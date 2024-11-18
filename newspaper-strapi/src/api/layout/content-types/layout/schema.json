@@ -1,0 +1,34 @@
+{
+  "kind": "singleType",
+  "collectionName": "layouts",
+  "info": {
+    "singularName": "layout",
+    "pluralName": "layouts",
+    "displayName": "Layout",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "editorJSData": {
+      "type": "json"
+    },
+    "columnWidth": {
+      "type": "integer"
+    },
+    "columnHeight": {
+      "type": "integer"
+    },
+    "columnCount": {
+      "type": "integer"
+    },
+    "headerHeight": {
+      "type": "integer"
+    },
+    "availableTextStyles": {
+      "type": "json"
+    }
+  }
+}
