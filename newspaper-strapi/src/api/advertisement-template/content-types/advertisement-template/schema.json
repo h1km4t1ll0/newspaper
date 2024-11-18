@@ -1,0 +1,21 @@
+{
+  "kind": "collectionType",
+  "collectionName": "advertisement_templates",
+  "info": {
+    "singularName": "advertisement-template",
+    "pluralName": "advertisement-templates",
+    "displayName": "AdvertisementTemplate"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "widthInColumns": {
+      "type": "integer"
+    },
+    "heightInColumns": {
+      "type": "integer"
+    }
+  }
+}
