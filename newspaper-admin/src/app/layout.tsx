@@ -45,13 +45,13 @@ export default function RootLayout({
                     notificationProvider={useNotificationProvider}
                     resources={[
                       {
-                        name: 'layouts',
-                        list: '/layouts',
-                        create: '/layouts/create',
-                        edit: '/layouts/edit/:id',
-                        show: '/layouts/show/:id',
+                        name: 'layout',
+                        list: '/layout',
+                        create: '/layout/create',
+                        edit: '/layout/edit/:id',
+                        show: '/layout/show/:id',
                         meta: {
-                          label: 'Layouts',
+                          label: 'Layout',
                         },
                       },
                       {
@@ -125,6 +125,16 @@ export default function RootLayout({
                         },
                       },
 
+                      {
+                        name: 'newspaper',
+                        list: '/newspapers',
+                        create: '/newspaper/create',
+                        edit: '/newspaper/edit/:id',
+                        show: '/newspaper/show/:id',
+                        meta: {
+                          label: 'Newspaper issues',
+                        },
+                      },
                     ]}
                     options={{
                       syncWithLocation: true,
