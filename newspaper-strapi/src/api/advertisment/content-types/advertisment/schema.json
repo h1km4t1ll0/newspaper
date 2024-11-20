@@ -1,0 +1,30 @@
+{
+  "kind": "collectionType",
+  "collectionName": "advertisments",
+  "info": {
+    "singularName": "advertisment",
+    "pluralName": "advertisments",
+    "displayName": "Advertisment",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "DateFrom": {
+      "type": "datetime"
+    },
+    "DateTo": {
+      "type": "datetime"
+    },
+    "Header": {
+      "type": "string"
+    },
+    "ad_template": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::advertisement-template.advertisement-template"
+    }
+  }
+}
