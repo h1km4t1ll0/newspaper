@@ -127,7 +127,7 @@ export default function RootLayout({
 
                       {
                         name: 'newspaper',
-                        list: '/newspapers',
+                        list: '/newspaper',
                         create: '/newspaper/create',
                         edit: '/newspaper/edit/:id',
                         show: '/newspaper/show/:id',
