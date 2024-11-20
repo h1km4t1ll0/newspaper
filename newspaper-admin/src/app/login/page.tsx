@@ -6,7 +6,7 @@ export default async function Login() {
   const data = await getData();
 
   if (data.authenticated) {
-    redirect(data?.redirectTo || "/");
+    redirect(data?.redirectTo || "/layouts");
   }
 
   return <AuthPage type="login" />;

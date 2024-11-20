@@ -45,13 +45,13 @@ export default function RootLayout({
                     notificationProvider={useNotificationProvider}
                     resources={[
                       {
-                        name: 'layout',
-                        list: '/layout',
-                        create: '/layout/create',
-                        edit: '/layout/edit/:id',
-                        show: '/layout/show/:id',
+                        name: 'layouts',
+                        list: '/layouts',
+                        create: '/layouts/create',
+                        edit: '/layouts/edit/:id',
+                        show: '/layouts/show/:id',
                         meta: {
-                          label: 'Layout',
+                          label: 'Layouts',
                         },
                       },
                       {
@@ -64,6 +64,67 @@ export default function RootLayout({
                           label: 'Advertisement template',
                         },
                       },
+                      {
+                        name: 'advertisements',
+                        list: '/advertisements',
+                        create: '/advertisements/create',
+                        edit: '/advertisements/edit/:id',
+                        show: '/advertisements/show/:id',
+                        meta: {
+                          label: 'Advertisements',
+                        },
+                      },
+                      {
+                        name: 'articles',
+                        list: '/articles',
+                        create: '/articles/create',
+                        edit: '/articles/edit/:id',
+                        show: '/articles/show/:id',
+                        meta: {
+                          label: 'Articles',
+                        },
+                      },
+                      {
+                        name: 'block-groups',
+                        list: '/block-groups',
+                        create: '/block-groups/create',
+                        edit: '/block-groups/edit/:id',
+                        show: '/block-groups/show/:id',
+                        meta: {
+                          label: 'Block Groups',
+                        },
+                      },
+                      {
+                        name: 'blocks',
+                        list: '/blocks',
+                        create: '/blocks/create',
+                        edit: '/blocks/edit/:id',
+                        show: '/blocks/show/:id',
+                        meta: {
+                          label: 'Blocks',
+                        },
+                      },
+                      {
+                        name: 'columns',
+                        list: '/columns',
+                        create: '/columns/create',
+                        edit: '/columns/edit/:id',
+                        show: '/columns/show/:id',
+                        meta: {
+                          label: 'Columns',
+                        },
+                      },
+                      {
+                        name: 'photos',
+                        list: '/photos',
+                        create: '/photos/create',
+                        edit: '/photos/edit/:id',
+                        show: '/photos/show/:id',
+                        meta: {
+                          label: 'Photos',
+                        },
+                      },
+
                     ]}
                     options={{
                       syncWithLocation: true,

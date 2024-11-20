@@ -12,9 +12,6 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "text": {
-      "type": "string"
-    },
     "name": {
       "type": "string"
     },
@@ -29,6 +26,9 @@
       "relation": "oneToMany",
       "target": "api::photo.photo",
       "mappedBy": "article"
+    },
+    "text": {
+      "type": "json"
     }
   }
 }

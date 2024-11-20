@@ -590,6 +590,53 @@ export interface PluginContentReleasesReleaseAction
   };
 }
 
+export interface PluginI18NLocale extends Schema.CollectionType {
+  collectionName: 'i18n_locale';
+  info: {
+    singularName: 'locale';
+    pluralName: 'locales';
+    collectionName: 'locales';
+    displayName: 'Locale';
+    description: '';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  pluginOptions: {
+    'content-manager': {
+      visible: false;
+    };
+    'content-type-builder': {
+      visible: false;
+    };
+  };
+  attributes: {
+    name: Attribute.String &
+      Attribute.SetMinMax<
+        {
+          min: 1;
+          max: 50;
+        },
+        number
+      >;
+    code: Attribute.String & Attribute.Unique;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'plugin::i18n.locale',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'plugin::i18n.locale',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
 export interface PluginUsersPermissionsPermission
   extends Schema.CollectionType {
   collectionName: 'up_permissions';
@@ -751,53 +798,6 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
   };
 }
 
-export interface PluginI18NLocale extends Schema.CollectionType {
-  collectionName: 'i18n_locale';
-  info: {
-    singularName: 'locale';
-    pluralName: 'locales';
-    collectionName: 'locales';
-    displayName: 'Locale';
-    description: '';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  pluginOptions: {
-    'content-manager': {
-      visible: false;
-    };
-    'content-type-builder': {
-      visible: false;
-    };
-  };
-  attributes: {
-    name: Attribute.String &
-      Attribute.SetMinMax<
-        {
-          min: 1;
-          max: 50;
-        },
-        number
-      >;
-    code: Attribute.String & Attribute.Unique;
-    createdAt: Attribute.DateTime;
-    updatedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<
-      'plugin::i18n.locale',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-    updatedBy: Attribute.Relation<
-      'plugin::i18n.locale',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-  };
-}
-
 export interface ApiAdvertisementTemplateAdvertisementTemplate
   extends Schema.CollectionType {
   collectionName: 'advertisement_templates';
@@ -805,13 +805,14 @@ export interface ApiAdvertisementTemplateAdvertisementTemplate
     singularName: 'advertisement-template';
     pluralName: 'advertisement-templates';
     displayName: 'AdvertisementTemplate';
+    description: '';
   };
   options: {
     draftAndPublish: false;
   };
   attributes: {
     widthInColumns: Attribute.Integer;
-    heightInColumns: Attribute.Integer;
+    heightInRows: Attribute.Integer;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -822,6 +823,44 @@ export interface ApiAdvertisementTemplateAdvertisementTemplate
       Attribute.Private;
     updatedBy: Attribute.Relation<
       'api::advertisement-template.advertisement-template',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiAdvertismentAdvertisment extends Schema.CollectionType {
+  collectionName: 'advertisments';
+  info: {
+    singularName: 'advertisment';
+    pluralName: 'advertisments';
+    displayName: 'Advertisment';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    DateFrom: Attribute.DateTime;
+    DateTo: Attribute.DateTime;
+    Header: Attribute.String;
+    ad_template: Attribute.Relation<
+      'api::advertisment.advertisment',
+      'oneToOne',
+      'api::advertisement-template.advertisement-template'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::advertisment.advertisment',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::advertisment.advertisment',
       'oneToOne',
       'admin::user'
     > &
@@ -841,7 +880,6 @@ export interface ApiArticleArticle extends Schema.CollectionType {
     draftAndPublish: false;
   };
   attributes: {
-    text: Attribute.String;
     name: Attribute.String;
     author: Attribute.Relation<
       'api::article.article',
@@ -853,6 +891,7 @@ export interface ApiArticleArticle extends Schema.CollectionType {
       'oneToMany',
       'api::photo.photo'
     >;
+    text: Attribute.JSON;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -870,7 +909,153 @@ export interface ApiArticleArticle extends Schema.CollectionType {
   };
 }
 
-export interface ApiLayoutLayout extends Schema.SingleType {
+export interface ApiBlockBlock extends Schema.CollectionType {
+  collectionName: 'blocks';
+  info: {
+    singularName: 'block';
+    pluralName: 'blocks';
+    displayName: 'Block';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    block_group: Attribute.Relation<
+      'api::block.block',
+      'manyToOne',
+      'api::block-group.block-group'
+    >;
+    column: Attribute.Relation<
+      'api::block.block',
+      'oneToOne',
+      'api::column.column'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::block.block',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::block.block',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiBlockGroupBlockGroup extends Schema.CollectionType {
+  collectionName: 'block_groups';
+  info: {
+    singularName: 'block-group';
+    pluralName: 'block-groups';
+    displayName: 'BlockGroup';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    blocks: Attribute.Relation<
+      'api::block-group.block-group',
+      'oneToMany',
+      'api::block.block'
+    >;
+    layout: Attribute.Relation<
+      'api::block-group.block-group',
+      'manyToOne',
+      'api::layout.layout'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::block-group.block-group',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::block-group.block-group',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiColumnColumn extends Schema.CollectionType {
+  collectionName: 'columns';
+  info: {
+    singularName: 'column';
+    pluralName: 'columns';
+    displayName: 'Column';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    width: Attribute.Integer;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::column.column',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::column.column',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiIssueIssue extends Schema.CollectionType {
+  collectionName: 'issues';
+  info: {
+    singularName: 'issue';
+    pluralName: 'issues';
+    displayName: 'Issue';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    name: Attribute.String;
+    layout: Attribute.Relation<
+      'api::issue.issue',
+      'oneToOne',
+      'api::layout.layout'
+    >;
+    PublishDate: Attribute.DateTime;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::issue.issue',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::issue.issue',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiLayoutLayout extends Schema.CollectionType {
   collectionName: 'layouts';
   info: {
     singularName: 'layout';
@@ -883,11 +1068,19 @@ export interface ApiLayoutLayout extends Schema.SingleType {
   };
   attributes: {
     editorJSData: Attribute.JSON;
-    columnWidth: Attribute.Integer;
-    columnHeight: Attribute.Integer;
     columnCount: Attribute.Integer;
     headerHeight: Attribute.Integer;
     availableTextStyles: Attribute.JSON;
+    block_groups: Attribute.Relation<
+      'api::layout.layout',
+      'oneToMany',
+      'api::block-group.block-group'
+    >;
+    column: Attribute.Relation<
+      'api::layout.layout',
+      'oneToOne',
+      'api::column.column'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -961,12 +1154,17 @@ declare module '@strapi/types' {
       'plugin::upload.folder': PluginUploadFolder;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
+      'plugin::i18n.locale': PluginI18NLocale;
       'plugin::users-permissions.permission': PluginUsersPermissionsPermission;
       'plugin::users-permissions.role': PluginUsersPermissionsRole;
       'plugin::users-permissions.user': PluginUsersPermissionsUser;
-      'plugin::i18n.locale': PluginI18NLocale;
       'api::advertisement-template.advertisement-template': ApiAdvertisementTemplateAdvertisementTemplate;
+      'api::advertisment.advertisment': ApiAdvertismentAdvertisment;
       'api::article.article': ApiArticleArticle;
+      'api::block.block': ApiBlockBlock;
+      'api::block-group.block-group': ApiBlockGroupBlockGroup;
+      'api::column.column': ApiColumnColumn;
+      'api::issue.issue': ApiIssueIssue;
       'api::layout.layout': ApiLayoutLayout;
       'api::photo.photo': ApiPhotoPhoto;
     }

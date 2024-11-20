@@ -22,7 +22,7 @@ export default function BlogPostShow() {
       <Title level={5}>{"Width"}</Title>
       <TextField value={record?.widthInColumns} />
       <Title level={5}>{"Height"}</Title>
-      <TextField value={record?.heightInColumns} />
+      <TextField value={record?.heightInRows} />
     </Show>
   );
 }

@@ -22,7 +22,7 @@ export default function BlogPostEdit() {
         </Form.Item>
         <Form.Item
           label={"Height"}
-          name={["heightInColumns"]}
+          name={["heightInRows"]}
           rules={[
             {
               required: true,

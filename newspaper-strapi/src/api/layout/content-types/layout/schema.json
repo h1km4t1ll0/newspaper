@@ -1,5 +1,5 @@
 {
-  "kind": "singleType",
+  "kind": "collectionType",
   "collectionName": "layouts",
   "info": {
     "singularName": "layout",
@@ -15,12 +15,6 @@
     "editorJSData": {
       "type": "json"
     },
-    "columnWidth": {
-      "type": "integer"
-    },
-    "columnHeight": {
-      "type": "integer"
-    },
     "columnCount": {
       "type": "integer"
     },
@@ -29,6 +23,17 @@
     },
     "availableTextStyles": {
       "type": "json"
+    },
+    "block_groups": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::block-group.block-group",
+      "mappedBy": "layout"
+    },
+    "column": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::column.column"
     }
   }
 }
