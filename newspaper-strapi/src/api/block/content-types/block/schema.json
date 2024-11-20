@@ -1,0 +1,27 @@
+{
+  "kind": "collectionType",
+  "collectionName": "blocks",
+  "info": {
+    "singularName": "block",
+    "pluralName": "blocks",
+    "displayName": "Block",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "block_group": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::block-group.block-group",
+      "inversedBy": "blocks"
+    },
+    "column": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::column.column"
+    }
+  }
+}
