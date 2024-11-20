@@ -15,7 +15,7 @@ import { Space, Table } from "antd";
 export default function BlogPostList() {
   const { tableProps, filters } = useTable<{
     widthInColumns: number,
-    heightInColumns: number,
+    heightInRows: number,
     createdAt: Date,
     updatedAt: Date,
     id: number | string,
@@ -36,7 +36,7 @@ export default function BlogPostList() {
       <Table {...tableProps} rowKey="id">
         <Table.Column dataIndex="id" title={"ID"} />
         <Table.Column dataIndex="widthInColumns" title={"Width"} />
-        <Table.Column dataIndex="heightInColumns" title={"Height"} />
+        <Table.Column dataIndex="heightInRows" title={"Height"} />
         <Table.Column
           title={"Actions"}
           dataIndex="actions"

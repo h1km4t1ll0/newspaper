@@ -8,7 +8,7 @@ export default function IndexPage() {
   const { push } = useRouter();
 
   useEffect(() => {
-    push('/layout');
+    push('/layouts');
   }, [push]);
 
   return null;
