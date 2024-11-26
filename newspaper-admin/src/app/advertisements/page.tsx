@@ -12,17 +12,31 @@ import {
 import { type BaseRecord } from "@refinedev/core";
 import { Space, Table } from "antd";
 
+const relationsQuery = {
+  populate: {
+    ad_template: {
+      populate: "*"
+    },
+  },
+};
+
+type AdTemplateType = {
+  widthInColumns: number,
+  heightInRows: number,
+}
+
 export default function BlogPostList() {
   const { tableProps, filters } = useTable<{
     DateFrom: Date,
     DateTo: Date,
     Header: string,
-    ad_template: string,
+    ad_template: AdTemplateType,
     createdAt: Date,
     updatedAt: Date,
     id: number | string,
   }[]>({
     syncWithLocation: true,
+    meta: relationsQuery,
     sorters: {
       initial: [
         {
@@ -41,6 +55,11 @@ export default function BlogPostList() {
         <Table.Column dataIndex="DateTo" title={"Date To"} />
         <Table.Column dataIndex="Header" title={"Header"} />
         <Table.Column dataIndex="ad_template" title={"AD Template"} />
+        <Table.Column
+            title={"AD Template"}
+            dataIndex="ad_template"
+            render={(_, record: BaseRecord) => JSON.stringify(record)}
+        />
         <Table.Column
           title={"Actions"}
           dataIndex="actions"

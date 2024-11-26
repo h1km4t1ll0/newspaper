@@ -95,13 +95,13 @@ export default function RootLayout({
                         },
                       },
                       {
-                        name: 'blocks',
-                        list: '/blocks',
-                        create: '/blocks/create',
-                        edit: '/blocks/edit/:id',
-                        show: '/blocks/show/:id',
+                        name: 'rows',
+                        list: '/rows',
+                        create: '/rows/create',
+                        edit: '/rows/edit/:id',
+                        show: '/rows/show/:id',
                         meta: {
-                          label: 'Blocks',
+                          label: 'Rows',
                         },
                       },
                       {

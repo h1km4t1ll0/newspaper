@@ -10,8 +10,8 @@ export default function BlogPostEdit() {
     <Edit saveButtonProps={saveButtonProps}>
       <Form {...formProps} layout="vertical">
         <Form.Item
-          label={"Blocks"}
-          name={["blocks"]}
+          label={"Rows"}
+          name={["rows"]}
           rules={[
             {
               required: true,
@@ -31,6 +31,17 @@ export default function BlogPostEdit() {
         >
           <Input />
         </Form.Item>
+          <Form.Item
+              label={"Type"}
+              name={["type"]}
+              rules={[
+                  {
+                      required: true,
+                  },
+              ]}
+          >
+              <Input />
+          </Form.Item>
       </Form>
     </Edit>
   );
