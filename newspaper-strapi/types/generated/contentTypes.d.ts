@@ -771,16 +771,6 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
       'manyToOne',
       'plugin::users-permissions.role'
     >;
-    article: Attribute.Relation<
-      'plugin::users-permissions.user',
-      'oneToOne',
-      'api::article.article'
-    >;
-    photo: Attribute.Relation<
-      'plugin::users-permissions.user',
-      'oneToOne',
-      'api::photo.photo'
-    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -881,11 +871,6 @@ export interface ApiArticleArticle extends Schema.CollectionType {
   };
   attributes: {
     name: Attribute.String;
-    author: Attribute.Relation<
-      'api::article.article',
-      'oneToOne',
-      'plugin::users-permissions.user'
-    >;
     photos: Attribute.Relation<
       'api::article.article',
       'oneToMany',
@@ -909,46 +894,6 @@ export interface ApiArticleArticle extends Schema.CollectionType {
   };
 }
 
-export interface ApiBlockBlock extends Schema.CollectionType {
-  collectionName: 'blocks';
-  info: {
-    singularName: 'block';
-    pluralName: 'blocks';
-    displayName: 'Block';
-    description: '';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    block_group: Attribute.Relation<
-      'api::block.block',
-      'manyToOne',
-      'api::block-group.block-group'
-    >;
-    column: Attribute.Relation<
-      'api::block.block',
-      'oneToOne',
-      'api::column.column'
-    >;
-    createdAt: Attribute.DateTime;
-    updatedAt: Attribute.DateTime;
-    publishedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<
-      'api::block.block',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-    updatedBy: Attribute.Relation<
-      'api::block.block',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-  };
-}
-
 export interface ApiBlockGroupBlockGroup extends Schema.CollectionType {
   collectionName: 'block_groups';
   info: {
@@ -961,16 +906,17 @@ export interface ApiBlockGroupBlockGroup extends Schema.CollectionType {
     draftAndPublish: true;
   };
   attributes: {
-    blocks: Attribute.Relation<
-      'api::block-group.block-group',
-      'oneToMany',
-      'api::block.block'
-    >;
     layout: Attribute.Relation<
       'api::block-group.block-group',
       'manyToOne',
       'api::layout.layout'
     >;
+    rows: Attribute.Relation<
+      'api::block-group.block-group',
+      'oneToMany',
+      'api::row.row'
+    >;
+    type: Attribute.Enumeration<['Advertisment', 'Photo', 'Article', 'None']>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -1001,6 +947,7 @@ export interface ApiColumnColumn extends Schema.CollectionType {
   };
   attributes: {
     width: Attribute.Integer;
+    rows: Attribute.Relation<'api::column.column', 'oneToMany', 'api::row.row'>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -1104,6 +1051,7 @@ export interface ApiPhotoPhoto extends Schema.CollectionType {
     singularName: 'photo';
     pluralName: 'photos';
     displayName: 'Photo';
+    description: '';
   };
   options: {
     draftAndPublish: false;
@@ -1112,11 +1060,6 @@ export interface ApiPhotoPhoto extends Schema.CollectionType {
     name: Attribute.String;
     width: Attribute.Integer;
     height: Attribute.Integer;
-    author: Attribute.Relation<
-      'api::photo.photo',
-      'oneToOne',
-      'plugin::users-permissions.user'
-    >;
     photo: Attribute.Media<'images'>;
     article: Attribute.Relation<
       'api::photo.photo',
@@ -1136,6 +1079,37 @@ export interface ApiPhotoPhoto extends Schema.CollectionType {
       'oneToOne',
       'admin::user'
     > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiRowRow extends Schema.CollectionType {
+  collectionName: 'rows';
+  info: {
+    singularName: 'row';
+    pluralName: 'rows';
+    displayName: 'Row';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    block_group: Attribute.Relation<
+      'api::row.row',
+      'manyToOne',
+      'api::block-group.block-group'
+    >;
+    column: Attribute.Relation<
+      'api::row.row',
+      'manyToOne',
+      'api::column.column'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<'api::row.row', 'oneToOne', 'admin::user'> &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<'api::row.row', 'oneToOne', 'admin::user'> &
       Attribute.Private;
   };
 }
@@ -1161,12 +1135,12 @@ declare module '@strapi/types' {
       'api::advertisement-template.advertisement-template': ApiAdvertisementTemplateAdvertisementTemplate;
       'api::advertisment.advertisment': ApiAdvertismentAdvertisment;
       'api::article.article': ApiArticleArticle;
-      'api::block.block': ApiBlockBlock;
       'api::block-group.block-group': ApiBlockGroupBlockGroup;
       'api::column.column': ApiColumnColumn;
       'api::issue.issue': ApiIssueIssue;
       'api::layout.layout': ApiLayoutLayout;
       'api::photo.photo': ApiPhotoPhoto;
+      'api::row.row': ApiRowRow;
     }
   }
 }

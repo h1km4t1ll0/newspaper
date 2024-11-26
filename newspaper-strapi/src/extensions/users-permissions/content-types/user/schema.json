@@ -65,18 +65,6 @@
       "target": "plugin::users-permissions.role",
       "inversedBy": "users",
       "configurable": false
-    },
-    "article": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::article.article",
-      "mappedBy": "author"
-    },
-    "photo": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::photo.photo",
-      "mappedBy": "author"
     }
   }
 }

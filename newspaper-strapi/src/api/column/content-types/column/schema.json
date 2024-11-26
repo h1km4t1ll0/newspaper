@@ -13,6 +13,12 @@
   "attributes": {
     "width": {
       "type": "integer"
+    },
+    "rows": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::row.row",
+      "mappedBy": "column"
     }
   }
 }
