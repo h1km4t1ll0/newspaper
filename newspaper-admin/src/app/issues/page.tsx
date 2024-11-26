@@ -12,16 +12,46 @@ import {
 import { type BaseRecord } from "@refinedev/core";
 import { Space, Table } from "antd";
 
+const relationsQuery = {
+  populate: {
+    layout: {
+      populate: {
+        column: {
+          populate: "*"
+        },
+      },
+    },
+  },
+};
+
+type RowType = {
+  column: ColumnType
+};
+
+type ColumnType = {
+  width: number,
+  rows: RowType[]
+}
+
+type LayoutType = {
+  editorJSData: JSON,
+  columnCount: number,
+  headerHeight: number,
+  availableTextStyles: JSON,
+  column: ColumnType
+}
+
 export default function BlogPostList() {
   const { tableProps, filters } = useTable<{
     name: string,
-    layout: string,
+    layout: LayoutType,
     PublishDate: Date,
     createdAt: Date,
     updatedAt: Date,
     id: number | string,
   }[]>({
     syncWithLocation: true,
+    meta: relationsQuery,
     sorters: {
       initial: [
         {
@@ -37,7 +67,11 @@ export default function BlogPostList() {
         <Table {...tableProps} rowKey="id">
           <Table.Column dataIndex="id" title={"ID"} />
           <Table.Column dataIndex="name" title={"Name"} />
-          <Table.Column dataIndex="layout" title={"Layout"} />
+          <Table.Column
+              title={"Layout"}
+              dataIndex="layout"
+              render={(_, record: BaseRecord) => JSON.stringify(record)}
+          />
           <Table.Column dataIndex="PublishDate" title={"PublishDate"} />
           <Table.Column
               title={"Actions"}

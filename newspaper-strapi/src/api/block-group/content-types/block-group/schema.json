@@ -12,17 +12,26 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "blocks": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::block.block",
-      "mappedBy": "block_group"
-    },
     "layout": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::layout.layout",
       "inversedBy": "block_groups"
+    },
+    "rows": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::row.row",
+      "mappedBy": "block_group"
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "Advertisment",
+        "Photo",
+        "Article",
+        "None"
+      ]
     }
   }
 }

@@ -14,8 +14,8 @@ export default function BlogPostCreate() {
     <Create saveButtonProps={saveButtonProps}>
       <Form {...formProps} layout="vertical">
           <Form.Item
-              label={"Blocks"}
-              name={["blocks"]}
+              label={"Rows"}
+              name={["rows"]}
               rules={[
                   {
                       required: true,
@@ -27,6 +27,17 @@ export default function BlogPostCreate() {
           <Form.Item
               label={"Layout"}
               name={["layout"]}
+              rules={[
+                  {
+                      required: true,
+                  },
+              ]}
+          >
+              <Input />
+          </Form.Item>
+          <Form.Item
+              label={"Type"}
+              name={["type"]}
               rules={[
                   {
                       required: true,

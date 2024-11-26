@@ -12,15 +12,55 @@ import {
 import { type BaseRecord } from "@refinedev/core";
 import { Space, Table } from "antd";
 
+const relationsQuery = {
+  populate: {
+    rows: {
+      populate: {
+        column: {
+          populate: "*"
+        },
+      },
+    },
+    layout: {
+      populate: {
+        column: {
+          populate: "*"
+        },
+      },
+    },
+  },
+};
+
+type BlockType = "Advertisement" | "Photo" | "Text" | "None"
+
+type RowType = {
+  column: ColumnType
+};
+
+type ColumnType = {
+  width: number,
+  rows: RowType[]
+}
+
+type LayoutType = {
+  editorJSData: JSON,
+  columnCount: number,
+  headerHeight: number,
+  availableTextStyles: JSON,
+  column: ColumnType
+}
+
 export default function BlogPostList() {
   const { tableProps, filters } = useTable<{
-    blocks: string,
-    layout: string,
+    rows: RowType[],
+    layout: LayoutType[],
+    type: BlockType,
     createdAt: Date,
     updatedAt: Date,
     id: number | string,
   }[]>({
     syncWithLocation: true,
+    meta: relationsQuery,
     sorters: {
       initial: [
         {
@@ -35,8 +75,17 @@ export default function BlogPostList() {
     <List>
       <Table {...tableProps} rowKey="id">
         <Table.Column dataIndex="id" title={"ID"} />
-        <Table.Column dataIndex="blocks" title={"Blocks"} />
-        <Table.Column dataIndex="layout" title={"Layout"} />
+        <Table.Column dataIndex="type" title={"Type"} />
+        <Table.Column
+            title={"Rows"}
+            dataIndex="rows"
+            render={(_, record: BaseRecord) => JSON.stringify(record)}
+        />
+        <Table.Column
+            title={"Layout"}
+            dataIndex="layout"
+            render={(_, record: BaseRecord) => JSON.stringify(record)}
+        />
         <Table.Column
           title={"Actions"}
           dataIndex="actions"

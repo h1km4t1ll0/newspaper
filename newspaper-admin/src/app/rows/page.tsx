@@ -12,15 +12,48 @@ import {
 import { type BaseRecord } from "@refinedev/core";
 import { Space, Table } from "antd";
 
+const relationsQuery = {
+  populate: {
+    column: {
+      populate: "*",
+    },
+    block_groups: {
+      populate: {
+        layout: {
+          populate: "*",
+        },
+      },
+    },
+  },
+};
+
+type BlockType = "Advertisement" | "Photo" | "Text" | "None"
+
+type RowType = {
+  column: ColumnType
+};
+
+type ColumnType = {
+  width: number,
+  rows: RowType[]
+}
+
+type BlockGroupType = {
+  rows: RowType[],
+  type: BlockType,
+};
+
+
 export default function BlogPostList() {
   const { tableProps, filters } = useTable<{
-    block_group: string,
-    column: string,
+    block_group: BlockGroupType[],
+    column: ColumnType,
     createdAt: Date,
     updatedAt: Date,
     id: number | string,
   }[]>({
     syncWithLocation: true,
+    meta: relationsQuery,
     sorters: {
       initial: [
         {
@@ -35,8 +68,16 @@ export default function BlogPostList() {
     <List>
       <Table {...tableProps} rowKey="id">
         <Table.Column dataIndex="id" title={"ID"} />
-        <Table.Column dataIndex="block_group" title={"Block Group"} />
-        <Table.Column dataIndex="column" title={"Column"} />
+        <Table.Column
+            title={"Block Group"}
+            dataIndex="block_group"
+            render={(_, record: BaseRecord) => JSON.stringify(record)}
+        />
+        <Table.Column
+            title={"Column"}
+            dataIndex="column"
+            render={(_, record: BaseRecord) => JSON.stringify(record)}
+        />
         <Table.Column
           title={"Actions"}
           dataIndex="actions"
