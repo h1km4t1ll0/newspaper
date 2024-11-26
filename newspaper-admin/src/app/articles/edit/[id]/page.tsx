@@ -20,17 +20,6 @@ export default function BlogPostEdit() {
         >
           <Input />
         </Form.Item>
-        <Form.Item
-          label={"Author"}
-          name={["author"]}
-          rules={[
-            {
-              required: true,
-            },
-          ]}
-        >
-          <Input />
-        </Form.Item>
           <Form.Item
               label={"Photos"}
               name={["photos"]}
