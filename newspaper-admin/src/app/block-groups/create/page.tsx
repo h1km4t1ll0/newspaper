@@ -1,7 +1,7 @@
 "use client";
 
 import { Create, useForm, useSelect } from "@refinedev/antd";
-import { Form, Input, Select } from "antd";
+import { Form, Input, Select, Cascader } from "antd";
 
 export default function BlogPostCreate() {
   const { formProps, saveButtonProps } = useForm({});
@@ -18,7 +18,7 @@ export default function BlogPostCreate() {
               name={["rows"]}
               rules={[
                   {
-                      required: true,
+                      required: false,
                   },
               ]}
           >
@@ -29,7 +29,7 @@ export default function BlogPostCreate() {
               name={["layout"]}
               rules={[
                   {
-                      required: true,
+                      required: false,
                   },
               ]}
           >

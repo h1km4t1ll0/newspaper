@@ -54,7 +54,6 @@ export default function BlogPostList() {
         <Table.Column dataIndex="DateFrom" title={"Date From"} />
         <Table.Column dataIndex="DateTo" title={"Date To"} />
         <Table.Column dataIndex="Header" title={"Header"} />
-        <Table.Column dataIndex="ad_template" title={"AD Template"} />
         <Table.Column
             title={"AD Template"}
             dataIndex="ad_template"

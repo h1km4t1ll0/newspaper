@@ -1,7 +1,7 @@
 "use client";
 
 import { Edit, useForm, useSelect } from "@refinedev/antd";
-import { Form, Input, Select } from "antd";
+import { Form, Input, Select, DatePicker } from "antd";
 
 export default function BlogPostEdit() {
   const { formProps, saveButtonProps } = useForm({});
@@ -18,7 +18,7 @@ export default function BlogPostEdit() {
             },
           ]}
         >
-          <Input />
+          <DatePicker />
         </Form.Item>
         <Form.Item
           label={"DateTo"}
@@ -29,7 +29,7 @@ export default function BlogPostEdit() {
             },
           ]}
         >
-          <Input />
+          <DatePicker />
         </Form.Item>
           <Form.Item
               label={"Header"}
@@ -47,7 +47,7 @@ export default function BlogPostEdit() {
               name={["ad_template"]}
               rules={[
                   {
-                      required: true,
+                      required: false,
                   },
               ]}
           >

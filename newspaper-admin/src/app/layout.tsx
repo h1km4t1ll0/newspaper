@@ -45,13 +45,13 @@ export default function RootLayout({
                     notificationProvider={useNotificationProvider}
                     resources={[
                       {
-                        name: 'layout',
-                        list: '/layout',
-                        create: '/layout/create',
-                        edit: '/layout/edit/:id',
-                        show: '/layout/show/:id',
+                        name: 'layouts',
+                        list: '/layouts',
+                        create: '/layouts/create',
+                        edit: '/layouts/edit/:id',
+                        show: '/layouts/show/:id',
                         meta: {
-                          label: 'Layout',
+                          label: 'Layouts',
                         },
                       },
                       {
@@ -126,11 +126,11 @@ export default function RootLayout({
                       },
 
                       {
-                        name: 'newspaper',
-                        list: '/newspaper',
-                        create: '/newspaper/create',
-                        edit: '/newspaper/edit/:id',
-                        show: '/newspaper/show/:id',
+                        name: 'issues',
+                        list: '/issues',
+                        create: '/issues/create',
+                        edit: '/issues/edit/:id',
+                        show: '/issue/show/:id',
                         meta: {
                           label: 'Newspaper issues',
                         },
