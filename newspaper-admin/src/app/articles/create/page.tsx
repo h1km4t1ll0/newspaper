@@ -29,7 +29,7 @@ export default function BlogPostCreate() {
               name={["photos"]}
               rules={[
                   {
-                      required: true,
+                      required: false,
                   },
               ]}
           >

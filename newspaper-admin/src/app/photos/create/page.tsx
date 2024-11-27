@@ -1,7 +1,7 @@
 "use client";
 
 import { Create, useForm, useSelect } from "@refinedev/antd";
-import { Form, Input, Select } from "antd";
+import { Form, Input, Select, InputNumber } from "antd";
 
 export default function BlogPostCreate() {
   const { formProps, saveButtonProps } = useForm({});
@@ -29,7 +29,7 @@ export default function BlogPostCreate() {
                   },
               ]}
           >
-              <Input />
+              <InputNumber />
           </Form.Item>
           <Form.Item
               label={"Height"}
@@ -40,7 +40,7 @@ export default function BlogPostCreate() {
                   },
               ]}
           >
-              <Input />
+              <InputNumber />
           </Form.Item>
           <Form.Item
               label={"Photo"}
@@ -58,7 +58,7 @@ export default function BlogPostCreate() {
               name={["article"]}
               rules={[
                   {
-                      required: true,
+                      required: false,
                   },
               ]}
           >

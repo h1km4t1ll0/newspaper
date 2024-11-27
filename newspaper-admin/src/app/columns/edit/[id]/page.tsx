@@ -1,7 +1,7 @@
 "use client";
 
 import { Edit, useForm, useSelect } from "@refinedev/antd";
-import { Form, Input, Select } from "antd";
+import { Form, InputNumber, Select } from "antd";
 
 export default function BlogPostEdit() {
   const { formProps, saveButtonProps } = useForm({});
@@ -18,7 +18,7 @@ export default function BlogPostEdit() {
             },
           ]}
         >
-          <Input />
+          <InputNumber />
         </Form.Item>
       </Form>
     </Edit>

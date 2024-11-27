@@ -31,7 +31,7 @@ const relationsQuery = {
   },
 };
 
-type BlockType = "Advertisement" | "Photo" | "Text" | "None"
+type BlockType = "Advertisement" | "Photo" | "Article" | "None"
 
 type RowType = {
   column: ColumnType

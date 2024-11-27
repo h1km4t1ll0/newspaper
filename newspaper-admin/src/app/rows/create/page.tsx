@@ -18,7 +18,7 @@ export default function BlogPostCreate() {
               name={["block_group"]}
               rules={[
                   {
-                      required: true,
+                      required: false,
                   },
               ]}
           >
@@ -29,7 +29,7 @@ export default function BlogPostCreate() {
               name={["column"]}
               rules={[
                   {
-                      required: true,
+                      required: false,
                   },
               ]}
           >

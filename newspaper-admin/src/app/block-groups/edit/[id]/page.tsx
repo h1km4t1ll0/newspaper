@@ -14,7 +14,7 @@ export default function BlogPostEdit() {
           name={["rows"]}
           rules={[
             {
-              required: true,
+              required: false,
             },
           ]}
         >
@@ -25,7 +25,7 @@ export default function BlogPostEdit() {
           name={["layout"]}
           rules={[
             {
-              required: true,
+              required: false,
             },
           ]}
         >
