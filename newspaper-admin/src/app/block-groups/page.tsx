@@ -79,12 +79,12 @@ export default function BlogPostList() {
         <Table.Column
             title={"Rows"}
             dataIndex="rows"
-            render={(_, record: BaseRecord) => JSON.stringify(record)}
+            render={(_, record: BaseRecord) => JSON.stringify(record.rows)}
         />
         <Table.Column
             title={"Layout"}
             dataIndex="layout"
-            render={(_, record: BaseRecord) => JSON.stringify(record)}
+            render={(_, record: BaseRecord) => JSON.stringify(record.layout)}
         />
         <Table.Column
           title={"Actions"}
