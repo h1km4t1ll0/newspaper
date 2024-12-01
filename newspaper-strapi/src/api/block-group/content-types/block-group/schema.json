@@ -27,7 +27,7 @@
     "type": {
       "type": "enumeration",
       "enum": [
-        "Advertisment",
+        "Advertisement",
         "Photo",
         "Article",
         "None"

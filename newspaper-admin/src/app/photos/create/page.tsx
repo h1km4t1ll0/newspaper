@@ -47,7 +47,7 @@ export default function BlogPostCreate() {
               name={["photo"]}
               rules={[
                   {
-                      required: true,
+                      required: false,
                   },
               ]}
           >

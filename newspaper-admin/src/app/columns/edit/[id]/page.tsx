@@ -11,7 +11,7 @@ export default function BlogPostEdit() {
       <Form {...formProps} layout="vertical">
         <Form.Item
           label={"Width"}
-          name={["Width"]}
+          name={["width"]}
           rules={[
             {
               required: true,

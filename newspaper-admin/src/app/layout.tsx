@@ -65,11 +65,11 @@ export default function RootLayout({
                         },
                       },
                       {
-                        name: 'advertisements',
-                        list: '/advertisements',
-                        create: '/advertisements/create',
-                        edit: '/advertisements/edit/:id',
-                        show: '/advertisements/show/:id',
+                        name: 'advertisments',
+                        list: '/advertisments',
+                        create: '/advertisments/create',
+                        edit: '/advertisments/edit/:id',
+                        show: '/advertisments/show/:id',
                         meta: {
                           label: 'Advertisements',
                         },
