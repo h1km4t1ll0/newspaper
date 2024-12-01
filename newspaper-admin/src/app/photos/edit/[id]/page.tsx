@@ -47,7 +47,7 @@ export default function BlogPostEdit() {
               name={["photo"]}
               rules={[
                   {
-                      required: true,
+                      required: false,
                   },
               ]}
           >

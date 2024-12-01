@@ -6,10 +6,6 @@ import { Form, Input, Select, DatePicker } from "antd";
 export default function BlogPostCreate() {
   const { formProps, saveButtonProps } = useForm({});
 
-  const { selectProps: categorySelectProps } = useSelect({
-    resource: "categories",
-  });
-
   return (
     <Create saveButtonProps={saveButtonProps}>
       <Form {...formProps} layout="vertical">
