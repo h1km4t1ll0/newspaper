@@ -11,6 +11,7 @@ import {
 } from "@refinedev/antd";
 import { type BaseRecord } from "@refinedev/core";
 import { Space, Table } from "antd";
+import dayjs from 'dayjs';
 
 const relationsQuery = {
   populate: {
@@ -70,9 +71,12 @@ export default function BlogPostList() {
           <Table.Column
               title={"Layout"}
               dataIndex="layout"
-              render={(_, record: BaseRecord) => JSON.stringify(record)}
+              render={(_, record: BaseRecord) => JSON.stringify(record.layout)}
           />
-          <Table.Column dataIndex="PublishDate" title={"PublishDate"} />
+          <Table.Column dataIndex="PublishDate"
+                        title={"PublishDate"}
+                        render={(_, record: BaseRecord) => dayjs(record.PublishDate).format('YYYY-MM-DD')}
+          />
           <Table.Column
               title={"Actions"}
               dataIndex="actions"

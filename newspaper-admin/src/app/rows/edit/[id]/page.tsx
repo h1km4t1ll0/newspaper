@@ -14,7 +14,7 @@ export default function BlogPostEdit() {
           name={["block_group"]}
           rules={[
             {
-              required: true,
+              required: false,
             },
           ]}
         >
@@ -25,7 +25,7 @@ export default function BlogPostEdit() {
           name={["column"]}
           rules={[
             {
-              required: true,
+              required: false,
             },
           ]}
         >

@@ -3,6 +3,25 @@
 import { Edit, useForm, useSelect } from "@refinedev/antd";
 import { Form, Input, Select } from "antd";
 
+const typeSelectOptions = [
+    {
+        label: 'None',
+        value: 'None',
+    },
+    {
+        label: 'Photo',
+        value: 'Photo',
+    },
+    {
+        label: 'Article',
+        value: 'Article',
+    },
+    {
+        label: 'Advertisement',
+        value: 'Advertisement',
+    },
+];
+
 export default function BlogPostEdit() {
   const { formProps, saveButtonProps } = useForm({});
 
@@ -14,7 +33,7 @@ export default function BlogPostEdit() {
           name={["rows"]}
           rules={[
             {
-              required: true,
+              required: false,
             },
           ]}
         >
@@ -25,7 +44,7 @@ export default function BlogPostEdit() {
           name={["layout"]}
           rules={[
             {
-              required: true,
+              required: false,
             },
           ]}
         >
@@ -40,7 +59,7 @@ export default function BlogPostEdit() {
                   },
               ]}
           >
-              <Input />
+              <Select options={[...typeSelectOptions]}/>
           </Form.Item>
       </Form>
     </Edit>

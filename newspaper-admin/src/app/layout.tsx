@@ -45,13 +45,13 @@ export default function RootLayout({
                     notificationProvider={useNotificationProvider}
                     resources={[
                       {
-                        name: 'layout',
-                        list: '/layout',
-                        create: '/layout/create',
-                        edit: '/layout/edit/:id',
-                        show: '/layout/show/:id',
+                        name: 'layouts',
+                        list: '/layouts',
+                        create: '/layouts/create',
+                        edit: '/layouts/edit/:id',
+                        show: '/layouts/show/:id',
                         meta: {
-                          label: 'Layout',
+                          label: 'Layouts',
                         },
                       },
                       {
@@ -65,11 +65,11 @@ export default function RootLayout({
                         },
                       },
                       {
-                        name: 'advertisements',
-                        list: '/advertisements',
-                        create: '/advertisements/create',
-                        edit: '/advertisements/edit/:id',
-                        show: '/advertisements/show/:id',
+                        name: 'advertisments',
+                        list: '/advertisments',
+                        create: '/advertisments/create',
+                        edit: '/advertisments/edit/:id',
+                        show: '/advertisments/show/:id',
                         meta: {
                           label: 'Advertisements',
                         },
@@ -126,11 +126,11 @@ export default function RootLayout({
                       },
 
                       {
-                        name: 'newspaper',
-                        list: '/newspaper',
-                        create: '/newspaper/create',
-                        edit: '/newspaper/edit/:id',
-                        show: '/newspaper/show/:id',
+                        name: 'issues',
+                        list: '/issues',
+                        create: '/issues/create',
+                        edit: '/issues/edit/:id',
+                        show: '/issue/show/:id',
                         meta: {
                           label: 'Newspaper issues',
                         },

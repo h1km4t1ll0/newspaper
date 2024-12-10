@@ -916,7 +916,7 @@ export interface ApiBlockGroupBlockGroup extends Schema.CollectionType {
       'oneToMany',
       'api::row.row'
     >;
-    type: Attribute.Enumeration<['Advertisment', 'Photo', 'Article', 'None']>;
+    type: Attribute.Enumeration<['Advertisement', 'Photo', 'Article', 'None']>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
