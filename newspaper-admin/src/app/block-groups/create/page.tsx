@@ -3,12 +3,28 @@
 import { Create, useForm, useSelect } from "@refinedev/antd";
 import { Form, Input, Select } from "antd";
 
+const typeSelectOptions = [
+    {
+        label: 'None',
+        value: 'None',
+    },
+    {
+        label: 'Photo',
+        value: 'Photo',
+    },
+    {
+        label: 'Article',
+        value: 'Article',
+    },
+    {
+        label: 'Advertisement',
+        value: 'Advertisement',
+    },
+];
+
+
 export default function BlogPostCreate() {
   const { formProps, saveButtonProps } = useForm({});
-
-  const { selectProps: categorySelectProps } = useSelect({
-    resource: "categories",
-  });
 
   return (
     <Create saveButtonProps={saveButtonProps}>
@@ -18,7 +34,7 @@ export default function BlogPostCreate() {
               name={["rows"]}
               rules={[
                   {
-                      required: true,
+                      required: false,
                   },
               ]}
           >
@@ -29,7 +45,7 @@ export default function BlogPostCreate() {
               name={["layout"]}
               rules={[
                   {
-                      required: true,
+                      required: false,
                   },
               ]}
           >
@@ -44,7 +60,7 @@ export default function BlogPostCreate() {
                   },
               ]}
           >
-              <Input />
+              <Select options={[...typeSelectOptions]}/>
           </Form.Item>
       </Form>
     </Create>

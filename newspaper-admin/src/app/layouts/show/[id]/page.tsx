@@ -16,14 +16,6 @@ export default function BlogPostShow() {
 
   const record = data?.data;
 
-  const { data: categoryData, isLoading: categoryIsLoading } = useOne({
-    resource: "categories",
-    id: record?.category?.id || "",
-    queryOptions: {
-      enabled: !!record,
-    },
-  });
-
   return (
     <Show isLoading={isLoading}>
       <Title level={5}>{"ID"}</Title>

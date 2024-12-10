@@ -31,7 +31,7 @@ const relationsQuery = {
   },
 };
 
-type BlockType = "Advertisement" | "Photo" | "Text" | "None"
+type BlockType = "Advertisement" | "Photo" | "Article" | "None"
 
 type RowType = {
   column: ColumnType
@@ -79,12 +79,12 @@ export default function BlogPostList() {
         <Table.Column
             title={"Rows"}
             dataIndex="rows"
-            render={(_, record: BaseRecord) => JSON.stringify(record)}
+            render={(_, record: BaseRecord) => JSON.stringify(record.rows)}
         />
         <Table.Column
             title={"Layout"}
             dataIndex="layout"
-            render={(_, record: BaseRecord) => JSON.stringify(record)}
+            render={(_, record: BaseRecord) => JSON.stringify(record.layout)}
         />
         <Table.Column
           title={"Actions"}

@@ -1,14 +1,10 @@
 "use client";
 
 import { Create, useForm, useSelect } from "@refinedev/antd";
-import { Form, Input, Select } from "antd";
+import { Form, Input, Select, InputNumber } from "antd";
 
 export default function BlogPostCreate() {
   const { formProps, saveButtonProps } = useForm({});
-
-  const { selectProps: categorySelectProps } = useSelect({
-    resource: "categories",
-  });
 
   return (
     <Create saveButtonProps={saveButtonProps}>
@@ -33,7 +29,7 @@ export default function BlogPostCreate() {
                   },
               ]}
           >
-              <Input.TextArea rows={5} />
+              <InputNumber />
           </Form.Item>
           <Form.Item
               label={"Header Height"}
@@ -44,7 +40,7 @@ export default function BlogPostCreate() {
                   },
               ]}
           >
-              <Input.TextArea rows={5} />
+              <InputNumber />
           </Form.Item>
           <Form.Item
               label={"Available Text Styles"}
@@ -62,7 +58,7 @@ export default function BlogPostCreate() {
               name={["block_groups"]}
               rules={[
                   {
-                      required: true,
+                      required: false,
                   },
               ]}
           >
@@ -73,7 +69,7 @@ export default function BlogPostCreate() {
               name={["column"]}
               rules={[
                   {
-                      required: true,
+                      required: false,
                   },
               ]}
           >
