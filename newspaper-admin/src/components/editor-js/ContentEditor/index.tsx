@@ -107,6 +107,7 @@ const ContentEditor: FC<IEditorProps> = (
 
   const save = () => {
     if (!editorCore.current) {
+      console.log('43434343344343344343434')
       return;
     }
 
@@ -114,6 +115,7 @@ const ContentEditor: FC<IEditorProps> = (
       .save()
       .then((outputData) => {
         if (onChange) {
+          console.log('jnsdgurdstugtrugtjdgtsjgtujurugt')
           onChange(outputData);
         }
       })
@@ -124,7 +126,12 @@ const ContentEditor: FC<IEditorProps> = (
   };
 
   const f = useRef(0);
-  useEffect(() => {
+
+  const init = useCallback(async () => {
+    if (editorCore.current) {
+      console.log('Editor is already initialized');
+      return; // Prevent re-initialization
+    }
     additionalRequestHeaders.Authorization = `Bearer ${auth.token}`;
 
     // @ts-ignore
@@ -176,7 +183,7 @@ const ContentEditor: FC<IEditorProps> = (
     };
 
     console.log('editorCore.current', editorCore.current)
-    if (editorElementRef.current && f.current < 1) {
+    if (editorElementRef.current) {
       const config: EditorConfig = {
         readOnly,
         holder: editorElementRef.current,
@@ -301,6 +308,7 @@ const ContentEditor: FC<IEditorProps> = (
         onReady: () => {
           setIsEditorReady(true);
           if (!readOnly && editorCore.current) {
+            console.log(editorCore.current, 'eirkerkekr')
             if (!disableUndo) {
               const undo = new Undo({ editor: editorCore.current, maxLength: 100 });
               undoInstance.current = undo;
@@ -341,18 +349,23 @@ const ContentEditor: FC<IEditorProps> = (
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       editorCore.current = new EditorJS(config);
+      await editorCore.current.isReady;
       f.current++;
       console.log(`хуйня выполнилась ${f.current} раз`)
     }
+  }, [editorCore.current, editorCore]);
+  useEffect(() => {
+    init()
 
     return () => {
+      console.log('jjjjjjjjjjjjj')
       // https://www.walkthrough.so/pblc/snKICMzxzedr/codelab-integrating-editor-js-into-your-react-application?sn=2
       if (editorCore.current?.destroy) {
         editorCore.current?.destroy();
       }
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      editorCore.current = null;
+      // editorCore.current = null;
     };
     //  TODO: если сюда добавить save и data перестает работать контент и тесты
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -374,6 +387,7 @@ const ContentEditor: FC<IEditorProps> = (
 
   return (
     <div className={styles.root}>
+      {isEditorReady ? 'yes' : 'no'}
       {/* eslint-disable-next-line jsx-a11y/control-has-associated-label,jsx-a11y/interactive-supports-focus */}
       <div
         ref={editorElementRef}
