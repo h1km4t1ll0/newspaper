@@ -12,6 +12,7 @@ import { ColorModeContextProvider } from "@contexts/color-mode";
 import { authProvider } from "@providers/auth-provider";
 import { dataProvider } from "@providers/data-provider";
 import "@refinedev/antd/dist/reset.css";
+import {observer} from "mobx-react-lite";
 
 export const metadata: Metadata = {
   title: "Refine",

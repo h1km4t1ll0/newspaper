@@ -1083,37 +1083,6 @@ export interface ApiPhotoPhoto extends Schema.CollectionType {
   };
 }
 
-export interface ApiRowRow extends Schema.CollectionType {
-  collectionName: 'rows';
-  info: {
-    singularName: 'row';
-    pluralName: 'rows';
-    displayName: 'Row';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    block_group: Attribute.Relation<
-      'api::row.row',
-      'manyToOne',
-      'api::block-group.block-group'
-    >;
-    column: Attribute.Relation<
-      'api::row.row',
-      'manyToOne',
-      'api::column.column'
-    >;
-    createdAt: Attribute.DateTime;
-    updatedAt: Attribute.DateTime;
-    publishedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<'api::row.row', 'oneToOne', 'admin::user'> &
-      Attribute.Private;
-    updatedBy: Attribute.Relation<'api::row.row', 'oneToOne', 'admin::user'> &
-      Attribute.Private;
-  };
-}
-
 declare module '@strapi/types' {
   export module Shared {
     export interface ContentTypes {
@@ -1140,7 +1109,6 @@ declare module '@strapi/types' {
       'api::issue.issue': ApiIssueIssue;
       'api::layout.layout': ApiLayoutLayout;
       'api::photo.photo': ApiPhotoPhoto;
-      'api::row.row': ApiRowRow;
     }
   }
 }
