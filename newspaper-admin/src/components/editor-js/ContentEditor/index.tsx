@@ -1,4 +1,5 @@
-import React, { FC, useEffect, useRef } from 'react';
+"use client";
+import React, {FC, useCallback, useEffect, useRef, useState} from 'react';
 
 import EditorJS, { OutputData } from '@editorjs/editorjs';
 
@@ -24,7 +25,16 @@ import Header from '@editorjs/header';
 import Marker from '@editorjs/marker';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
+import Warning from "@editorjs/warning";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import Paragraph from "@editorjs/paragraph";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import CheckList from '@editorjs/checklist';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import EditorJsColumns from "@calumk/editorjs-columns";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import Delimiter from '@editorjs/delimiter';
@@ -93,6 +103,7 @@ const ContentEditor: FC<IEditorProps> = (
   const editorCore = React.useRef<EditorJS>(null);
   const undoInstance = React.useRef<Undo>();
   const { authStore: { auth } } = useStore();
+  const [isEditorReady, setIsEditorReady] = useState(false);
 
   const save = () => {
     if (!editorCore.current) {
@@ -112,6 +123,7 @@ const ContentEditor: FC<IEditorProps> = (
       });
   };
 
+  const f = useRef(0);
   useEffect(() => {
     additionalRequestHeaders.Authorization = `Bearer ${auth.token}`;
 
@@ -126,10 +138,6 @@ const ContentEditor: FC<IEditorProps> = (
       },
       checklist: CheckList,
       table: Table,
-      collapse: {
-        class: Collapse,
-        inlineToolbar: true,
-      },
       button: {
         class: Button,
         inlineToolbar: false,
@@ -140,32 +148,6 @@ const ContentEditor: FC<IEditorProps> = (
         },
       },
       delimiter: Delimiter,
-      linkTool: {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        class: LinkTool,
-      },
-      questionLink: {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        class: QuestionLinkTool,
-      },
-      math: {
-        // @ts-ignore
-        class: MathEditor,
-        inlineToolbar: true,
-        config: {
-          virtualKeyboardMode: 'manual',
-          defaultMode: 'math',
-          smartMode: false,
-          virtualKeyboardTheme: 'material',
-          onChange: () => {
-            setTimeout(() => {
-              save();
-            }, 300);
-          },
-        },
-      },
       image: {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
@@ -178,95 +160,23 @@ const ContentEditor: FC<IEditorProps> = (
           },
         },
       },
-      audio: {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        class: AudioTools,
-        config: {
-          additionalRequestHeaders,
-          saveServer: async (file: any) => {
-            try {
-              const formData = new FormData();
-              formData.append('file', file);
-              const route = `${getApiBase()}/api/editorjs/uploadFile`;
-              const req = await axios.post(route, formData, {
-                headers: { ...additionalRequestHeaders },
-              });
-              return {
-                data: {
-                  url: req?.data?.file?.url,
-                  name: req?.data?.file?.name,
-                  id: req?.data?.file?.url,
-                },
-              };
-            } catch (e) {
-              // eslint-disable-next-line no-console
-              console.error(e);
-              return null;
-            }
-          },
-        },
-      },
-      attaches: {
-        class: AttachesTool,
-        config: {
-          types: 'image/gif,image/jpeg,image/png,image/bmp,video/mpeg,video/mp4,video/ogg,video/quicktime,video/webm,video/x-ms-wmv,video/x-flv,video/x-msvideo,video/3gpp,video/3gpp2,application/pdf,text/csv,text/plain,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel.sheet.binary.macroEnabled.12,application/vnd.ms-excel,application/vnd.ms-excel.sheet.macroEnabled.12,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/rtf,text/rtf,application/zip,application/vnd.rar',
-          buttonText: 'Загрузить файл',
-          uploader: {
-            uploadByFile(file: File) {
-              const formData = new FormData();
-              formData.append('file', file);
-              return fetch(`${getApiBase()}/api/editorjs/uploadFile`, {
-                method: 'POST',
-                headers: additionalRequestHeaders,
-                body: formData,
-              })
-                .then((response) => response.json())
-                .then((json) => {
-                  if (json?.code && json?.code === 'InternalError') {
-                    throw new Error('Данные ответа S3 невалидные!');
-                  }
-                  setTimeout(() => {
-                    save();
-                  }, 500);
-
-                  return json;
-                })
-                .catch((error) => {
-                  console.error('Ошибка при добавлении файла:', error);
-                  return Promise.reject(error);
-                });
-            },
-          },
-        },
-      },
-      embed: {
-        class: Embed,
-        config: {
-          services: {
-            youtube: true,
-            vimeo: true,
-          },
-        },
-      },
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       simpleImage: SimpleImage,
-      video: {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        class: Video,
+      columns: {
+        class: EditorJsColumns,
         config: {
-          onUpdate: () => {
-            setTimeout(() => {
-              save();
-            }, 500);
-          },
-        },
-      },
+          EditorJsLibrary: EditorJS,
+          tools: {
+            header: Header,
+            paragraph: Paragraph,
+          }
+        }
+      }
     };
 
-    if (editorElementRef.current) {
+    console.log('editorCore.current', editorCore.current)
+    if (editorElementRef.current && f.current < 1) {
       const config: EditorConfig = {
         readOnly,
         holder: editorElementRef.current,
@@ -389,6 +299,7 @@ const ContentEditor: FC<IEditorProps> = (
           }
         },
         onReady: () => {
+          setIsEditorReady(true);
           if (!readOnly && editorCore.current) {
             if (!disableUndo) {
               const undo = new Undo({ editor: editorCore.current, maxLength: 100 });
@@ -430,6 +341,8 @@ const ContentEditor: FC<IEditorProps> = (
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       editorCore.current = new EditorJS(config);
+      f.current++;
+      console.log(`хуйня выполнилась ${f.current} раз`)
     }
 
     return () => {

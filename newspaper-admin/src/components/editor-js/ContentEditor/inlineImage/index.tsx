@@ -6,7 +6,7 @@
 import axios from 'axios';
 
 import additionalRequestHeaders from '../additionalRequestHeaders';
-import {getApiBase} from "@app/newspaper/ContentEditor";
+import {getApiBase} from "@components/editor-js/ContentEditor";
 
 class InlineImageTool {
   static get isInline() {
@@ -41,6 +41,7 @@ class InlineImageTool {
     document.body.appendChild(input);
     input.click();
     input.onchange = async () => {
+      //@ts-ignore
       const [file] = input.files ?? [];
 
       try {

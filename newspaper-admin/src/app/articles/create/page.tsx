@@ -1,7 +1,8 @@
 "use client";
 
-import { Create, useForm, useSelect } from "@refinedev/antd";
-import { Form, Input, Select } from "antd";
+import { Create, useForm } from "@refinedev/antd";
+import { Form, Input } from "antd";
+import EditorJSInput from "@components/editor-js/EditorJSInput";
 
 export default function BlogPostCreate() {
   const { formProps, saveButtonProps } = useForm({});
@@ -40,7 +41,7 @@ export default function BlogPostCreate() {
                   },
               ]}
           >
-              <Input />
+             <EditorJSInput/>
           </Form.Item>
       </Form>
     </Create>

@@ -94,8 +94,13 @@
 //  border-color: #A675E5 !important;
 //}
 // ---
+
 .root {
   position: relative;
+  :global(.codex-editor__redactor) {
+    padding-bottom: 16px !important;
+  }
+  padding-left: 56px;
 }
 .readOnly {
   margin: 0;
