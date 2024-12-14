@@ -10,9 +10,7 @@ export default function BlogPostList() {
   console.log(val)
   return (
     <div style={{width: '100%'}}>
-      <Row gutter={16} style={{width: '100%'}}>
         <ContentEditor/>
-      </Row>
     </div>
   );
 }
