@@ -132,7 +132,7 @@ const ContentEditor: FC<IEditorProps> = (
       console.log('Editor is already initialized');
       return; // Prevent re-initialization
     }
-    additionalRequestHeaders.Authorization = `Bearer ${auth.token}`;
+    // additionalRequestHeaders.Authorization = `Bearer ${auth.token}`;
 
     // @ts-ignore
     const tools: EditorConfig['tools'] = {
