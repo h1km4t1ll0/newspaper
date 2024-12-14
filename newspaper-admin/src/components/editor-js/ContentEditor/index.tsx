@@ -66,6 +66,8 @@ import type { EditorConfig } from '@editorjs/editorjs/types/configs';
 import MathEditor from './mathEditor';
 import SimpleImage from './simpleImage';
 import zoomImage from './zoomImage';
+// // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// // @ts-ignore
 import EditorJsColumns from './columns/editorjs-columns';
 import AudioTools from './audio';
 import Collapse from './collapse';
