@@ -11,15 +11,7 @@ export default function BlogPostList() {
   return (
     <div style={{width: '100%'}}>
       <Row gutter={16} style={{width: '100%'}}>
-        <Col md={8} xs={24}>
-          <ContentEditor value={val} onChange={(value) => setVal(value)}/>
-        </Col>
-        <Col md={8} xs={24}>
-          <ContentEditor/>
-        </Col>
-        <Col md={8} xs={24}>
-          <ContentEditor/>
-        </Col>
+        <ContentEditor/>
       </Row>
     </div>
   );
