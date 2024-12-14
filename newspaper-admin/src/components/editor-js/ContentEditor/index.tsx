@@ -32,9 +32,12 @@ import Paragraph from "@editorjs/paragraph";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import CheckList from '@editorjs/checklist';
+// // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// // @ts-ignore
+// import EditorJsColumns from "@calumk/editorjs-columns";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import EditorJsColumns from "@calumk/editorjs-columns";
+// import Table from '@editorjs/table'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import Delimiter from '@editorjs/delimiter';
@@ -63,6 +66,7 @@ import type { EditorConfig } from '@editorjs/editorjs/types/configs';
 import MathEditor from './mathEditor';
 import SimpleImage from './simpleImage';
 import zoomImage from './zoomImage';
+import EditorJsColumns from './columns/editorjs-columns';
 import AudioTools from './audio';
 import Collapse from './collapse';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
