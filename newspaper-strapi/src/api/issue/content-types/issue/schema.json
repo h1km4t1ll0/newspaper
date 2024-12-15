@@ -21,6 +21,12 @@
     },
     "PublishDate": {
       "type": "datetime"
+    },
+    "newspaper": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::newspaper.newspaper",
+      "inversedBy": "issues"
     }
   }
 }
