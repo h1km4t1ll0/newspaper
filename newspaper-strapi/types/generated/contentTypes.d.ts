@@ -984,6 +984,11 @@ export interface ApiIssueIssue extends Schema.CollectionType {
       'api::layout.layout'
     >;
     PublishDate: Attribute.DateTime;
+    newspaper: Attribute.Relation<
+      'api::issue.issue',
+      'manyToOne',
+      'api::newspaper.newspaper'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -1038,6 +1043,45 @@ export interface ApiLayoutLayout extends Schema.CollectionType {
       Attribute.Private;
     updatedBy: Attribute.Relation<
       'api::layout.layout',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiNewspaperNewspaper extends Schema.CollectionType {
+  collectionName: 'newspapers';
+  info: {
+    singularName: 'newspaper';
+    pluralName: 'newspapers';
+    displayName: 'Newspaper';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    name: Attribute.String;
+    cover: Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    columnCount: Attribute.Integer;
+    fontFamily: Attribute.String;
+    height: Attribute.Integer;
+    issues: Attribute.Relation<
+      'api::newspaper.newspaper',
+      'oneToMany',
+      'api::issue.issue'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::newspaper.newspaper',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::newspaper.newspaper',
       'oneToOne',
       'admin::user'
     > &
@@ -1108,6 +1152,7 @@ declare module '@strapi/types' {
       'api::column.column': ApiColumnColumn;
       'api::issue.issue': ApiIssueIssue;
       'api::layout.layout': ApiLayoutLayout;
+      'api::newspaper.newspaper': ApiNewspaperNewspaper;
       'api::photo.photo': ApiPhotoPhoto;
     }
   }

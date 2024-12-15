@@ -1,0 +1,43 @@
+{
+  "kind": "collectionType",
+  "collectionName": "newspapers",
+  "info": {
+    "singularName": "newspaper",
+    "pluralName": "newspapers",
+    "displayName": "Newspaper"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "cover": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": false
+    },
+    "columnCount": {
+      "type": "integer"
+    },
+    "fontFamily": {
+      "type": "string"
+    },
+    "height": {
+      "type": "integer"
+    },
+    "issues": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::issue.issue",
+      "mappedBy": "newspaper"
+    }
+  }
+}

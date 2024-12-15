@@ -125,15 +125,14 @@ export default function RootLayout({
                           label: 'Photos',
                         },
                       },
-
                       {
-                        name: 'issues',
-                        list: '/issues',
-                        create: '/issues/create',
-                        edit: '/issues/edit/:id',
-                        show: '/issue/show/:id',
+                        name: 'newspapers',
+                        list: '/newspapers',
+                        create: '/newspapers/create',
+                        edit: '/newspapers/edit/:id',
+                        show: '/newspapers/show/:id',
                         meta: {
-                          label: 'Newspaper issues',
+                          label: 'Newspapers',
                         },
                       },
                     ]}
