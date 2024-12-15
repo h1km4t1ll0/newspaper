@@ -56,7 +56,9 @@ const GridStack = () => {
                 id={widget.id}
                 data-lock={widget.lock}
             >
-              <EditorJSComponent widgetId={widget.id} />
+              <div className="editor-js">
+                <EditorJSComponent widgetId={widget.id}/>
+              </div>
             </div>
         ))}
       </Grid>
