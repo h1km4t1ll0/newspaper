@@ -1,12 +1,20 @@
-import { useEffect, useState } from "react";
+import {FC, useEffect, useState} from "react";
 import "./grid-stack.css";
 import { Grid } from "./Grid";
 import EditorJSComponent from "./EditorJSComponent";
 
 type Layout = { id: string; x: number; y: number; w: number; h: number }[];
 type Widget = { id: string; content: string; lock: boolean };
+type LayoutSettings = {
+  rowHeight: number;
+  rowCount: number;
+};
 
-const GridStack = () => {
+type GridStackProps = {
+  layoutSettings?: LayoutSettings; // Allow optional prop with default
+};
+
+const GridStack: FC<GridStackProps> = ({ layoutSettings }: GridStackProps) => {
   const [layout, setLayout] = useState<any>({
     "1": { x: 0, y: 0, w: 1, h: 1 },
     "2": { x: 1, y: 0, w: 1, h: 1 },
@@ -41,9 +49,12 @@ const GridStack = () => {
     setWidgets(widgets.filter((widget) => widget.id !== id));
   };
 
+
   return (
       <Grid
           layout={layout}
+          // @ts-ignore
+          layoutSettings={layoutSettings} // Pass layoutSettings to Grid
           updateLayoutHandle={updateLayoutHandle}
           addWidget={addWidget}
           removeWidget={removeWidget}
@@ -57,7 +68,7 @@ const GridStack = () => {
                 data-lock={widget.lock}
             >
               <div className="editor-js">
-                <EditorJSComponent widgetId={widget.id}/>
+                <EditorJSComponent widgetId={widget.id} />
               </div>
             </div>
         ))}

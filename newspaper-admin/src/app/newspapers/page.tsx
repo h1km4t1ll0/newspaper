@@ -73,7 +73,7 @@ export default function NewspaperList() {
                     render={(_, record: BaseRecord) => (
                         <Space>
                             <EditButton hideText size="small" recordItemId={record.id} />
-                            <ShowButton hideText size="small" recordItemId={record.id} />
+                            <ShowButton hideText size="small" recordItemId={record.id} onClick={() => router.push(`/issues?newspaperId=${record.id}`)} />
                             <DeleteButton hideText size="small" recordItemId={record.id} />
                         </Space>
                     )}

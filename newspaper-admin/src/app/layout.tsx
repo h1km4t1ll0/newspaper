@@ -130,9 +130,19 @@ export default function RootLayout({
                         list: '/newspapers',
                         create: '/newspapers/create',
                         edit: '/newspapers/edit/:id',
-                        show: '/newspapers/show/:id',
+                        show: '/issues',
                         meta: {
                           label: 'Newspapers',
+                        },
+                      },
+                      {
+                        name: 'issues',
+                        list: '/issues',
+                        create: '/issues/create',
+                        edit: '/issues/edit/:id',
+                        show: '/issues/show/:id',
+                        meta: {
+                          label: 'Issues',
                         },
                       },
                     ]}

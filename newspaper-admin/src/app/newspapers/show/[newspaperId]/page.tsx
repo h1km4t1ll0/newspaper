@@ -1,1 +1,0 @@
-//There should be a page with all issues where newspaper == newspaperId
