@@ -1,1 +1,0 @@
-// there should be a page where we can create issue but the newspaper is already set to newspaperId (only settings are set)

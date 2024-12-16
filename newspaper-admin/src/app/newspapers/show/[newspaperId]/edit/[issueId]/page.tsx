@@ -1,1 +1,0 @@
-// there should be a page with editor of exact issue settings
