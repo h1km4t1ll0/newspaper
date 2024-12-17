@@ -86,36 +86,6 @@ export default function RootLayout({
                         },
                       },
                       {
-                        name: 'block-groups',
-                        list: '/block-groups',
-                        create: '/block-groups/create',
-                        edit: '/block-groups/edit/:id',
-                        show: '/block-groups/show/:id',
-                        meta: {
-                          label: 'Block Groups',
-                        },
-                      },
-                      {
-                        name: 'rows',
-                        list: '/rows',
-                        create: '/rows/create',
-                        edit: '/rows/edit/:id',
-                        show: '/rows/show/:id',
-                        meta: {
-                          label: 'Rows',
-                        },
-                      },
-                      {
-                        name: 'columns',
-                        list: '/columns',
-                        create: '/columns/create',
-                        edit: '/columns/edit/:id',
-                        show: '/columns/show/:id',
-                        meta: {
-                          label: 'Columns',
-                        },
-                      },
-                      {
                         name: 'photos',
                         list: '/photos',
                         create: '/photos/create',

@@ -6,8 +6,14 @@ import EditorJSComponent from "./EditorJSComponent";
 type Layout = { id: string; x: number; y: number; w: number; h: number }[];
 type Widget = { id: string; content: string; lock: boolean };
 type LayoutSettings = {
-  rowHeight: number;
-  rowCount: number;
+  editorJSData: JSON,
+  columnCount: number,
+  pageHeight: number,
+  availableTextStyles: JSON,
+  pageWidth: number,
+  horizontalFieldsWidth: number,
+  verticalFieldsHeight: number,
+  fontFamily: string,
 };
 
 type GridStackProps = {

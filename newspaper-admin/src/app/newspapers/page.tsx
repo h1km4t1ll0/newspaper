@@ -8,14 +8,24 @@ import { useRouter } from "next/navigation";
 
 const relationsQuery = {
     populate: {
-        issue: {
-            populate: {
-                layout: {
-                    populate: "*"
-                }
-            }
+        issues: {
+            populate: "*"
         },
+        layout: {
+            populate: "*"
+        }
     },
+};
+
+type LayoutType = {
+    editorJSData: JSON,
+    columnCount: number,
+    pageHeight: number,
+    availableTextStyles: JSON,
+    pageWidth: number,
+    horizontalFieldsWidth: number,
+    verticalFieldsHeight: number,
+    fontFamily: string,
 };
 
 type IssueType = {
@@ -28,7 +38,7 @@ export default function NewspaperList() {
         id: number | string;
         name: string;
         cover: string;
-        columnCount: number;
+        layout: LayoutType;
         fontFamily: string;
         height: string;
         issues: IssueType[]
@@ -59,13 +69,15 @@ export default function NewspaperList() {
                 <Table.Column title="ID" dataIndex="id" />
                 <Table.Column title="Name" dataIndex="name" />
                 <Table.Column title="Cover" dataIndex="cover" render={(photo: string) => <img src={photo} alt="newspaper" width={50} height={50} />} />
-                <Table.Column title="Column Count" dataIndex="columnCount" />
-                <Table.Column title="Font Family" dataIndex="fontFamily" />
-                <Table.Column title="Height" dataIndex="height" />
                 <Table.Column
                     title={"Issues"}
                     dataIndex="issues"
                     render={(_, record: BaseRecord) => JSON.stringify(record.issues)}
+                />
+                <Table.Column
+                    title={"Layout"}
+                    dataIndex="layout"
+                    render={(_, record: BaseRecord) => JSON.stringify(record.layout)}
                 />
                 <Table.Column
                     title="Actions"
