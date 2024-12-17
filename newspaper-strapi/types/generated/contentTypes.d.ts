@@ -829,7 +829,7 @@ export interface ApiAdvertismentAdvertisment extends Schema.CollectionType {
     description: '';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     DateFrom: Attribute.DateTime;
@@ -842,7 +842,6 @@ export interface ApiAdvertismentAdvertisment extends Schema.CollectionType {
     >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
-    publishedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
       'api::advertisment.advertisment',
       'oneToOne',
@@ -903,7 +902,7 @@ export interface ApiIssueIssue extends Schema.CollectionType {
     description: '';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     name: Attribute.String;
@@ -915,7 +914,6 @@ export interface ApiIssueIssue extends Schema.CollectionType {
     >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
-    publishedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
       'api::issue.issue',
       'oneToOne',
@@ -977,7 +975,7 @@ export interface ApiNewspaperNewspaper extends Schema.CollectionType {
     description: '';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     name: Attribute.String;
@@ -994,7 +992,6 @@ export interface ApiNewspaperNewspaper extends Schema.CollectionType {
     >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
-    publishedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
       'api::newspaper.newspaper',
       'oneToOne',

@@ -9,7 +9,7 @@
   box-sizing: border-box;
   background-color: white;
   font-family: 'Lexend', sans-serif;
-  display: flex;
+  /*display: flex;*/
   overflow: hidden;
 }
 

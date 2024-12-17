@@ -3,6 +3,12 @@
 import { useTable } from "@refinedev/antd";
 import { useParams, useSearchParams } from "next/navigation";
 import GridStack from "@components/Gridstack";
+import {Button, Card, Col, Modal, Row} from "antd";
+import {useMemo, useState} from "react";
+import {useCustom} from "@refinedev/core";
+import {API_URL} from "@utility/constants";
+import qs from "qs";
+import ContentEditor from "@components/editor-js/ContentEditor";
 
 const relationsQuery = {
     populate: {
@@ -86,8 +92,8 @@ export default function IssueShowPage() {
                 <strong>Newspaper:</strong> {issue.newspaper.id}
             </p>
 
-            {/* Render GridStack */}
-            <GridStack layoutSettings={issue.newspaper.layout} />
+          {/* Render GridStack */}
+            <GridStack layoutSettings={issue.newspaper.layout}/>
         </div>
     );
 }

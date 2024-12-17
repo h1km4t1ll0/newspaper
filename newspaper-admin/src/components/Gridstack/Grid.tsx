@@ -1,19 +1,22 @@
 import React, {
-    useRef,
-    createRef,
-    useEffect,
-    FC,
-    Children,
-    MouseEventHandler,
-    ReactElement,
+  useRef,
+  createRef,
+  useEffect,
+  FC,
+  Children,
+  MouseEventHandler,
+  ReactElement, useMemo, useState, useCallback,
 } from "react";
 import { GridStack } from "gridstack";
 import "gridstack/dist/gridstack.min.css";
 import "gridstack/dist/gridstack-extra.min.css";
 import { GridItem } from "./GridItem";
-import { Button } from "antd";
-
-type Layout = { id: string; x: number; y: number; w: number; h: number }[];
+import {Button, Card, Col, Modal, Row} from "antd";
+import {Layout} from "@components/Gridstack/index";
+import {API_URL} from "@utility/constants";
+import ContentEditor from "@components/editor-js/ContentEditor";
+import qs from "qs";
+import {useCustom} from "@refinedev/core";
 
 type LayoutSettings = {
     editorJSData: JSON;
@@ -31,9 +34,10 @@ type GridProps = {
     layoutSettings: LayoutSettings;
     updateLayoutHandle: (layout: Layout) => void;
     addWidget: MouseEventHandler<HTMLButtonElement>;
+    addWidgetWithContent: MouseEventHandler<HTMLButtonElement>;
     removeWidget: (id: string) => void;
     children?: ReactElement | ReactElement[];
-    onChangeLayout: (layout: any) => void;
+    onChangeLayout: (layout: Layout) => void;
 };
 
 export const Grid: FC<GridProps> = ({
@@ -43,11 +47,85 @@ export const Grid: FC<GridProps> = ({
                                         removeWidget,
                                         children,
                                         onChangeLayout,
+                                        addWidgetWithContent,
                                     }) => {
     const gridItemsRefs: React.MutableRefObject<{
         [key: string]: React.MutableRefObject<HTMLDivElement>;
     }> = useRef({});
     const gridRef: React.MutableRefObject<undefined | GridStack> = useRef();
+
+
+  const query = qs.stringify(
+    {
+      fields: '*',
+      populate: {
+        photos: {
+          fields: '*',
+          populate: {
+            photo: {
+              fields: '*',
+            },
+          },
+        },
+      },
+    },
+    {
+      encodeValuesOnly: true, // prettify URL
+    }
+  );
+
+  const { data, isLoading, refetch } = useCustom<{
+    data: {
+      id: number,
+      attributes: {
+        id: number,
+        text: any,
+        name: string,
+        photos: {
+          data: [{
+            id: number,
+            attributes: {
+              name: string,
+              width: number,
+              height: number,
+              createdAt: string,
+              updatedAt: string,
+              photo: {
+                data: {
+                  attributes: {
+                    url: string,
+                  },
+                },
+              },
+            },
+          }],
+        },
+      },
+    }[],
+  }>({
+    url: `${API_URL}/api/articles?${query}`,
+    method: "get",
+  });
+  const [items, setItems] = useState<{ title: string, content: any, id: number, images: string[] }[]>();
+
+  const getItems = useCallback(
+    async () => {
+      const data = await refetch();
+
+      console.log(data, 'data')
+
+      setItems(data.data?.data.data.map(
+        (rawData) => ({
+          title: rawData.attributes.name,
+          content: rawData.attributes.text,
+          id: rawData.id,
+          images: rawData.attributes.photos.data.map(
+            (image) => image.attributes.photo.data.attributes.url,
+          ),
+        }),
+      ));
+    }, []
+  );
 
     const rowHeight = 20;
     const rowCount = Math.floor((layoutSettings.pageHeight - layoutSettings.verticalFieldsHeight) / rowHeight);
@@ -55,6 +133,14 @@ export const Grid: FC<GridProps> = ({
     const saveData = () => {
         console.log("Saved data:", gridRef.current?.save());
     };
+
+  const [visible, setVisible] = useState(false);
+  const showModal = () => {
+    getItems().then(() => setVisible(true));
+  };
+  const handleCancel = () => {
+    setVisible(false);
+  };
 
     if (children) {
         Children.forEach(children, (child) => {
@@ -69,6 +155,8 @@ export const Grid: FC<GridProps> = ({
         gridRef.current =
             gridRef.current ||
             GridStack.init({
+                removable: '.trash',
+                acceptWidgets: function(el) { return true },
                 column: layoutSettings.columnCount,
                 cellHeight: rowHeight,
                 margin: 5,
@@ -78,40 +166,66 @@ export const Grid: FC<GridProps> = ({
 
         const grid = gridRef.current;
 
+        const nextId =  (layout.length + 1).toString();
+        console.log(grid.save())
+
+        // let insert = [ {w: 2, h: 2, content: 'new item', id: nextId, lock: false} ];
+        // GridStack.setupDragIn('.sidepanel>.grid-stack-item', undefined, insert);
+
         grid.on("added", (event, items) => {
-            const itemId: string | undefined = items[items.length - 1]?.el?.id;
+            const itemId: string | undefined = items[items.length - 1]?.id;
             if (!itemId) {
                 console.error("Ошибка при изменении лейаута! Нет ид элемента!");
                 return;
             }
 
-            // @ts-ignore
-            if (layout[itemId]) {
-                return;
+            if (layout.filter((each) => each.id === itemId).length > 0) {
+              return;
             }
 
-            if (Object.keys(layout).length === items.length) {
-                return;
-            }
+            const curItem = items[items.length - 1];
+
+            onChangeLayout([
+              ...layout,
+              {
+                content: curItem.content ?? 'ХУЙ ГОВНО',
+                id: itemId,
+                lock: false,
+                h: curItem.h,
+                w: curItem.w,
+                x: curItem.x,
+                y: curItem.y,
+              },
+            ]);
         });
 
         gridRef.current.on("change", (event, items) => {
             const itemId = items[0]?.el?.id;
 
+          console.log(items, 'items CHANGED')
+
             if (!itemId) {
                 console.error("Ошибка при изменении лейаута! Нет ид элемента!");
                 return;
             }
 
-            onChangeLayout({
-                ...layout,
-                [itemId]: {
+            const curItem = layout.find((each) => each.id === itemId);
+
+            if (!curItem) {
+              console.error("Ошибка при изменении лейаута! Элемента нет в layout");
+              return;
+            }
+
+            onChangeLayout([
+                ...layout.filter((each) => each.id !== itemId),
+                {
+                    ...curItem,
                     h: items[0].h,
                     w: items[0].w,
                     x: items[0].x,
                     y: items[0].y,
                 },
-            });
+            ]);
         });
 
         grid.batchUpdate();
@@ -129,6 +243,9 @@ export const Grid: FC<GridProps> = ({
                 <Button onClick={addWidget}>Add Widget</Button>
                 <Button onClick={saveData}>Save Layout</Button>
                 <Button onClick={() => console.log("Preview Page")}>Preview</Button>
+                <Button type="primary" onClick={showModal}>
+                  Open Popup
+                </Button>
             </div>
             <div
                 style={{
@@ -164,7 +281,9 @@ export const Grid: FC<GridProps> = ({
                                             fontSize: "16px",
                                             cursor: "pointer",
                                         }}
-                                        onClick={() => removeWidget(child?.props.id)}
+                                        onClick={() => {
+                                          removeWidget(child?.props.id);
+                                        }}
                                     >
                                         X
                                     </button>
@@ -176,6 +295,36 @@ export const Grid: FC<GridProps> = ({
                     })}
                 </div>
             </div>
+            <Modal
+              title="Scrollable Card List"
+              open={visible}
+              onCancel={handleCancel}
+              footer={null} // No footer buttons
+              width={600} // Set width of the modal
+            >
+              <div style={{ height: '500px', overflowY: 'auto', padding: '16px', display: 'flex' }}>
+                <Row gutter={[16, 16]}>
+                  {items?.map(item => (
+                    <Col span={24} key={item.id}>
+                      <Card title={item.title} bordered={true}>
+                        {item.images.length > 0 && (
+                          <img src={`${API_URL}${item.images[0]}`} style={{width: 300, height: 200}}/>
+                        )}
+                        {item.content && (
+                          <ContentEditor readOnly value={item.content}/>
+                        )}
+                        <Button type="primary" onClick={() => {
+                          addWidgetWithContent(item.content);
+                          console.log(items, 'before')
+                          setItems((prev) => prev?.filter((each) => each.id !== item.id));
+                          console.log(items, 'after')
+                        }}>Add to issue</Button>
+                      </Card>
+                    </Col>
+                  ))}
+                </Row>
+              </div>
+            </Modal>
         </>
     );
 };
