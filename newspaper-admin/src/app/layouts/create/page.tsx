@@ -33,7 +33,7 @@ export default function BlogPostCreate() {
           </Form.Item>
           <Form.Item
               label={"Header Height"}
-              name="headerHeight"
+              name="pageHeight"
               rules={[
                   {
                       required: true,
@@ -54,8 +54,8 @@ export default function BlogPostCreate() {
               <Input />
           </Form.Item>
           <Form.Item
-              label={"Block Groups"}
-              name={["block_groups"]}
+              label={"Page Width"}
+              name={["pageWidth"]}
               rules={[
                   {
                       required: false,
@@ -65,8 +65,30 @@ export default function BlogPostCreate() {
               <Input />
           </Form.Item>
           <Form.Item
-              label={"Column"}
-              name={["column"]}
+              label={"Horizontal Fields Width"}
+              name={["horizontalFieldsWidth"]}
+              rules={[
+                  {
+                      required: false,
+                  },
+              ]}
+          >
+              <Input />
+          </Form.Item>
+          <Form.Item
+              label={"Vertical Fields Height"}
+              name={["verticalFieldsHeight"]}
+              rules={[
+                  {
+                      required: false,
+                  },
+              ]}
+          >
+              <Input />
+          </Form.Item>
+          <Form.Item
+              label={"Font Family"}
+              name={["fontFamily"]}
               rules={[
                   {
                       required: false,

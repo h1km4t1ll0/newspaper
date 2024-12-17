@@ -44,51 +44,24 @@ export default function CreateNewspaperPage() {
                 </Form.Item>
 
                 <Form.Item
-                    label="Column Count"
-                    name={["columnCount"]}
-                    rules={[
-                        {
-                            required: true,
-                            message: "Please enter the number of columns!",
-                        },
-                    ]}
-                >
-                    <InputNumber min={1} max={10} />
-                </Form.Item>
-
-                <Form.Item
-                    label="Font Family"
-                    name={["fontFamily"]}
-                    rules={[
-                        {
-                            required: true,
-                            message: "Please enter the font family!",
-                        },
-                    ]}
-                >
-                    <Input />
-                </Form.Item>
-
-                <Form.Item
-                    label="Height"
-                    name={["height"]}
-                    rules={[
-                        {
-                            required: true,
-                            message: "Please enter the height of the newspaper!",
-                        },
-                    ]}
-                >
-                    <Input />
-                </Form.Item>
-
-                <Form.Item
                     label="Issues"
                     name={["issues"]}
                     rules={[
                         {
                             required: false,
                             message: "Please enter the issues of the newspaper!",
+                        },
+                    ]}
+                >
+                    <Input />
+                </Form.Item>
+
+                <Form.Item
+                    label={"Layout"}
+                    name={["layout"]}
+                    rules={[
+                        {
+                            required: false,
                         },
                     ]}
                 >

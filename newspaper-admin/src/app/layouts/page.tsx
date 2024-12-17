@@ -12,55 +12,21 @@ import {
 import { type BaseRecord } from "@refinedev/core";
 import { Space, Table } from "antd";
 
-const relationsQuery = {
-  populate: {
-    column: {
-      populate: {
-        rows: {
-          populate: "*"
-        },
-      },
-    },
-    block_groups: {
-      populate: {
-        rows: {
-          populate: "*"
-        },
-      },
-    },
-  },
-};
-
-type BlockType = "Advertisement" | "Photo" | "Text" | "None"
-
-type RowType = {
-  column: ColumnType
-};
-
-type ColumnType = {
-  width: number,
-  rows: RowType[]
-}
-
-type BlockGroupType = {
-  rows: RowType[],
-  type: BlockType,
-};
-
 export default function BlogPostList() {
   const { tableProps, filters } = useTable<{
     editorJSData: JSON,
     columnCount: number,
-    headerHeight: number,
+    pageHeight: number,
     availableTextStyles: JSON,
-    block_groups: BlockGroupType[],
-    column: ColumnType,
+    pageWidth: number,
+    horizontalFieldsWidth: number,
+    verticalFieldsHeight: number,
+    fontFamily: string,
     createdAt: Date,
     updatedAt: Date,
     id: number | string,
   }[]>({
     syncWithLocation: true,
-    meta: relationsQuery,
     sorters: {
       initial: [
         {
@@ -77,18 +43,12 @@ export default function BlogPostList() {
           <Table.Column dataIndex="id" title={"ID"} />
           <Table.Column dataIndex="editorJSData" title={"editorJSData"} />
           <Table.Column dataIndex="columnCount" title={"column Count"} />
-          <Table.Column dataIndex="headerHeight" title={"header Height"} />
+          <Table.Column dataIndex="pageHeight" title={"header Height"} />
           <Table.Column dataIndex="availableTextStyles" title={"availableTextStyles"} />
-          <Table.Column
-              title={"block groups"}
-              dataIndex="block_groups"
-              render={(_, record: BaseRecord) => JSON.stringify(record.block_groups)}
-          />
-          <Table.Column
-              title={"column"}
-              dataIndex="column"
-              render={(_, record: BaseRecord) => JSON.stringify(record.column)}
-          />
+          <Table.Column dataIndex="pageWidth" title={"pageWidth"} />
+          <Table.Column dataIndex="horizontalFieldsWidth" title={"horizontalFieldsWidth"} />
+          <Table.Column dataIndex="verticalFieldsHeight" title={"verticalFieldsHeight"} />
+          <Table.Column dataIndex="fontFamily" title={"fontFamily"} />
           <Table.Column
               title={"Actions"}
               dataIndex="actions"

@@ -894,95 +894,19 @@ export interface ApiArticleArticle extends Schema.CollectionType {
   };
 }
 
-export interface ApiBlockGroupBlockGroup extends Schema.CollectionType {
-  collectionName: 'block_groups';
-  info: {
-    singularName: 'block-group';
-    pluralName: 'block-groups';
-    displayName: 'BlockGroup';
-    description: '';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    layout: Attribute.Relation<
-      'api::block-group.block-group',
-      'manyToOne',
-      'api::layout.layout'
-    >;
-    rows: Attribute.Relation<
-      'api::block-group.block-group',
-      'oneToMany',
-      'api::row.row'
-    >;
-    type: Attribute.Enumeration<['Advertisement', 'Photo', 'Article', 'None']>;
-    createdAt: Attribute.DateTime;
-    updatedAt: Attribute.DateTime;
-    publishedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<
-      'api::block-group.block-group',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-    updatedBy: Attribute.Relation<
-      'api::block-group.block-group',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-  };
-}
-
-export interface ApiColumnColumn extends Schema.CollectionType {
-  collectionName: 'columns';
-  info: {
-    singularName: 'column';
-    pluralName: 'columns';
-    displayName: 'Column';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    width: Attribute.Integer;
-    rows: Attribute.Relation<'api::column.column', 'oneToMany', 'api::row.row'>;
-    createdAt: Attribute.DateTime;
-    updatedAt: Attribute.DateTime;
-    publishedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<
-      'api::column.column',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-    updatedBy: Attribute.Relation<
-      'api::column.column',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-  };
-}
-
 export interface ApiIssueIssue extends Schema.CollectionType {
   collectionName: 'issues';
   info: {
     singularName: 'issue';
     pluralName: 'issues';
     displayName: 'Issue';
+    description: '';
   };
   options: {
     draftAndPublish: true;
   };
   attributes: {
     name: Attribute.String;
-    layout: Attribute.Relation<
-      'api::issue.issue',
-      'oneToOne',
-      'api::layout.layout'
-    >;
     PublishDate: Attribute.DateTime;
     newspaper: Attribute.Relation<
       'api::issue.issue',
@@ -1021,18 +945,12 @@ export interface ApiLayoutLayout extends Schema.CollectionType {
   attributes: {
     editorJSData: Attribute.JSON;
     columnCount: Attribute.Integer;
-    headerHeight: Attribute.Integer;
+    pageHeight: Attribute.Integer;
     availableTextStyles: Attribute.JSON;
-    block_groups: Attribute.Relation<
-      'api::layout.layout',
-      'oneToMany',
-      'api::block-group.block-group'
-    >;
-    column: Attribute.Relation<
-      'api::layout.layout',
-      'oneToOne',
-      'api::column.column'
-    >;
+    pageWidth: Attribute.Integer;
+    horizontalFieldsWidth: Attribute.Integer;
+    verticalFieldsHeight: Attribute.Integer;
+    fontFamily: Attribute.String;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -1056,6 +974,7 @@ export interface ApiNewspaperNewspaper extends Schema.CollectionType {
     singularName: 'newspaper';
     pluralName: 'newspapers';
     displayName: 'Newspaper';
+    description: '';
   };
   options: {
     draftAndPublish: true;
@@ -1063,13 +982,15 @@ export interface ApiNewspaperNewspaper extends Schema.CollectionType {
   attributes: {
     name: Attribute.String;
     cover: Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
-    columnCount: Attribute.Integer;
-    fontFamily: Attribute.String;
-    height: Attribute.Integer;
     issues: Attribute.Relation<
       'api::newspaper.newspaper',
       'oneToMany',
       'api::issue.issue'
+    >;
+    layout: Attribute.Relation<
+      'api::newspaper.newspaper',
+      'oneToOne',
+      'api::layout.layout'
     >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
@@ -1148,8 +1069,6 @@ declare module '@strapi/types' {
       'api::advertisement-template.advertisement-template': ApiAdvertisementTemplateAdvertisementTemplate;
       'api::advertisment.advertisment': ApiAdvertismentAdvertisment;
       'api::article.article': ApiArticleArticle;
-      'api::block-group.block-group': ApiBlockGroupBlockGroup;
-      'api::column.column': ApiColumnColumn;
       'api::issue.issue': ApiIssueIssue;
       'api::layout.layout': ApiLayoutLayout;
       'api::newspaper.newspaper': ApiNewspaperNewspaper;

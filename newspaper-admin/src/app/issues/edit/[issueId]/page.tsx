@@ -24,17 +24,6 @@ export default function BlogPostEdit() {
                     <Input />
                 </Form.Item>
                 <Form.Item
-                    label={"Layout"}
-                    name={["layout"]}
-                    rules={[
-                        {
-                            required: false,
-                        },
-                    ]}
-                >
-                    <Input />
-                </Form.Item>
-                <Form.Item
                     label={"PublishDate"}
                     name={["PublishDate"]}
                     rules={[

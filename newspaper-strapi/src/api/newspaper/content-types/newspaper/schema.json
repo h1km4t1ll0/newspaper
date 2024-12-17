@@ -4,7 +4,8 @@
   "info": {
     "singularName": "newspaper",
     "pluralName": "newspapers",
-    "displayName": "Newspaper"
+    "displayName": "Newspaper",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -15,29 +16,26 @@
       "type": "string"
     },
     "cover": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
       "allowedTypes": [
         "images",
         "files",
         "videos",
         "audios"
-      ],
-      "type": "media",
-      "multiple": false
-    },
-    "columnCount": {
-      "type": "integer"
-    },
-    "fontFamily": {
-      "type": "string"
-    },
-    "height": {
-      "type": "integer"
+      ]
     },
     "issues": {
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::issue.issue",
       "mappedBy": "newspaper"
+    },
+    "layout": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::layout.layout"
     }
   }
 }

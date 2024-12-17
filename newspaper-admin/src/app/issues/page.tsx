@@ -14,27 +14,31 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 const relationsQuery = {
   populate: {
-    layout: {
+    newspaper: {
       populate: {
-        column: {
-          populate: "*"
-        },
-      },
+          layout: {
+              populate: "*"
+          }
+      }
     },
   },
 };
 
-type ColumnType = {
-  width: number;
-  rows: { column: ColumnType }[];
+type LayoutType = {
+    editorJSData: JSON,
+    columnCount: number,
+    pageHeight: number,
+    availableTextStyles: JSON,
+    pageWidth: number,
+    horizontalFieldsWidth: number,
+    verticalFieldsHeight: number,
+    fontFamily: string,
 };
 
-type LayoutType = {
-  editorJSData: JSON;
-  columnCount: number;
-  headerHeight: number;
-  availableTextStyles: JSON;
-  column: ColumnType;
+type NewspaperType = {
+    name: JSON,
+    cover: number,
+    layout: LayoutType,
 };
 
 export default function BlogPostList() {
@@ -43,8 +47,8 @@ export default function BlogPostList() {
 
   const { tableProps } = useTable<{
     name: string;
-    layout: LayoutType;
     PublishDate: Date;
+    newspaper: NewspaperType;
     createdAt: Date;
     updatedAt: Date;
     id: number | string;
@@ -89,12 +93,12 @@ export default function BlogPostList() {
         <Table {...tableProps} rowKey="id">
           <Table.Column dataIndex="id" title={"ID"} />
           <Table.Column dataIndex="name" title={"Name"} />
-          <Table.Column
-              title={"Layout"}
-              dataIndex="layout"
-              render={(_, record: BaseRecord) => JSON.stringify(record.layout)}
-          />
           <Table.Column dataIndex="PublishDate" title={"Publish Date"} />
+            <Table.Column
+                title={"Newspaper"}
+                dataIndex="newspaper"
+                render={(_, record: BaseRecord) => JSON.stringify(record.layout)}
+            />
           <Table.Column
               title={"Actions"}
               dataIndex="actions"

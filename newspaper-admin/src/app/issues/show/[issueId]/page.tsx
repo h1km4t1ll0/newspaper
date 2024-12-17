@@ -3,43 +3,42 @@
 import { useTable } from "@refinedev/antd";
 import { useParams, useSearchParams } from "next/navigation";
 import GridStack from "@components/Gridstack";
-import { List, Space, Table } from "antd";
-
-const layoutSettings = {
-    rowHeight: 50,
-    rowCount: 10,
-};
 
 const relationsQuery = {
     populate: {
-        layout: {
+        newspaper: {
             populate: {
-                column: {
-                    populate: "*",
-                },
-            },
-        },
-        rows: {
-            populate: {
-                column: {
-                    populate: "*",
-                },
-            },
-        },
-    },
+                layout: {
+                    populate: "*"
+                }
+            }
+        }
+    }
+};
+
+type LayoutType = {
+    editorJSData: JSON,
+    columnCount: number,
+    pageHeight: number,
+    availableTextStyles: JSON,
+    pageWidth: number,
+    horizontalFieldsWidth: number,
+    verticalFieldsHeight: number,
+    fontFamily: string,
+}
+
+type NewspaperType = {
+    id: string | number;
+    name: string;
+    cover: string;
+    layout: LayoutType;
 };
 
 type IssueType = {
     id: string | number;
     name: string;
     PublishDate: string;
-    newspaper: string | number;
-    layout: {
-        editorJSData: JSON;
-        columnCount: number;
-        headerHeight: number;
-        availableTextStyles: JSON;
-    };
+    newspaper: NewspaperType;
 };
 
 export default function IssueShowPage() {
@@ -59,7 +58,7 @@ export default function IssueShowPage() {
                     value: issueId,
                 },
                 {
-                    field: "newspaper",
+                    field: "newspaper.id",
                     operator: "eq",
                     value: newspaperId,
                 },
@@ -84,13 +83,11 @@ export default function IssueShowPage() {
                 <strong>Publish Date:</strong> {issue.PublishDate}
             </p>
             <p>
-                <strong>Newspaper:</strong> {issue.newspaper}
+                <strong>Newspaper:</strong> {issue.newspaper.id}
             </p>
-            <h2>Layout</h2>
-            <pre>{JSON.stringify(issue.layout, null, 2)}</pre>
 
             {/* Render GridStack */}
-            <GridStack layoutSettings={layoutSettings} />
+            <GridStack layoutSettings={issue.newspaper.layout} />
         </div>
     );
 }

@@ -4,7 +4,8 @@
   "info": {
     "singularName": "issue",
     "pluralName": "issues",
-    "displayName": "Issue"
+    "displayName": "Issue",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -13,11 +14,6 @@
   "attributes": {
     "name": {
       "type": "string"
-    },
-    "layout": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::layout.layout"
     },
     "PublishDate": {
       "type": "datetime"

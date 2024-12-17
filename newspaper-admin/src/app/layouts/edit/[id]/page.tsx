@@ -15,31 +15,31 @@ export default function BlogPostEdit() {
   return (
     <Edit saveButtonProps={saveButtonProps}>
       <Form {...formProps} layout="vertical">
-        <Form.Item
-          label={"editorJSData"}
-          name={["editorJSData"]}
-          rules={[
-            {
-              required: true,
-            },
-          ]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          label={"Column Count"}
-          name="columnCount"
-          rules={[
-            {
-              required: true,
-            },
-          ]}
-        >
-          <InputNumber />
-        </Form.Item>
+          <Form.Item
+              label={"editorJSData"}
+              name={["editorJSData"]}
+              rules={[
+                  {
+                      required: true,
+                  },
+              ]}
+          >
+              <Input />
+          </Form.Item>
+          <Form.Item
+              label={"Column Count"}
+              name="columnCount"
+              rules={[
+                  {
+                      required: true,
+                  },
+              ]}
+          >
+              <InputNumber />
+          </Form.Item>
           <Form.Item
               label={"Header Height"}
-              name="headerHeight"
+              name="pageHeight"
               rules={[
                   {
                       required: true,
@@ -60,8 +60,8 @@ export default function BlogPostEdit() {
               <Input />
           </Form.Item>
           <Form.Item
-              label={"Block Groups"}
-              name={["block_groups"]}
+              label={"Page Width"}
+              name={["pageWidth"]}
               rules={[
                   {
                       required: false,
@@ -71,8 +71,30 @@ export default function BlogPostEdit() {
               <Input />
           </Form.Item>
           <Form.Item
-              label={"Column"}
-              name={["column"]}
+              label={"Horizontal Fields Width"}
+              name={["horizontalFieldsWidth"]}
+              rules={[
+                  {
+                      required: false,
+                  },
+              ]}
+          >
+              <Input />
+          </Form.Item>
+          <Form.Item
+              label={"Vertical Fields Height"}
+              name={["verticalFieldsHeight"]}
+              rules={[
+                  {
+                      required: false,
+                  },
+              ]}
+          >
+              <Input />
+          </Form.Item>
+          <Form.Item
+              label={"Font Family"}
+              name={["fontFamily"]}
               rules={[
                   {
                       required: false,
