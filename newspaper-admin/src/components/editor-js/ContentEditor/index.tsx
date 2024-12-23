@@ -141,6 +141,7 @@ const ContentEditor: FC<IEditorProps> = (
     // additionalRequestHeaders.Authorization = `Bearer ${auth.token}`;
 
     // @ts-ignore
+    // @ts-ignore
     const tools: EditorConfig['tools'] = {
       marker: Marker,
       inlineImage: InlineImageTool,
@@ -177,6 +178,7 @@ const ContentEditor: FC<IEditorProps> = (
       // @ts-ignore
       simpleImage: SimpleImage,
       columns: {
+        // @ts-ignore
         class: EditorJsColumns,
         config: {
           EditorJsLibrary: EditorJS,
@@ -357,14 +359,12 @@ const ContentEditor: FC<IEditorProps> = (
       editorCore.current = new EditorJS(config);
       await editorCore.current.isReady;
       f.current++;
-      console.log(`хуйня выполнилась ${f.current} раз`)
     }
   }, [editorCore.current, editorCore]);
   useEffect(() => {
     init()
 
     return () => {
-      console.log('jjjjjjjjjjjjj')
       // https://www.walkthrough.so/pblc/snKICMzxzedr/codelab-integrating-editor-js-into-your-react-application?sn=2
       if (editorCore.current?.destroy) {
         editorCore.current?.destroy();

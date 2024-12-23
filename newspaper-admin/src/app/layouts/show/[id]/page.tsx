@@ -36,6 +36,8 @@ export default function BlogPostShow() {
         <TextField value={record?.verticalFieldsHeight} />
         <Title level={5}>{"fontFamily"}</Title>
         <TextField value={record?.fontFamily} />
+        <Title level={5}>{"pagesCount"}</Title>
+        <TextField value={record?.pagesCount} />
     </Show>
   );
 }
