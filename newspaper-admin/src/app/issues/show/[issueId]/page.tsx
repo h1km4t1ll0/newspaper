@@ -43,6 +43,7 @@ type NewspaperType = {
 
 type IssueType = {
     id: string | number;
+    status: string;
     name: string;
     PublishDate: string;
     newspaper: NewspaperType;
@@ -87,13 +88,16 @@ export default function IssueShowPage() {
                 <strong>Name:</strong> {issue.name}
             </p>
             <p>
+                <strong>Status:</strong> {issue.status}
+            </p>
+            <p>
                 <strong>Publish Date:</strong> {issue.PublishDate}
             </p>
             <p>
                 <strong>Newspaper:</strong> {issue.newspaper.id}
             </p>
 
-          {/* Render GridStack */}
+            {/* Render GridStack */}
             <GridStack layoutSettings={issue.newspaper.layout}/>
         </div>
     );
