@@ -1,11 +1,11 @@
 import React, {
-  useRef,
-  createRef,
-  useEffect,
-  FC,
-  Children,
-  MouseEventHandler,
-  ReactElement, useMemo, useState, useCallback,
+    useRef,
+    createRef,
+    useEffect,
+    FC,
+    Children,
+    MouseEventHandler,
+    ReactElement, useMemo, useState, useCallback,
 } from "react";
 import { GridStack } from "gridstack";
 import "gridstack/dist/gridstack.min.css";
@@ -56,77 +56,77 @@ export const Grid: FC<GridProps> = ({
     const gridRef: React.MutableRefObject<undefined | GridStack> = useRef();
 
 
-  const query = qs.stringify(
-    {
-      fields: '*',
-      populate: {
-        photos: {
-          fields: '*',
-          populate: {
-            photo: {
-              fields: '*',
+    const query = qs.stringify(
+        {
+            fields: '*',
+            populate: {
+                photos: {
+                    fields: '*',
+                    populate: {
+                        photo: {
+                            fields: '*',
+                        },
+                    },
+                },
             },
-          },
         },
-      },
-    },
-    {
-      encodeValuesOnly: true, // prettify URL
-    }
-  );
+        {
+            encodeValuesOnly: true, // prettify URL
+        }
+    );
 
-  const { data, isLoading, refetch } = useCustom<{
-    data: {
-      id: number,
-      attributes: {
-        id: number,
-        text: any,
-        name: string,
-        photos: {
-          data: [{
+    const { data, isLoading, refetch } = useCustom<{
+        data: {
             id: number,
             attributes: {
-              name: string,
-              width: number,
-              height: number,
-              createdAt: string,
-              updatedAt: string,
-              photo: {
-                data: {
-                  attributes: {
-                    url: string,
-                  },
+                id: number,
+                text: any,
+                name: string,
+                photos: {
+                    data: [{
+                        id: number,
+                        attributes: {
+                            name: string,
+                            width: number,
+                            height: number,
+                            createdAt: string,
+                            updatedAt: string,
+                            photo: {
+                                data: {
+                                    attributes: {
+                                        url: string,
+                                    },
+                                },
+                            },
+                        },
+                    }],
                 },
-              },
             },
-          }],
-        },
-      },
-    }[],
-  }>({
-    url: `${API_URL}/api/articles?${query}`,
-    method: "get",
-  });
-  const [items, setItems] = useState<{ title: string, content: any, id: number, images: string[] }[]>();
+        }[],
+    }>({
+        url: `${API_URL}/api/articles?${query}`,
+        method: "get",
+    });
+    const [items, setItems] = useState<{ title: string, content: any, id: number, images: string[] }[]>();
 
-  const getItems = useCallback(
-    async () => {
-      const data = await refetch();
+    const getItems = useCallback(
+        async () => {
+            const data = await refetch();
 
-      console.log(data, 'data')
+            console.log(data, 'data')
 
-      setItems(data.data?.data.data.map(
-        (rawData) => ({
-          title: rawData.attributes.name,
-          content: rawData.attributes.text,
-          id: rawData.id,
-          images: rawData.attributes.photos.data.map(
-            (image) => image.attributes.photo.data.attributes.url,
-          ),
-        }),
-      ));
-    }, []
-  );
+            setItems(data.data?.data.data.map(
+                (rawData) => ({
+                    title: rawData.attributes.name,
+                    content: rawData.attributes.text,
+                    id: rawData.id,
+                    images: rawData.attributes.photos.data.map(
+                        (image) => image.attributes.photo.data.attributes.url,
+                    ),
+                }),
+            ));
+        }, []
+    );
 
     const rowHeight = 20;
     const rowCount = Math.floor((layoutSettings.pageHeight - layoutSettings.verticalFieldsHeight) / rowHeight);
@@ -135,13 +135,13 @@ export const Grid: FC<GridProps> = ({
         console.log("Saved data:", gridRef.current?.save());
     };
 
-  const [visible, setVisible] = useState(false);
-  const showModal = () => {
-    getItems().then(() => setVisible(true));
-  };
-  const handleCancel = () => {
-    setVisible(false);
-  };
+    const [visible, setVisible] = useState(false);
+    const showModal = () => {
+        getItems().then(() => setVisible(true));
+    };
+    const handleCancel = () => {
+        setVisible(false);
+    };
 
     if (children) {
         Children.forEach(children, (child) => {
@@ -181,29 +181,29 @@ export const Grid: FC<GridProps> = ({
             }
 
             if (layout.filter((each) => each.id === itemId).length > 0) {
-              return;
+                return;
             }
 
             const curItem = items[items.length - 1];
 
             onChangeLayout([
-              ...layout,
-              {
-                content: curItem.content ?? 'ХУЙ ГОВНО',
-                id: itemId,
-                lock: false,
-                h: curItem.h,
-                w: curItem.w,
-                x: curItem.x,
-                y: curItem.y,
-              },
+                ...layout,
+                {
+                    content: curItem.content,
+                    id: itemId,
+                    lock: false,
+                    h: curItem.h,
+                    w: curItem.w,
+                    x: curItem.x,
+                    y: curItem.y,
+                },
             ]);
         });
 
         gridRef.current.on("change", (event, items) => {
             const itemId = items[0]?.el?.id;
 
-          console.log(items, 'items CHANGED')
+            console.log(items, 'items CHANGED')
 
             if (!itemId) {
                 console.error("Ошибка при изменении лейаута! Нет ид элемента!");
@@ -213,8 +213,8 @@ export const Grid: FC<GridProps> = ({
             const curItem = layout.find((each) => each.id === itemId);
 
             if (!curItem) {
-              console.error("Ошибка при изменении лейаута! Элемента нет в layout");
-              return;
+                console.error("Ошибка при изменении лейаута! Элемента нет в layout");
+                return;
             }
 
             onChangeLayout([
@@ -245,12 +245,13 @@ export const Grid: FC<GridProps> = ({
                 <Button onClick={saveData}>Save Layout</Button>
                 <Button onClick={() => console.log("Preview Page")}>Preview</Button>
                 <Button type="primary" onClick={showModal}>
-                  Open Popup
+                    Open Popup
                 </Button>
             </div>
             <div
                 style={{
-                    backgroundColor: "#e5e7eb",
+                    backgroundColor: "#ffffff",
+                    border: "1px solid #ddd",
                     height: layoutSettings.pageHeight,
                     padding: `${layoutSettings.verticalFieldsHeight}px ${layoutSettings.horizontalFieldsWidth}px`,
                 }}
@@ -283,7 +284,7 @@ export const Grid: FC<GridProps> = ({
                                             cursor: "pointer",
                                         }}
                                         onClick={() => {
-                                          removeWidget(child?.props.id);
+                                            removeWidget(child?.props.id);
                                         }}
                                     >
                                         X
@@ -297,34 +298,34 @@ export const Grid: FC<GridProps> = ({
                 </div>
             </div>
             <Modal
-              title="Scrollable Card List"
-              open={visible}
-              onCancel={handleCancel}
-              footer={null} // No footer buttons
-              width={600} // Set width of the modal
+                title="Scrollable Card List"
+                open={visible}
+                onCancel={handleCancel}
+                footer={null} // No footer buttons
+                width={600} // Set width of the modal
             >
-              <div style={{ height: '500px', overflowY: 'auto', padding: '16px', display: 'flex' }}>
-                <Row gutter={[16, 16]}>
-                  {items?.map(item => (
-                    <Col span={24} key={item.id}>
-                      <Card title={item.title} bordered={true}>
-                        {item.images.length > 0 && (
-                          <img src={`${API_URL}${item.images[0]}`} style={{width: 300, height: 200}}/>
-                        )}
-                        {item.content && (
-                          <ContentEditor readOnly value={item.content}/>
-                        )}
-                        <Button type="primary" onClick={() => {
-                          addWidgetWithContent(item.content);
-                          console.log(items, 'before')
-                          setItems((prev) => prev?.filter((each) => each.id !== item.id));
-                          console.log(items, 'after')
-                        }}>Add to issue</Button>
-                      </Card>
-                    </Col>
-                  ))}
-                </Row>
-              </div>
+                <div style={{ height: '500px', overflowY: 'auto', padding: '16px', display: 'flex' }}>
+                    <Row gutter={[16, 16]}>
+                        {items?.map(item => (
+                            <Col span={24} key={item.id}>
+                                <Card title={item.title} bordered={true}>
+                                    {item.images.length > 0 && (
+                                        <img src={`${API_URL}${item.images[0]}`} style={{width: 300, height: 200}}/>
+                                    )}
+                                    {item.content && (
+                                        <ContentEditor readOnly value={item.content}/>
+                                    )}
+                                    <Button type="primary" onClick={() => {
+                                        addWidgetWithContent(item.content);
+                                        console.log(items, 'before')
+                                        setItems((prev) => prev?.filter((each) => each.id !== item.id));
+                                        console.log(items, 'after')
+                                    }}>Add to issue</Button>
+                                </Card>
+                            </Col>
+                        ))}
+                    </Row>
+                </div>
             </Modal>
         </>
     );
