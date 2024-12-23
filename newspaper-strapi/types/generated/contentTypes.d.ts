@@ -949,6 +949,7 @@ export interface ApiLayoutLayout extends Schema.CollectionType {
     horizontalFieldsWidth: Attribute.Integer;
     verticalFieldsHeight: Attribute.Integer;
     fontFamily: Attribute.String;
+    pagesCount: Attribute.Integer;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<

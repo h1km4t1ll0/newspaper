@@ -1,93 +1,160 @@
-import React, {FC, useEffect, useMemo, useState} from "react";
+import React, { FC, useEffect, useMemo, useState } from "react";
 import "./grid-stack.css";
 import { Grid } from "./Grid";
 import ContentEditor from "@components/editor-js/ContentEditor";
 
-export type Layout = { id: string; x?: number; y?: number; w?: number; h?: number, content: any, lock: boolean }[];
+export type Layout = {
+  id: string;
+  x?: number;
+  y?: number;
+  w?: number;
+  h?: number;
+  content: any;
+  lock: boolean;
+}[];
+
+export type PageLayout = {
+  [pageId: string]: Layout;
+};
+
 type LayoutSettings = {
-  editorJSData: JSON,
-  columnCount: number,
-  pageHeight: number,
-  availableTextStyles: JSON,
-  pageWidth: number,
-  horizontalFieldsWidth: number,
-  verticalFieldsHeight: number,
-  fontFamily: string,
+  editorJSData: JSON;
+  columnCount: number;
+  pageHeight: number;
+  availableTextStyles: JSON;
+  pageWidth: number;
+  horizontalFieldsWidth: number;
+  verticalFieldsHeight: number;
+  fontFamily: string;
+  pagesCount: number;
 };
 
 type GridStackProps = {
-  layoutSettings?: LayoutSettings; // Allow optional prop with default
+  layoutSettings: LayoutSettings; // Required
 };
 
 const GridStack: FC<GridStackProps> = ({ layoutSettings }: GridStackProps) => {
-  const [layout, setLayout] = useState<Layout>([
-    { id: "1", x: 0, y: 0, w: 1, h: 1, content: "widget 1", lock: false },
-    { id: "2", x: 1, y: 0, w: 1, h: 1, content: "widget 2", lock: false },
-    { id: "3", x: 2, y: 0, w: 1, h: 1, content: "widget 3", lock: false },
-    { id: "4", x: 3, y: 0, w: 1, h: 1, content: "widget 4", lock: false },
-  ]);
+  const { pagesCount } = layoutSettings;
+
+  // Initialize pages based on pagesCount
+  const initializePages = (): PageLayout => {
+    const initialPages: PageLayout = {};
+    for (let i = 1; i <= pagesCount; i++) {
+      initialPages[`page${i}`] = []; // Each page starts with an empty layout
+    }
+    return initialPages;
+  };
+
+  const [pages, setPages] = useState<PageLayout>(initializePages);
+  const [currentPage, setCurrentPage] = useState<string>("page1");
 
   useEffect(() => {
-    console.log(layout);
-  }, [layout]);
+    console.log(`Current page: ${currentPage}`, pages[currentPage]);
+  }, [currentPage, pages]);
 
-  const updateLayoutHandle = (layout: Layout) => console.log(layout);
+  const updateLayoutHandle = (layout: Layout) => {
+    setPages((prev) => ({ ...prev, [currentPage]: layout }));
+  };
 
   const addWidget = () => {
-    setLayout([
-      ...layout,
-      {
-        id: (Object.keys(layout).length + 1).toString(),
-        content: "widget " + (Object.keys(layout).length + 1).toString(),
-        lock: false,
-      },
-    ]);
+    const pageLayout = pages[currentPage];
+    setPages({
+      ...pages,
+      [currentPage]: [
+        ...pageLayout,
+        {
+          id: `${currentPage}-widget-${pageLayout.length + 1}`,
+          x: 0, // Default x position
+          y: Infinity, // Places the widget at the bottom
+          w: 1, // Default width
+          h: 1, // Default height
+          content: `widget ${pageLayout.length + 1}`,
+          lock: false,
+        },
+      ],
+    });
   };
 
   const addWidgetWithContent = (content: any) => {
-    setLayout([
-      ...layout,
-      {
-        id: (Object.keys(layout).length + 1).toString(),
-        content: content,
-        lock: false,
-      },
-    ]);
+    const pageLayout = pages[currentPage];
+    setPages({
+      ...pages,
+      [currentPage]: [
+        ...pageLayout,
+        {
+          id: `${currentPage}-widget-${pageLayout.length + 1}`,
+          x: 0, // Default x position
+          y: Infinity, // Places the widget at the bottom
+          w: 1, // Default width
+          h: 1, // Default height
+          content,
+          lock: false,
+        },
+      ],
+    });
   };
 
   const removeWidget = (id: string) => {
-    setLayout(layout.filter(each => each.id !== id));
+    const pageLayout = pages[currentPage];
+    setPages({
+      ...pages,
+      [currentPage]: pageLayout.filter((block) => block.id !== id),
+    });
   };
 
-  const gridElementMemo = useMemo(() =>{
-    return layout.map((layout_) => (
-      <div
-        className="widget"
-        key={layout_.id}
-        id={layout_.id}
-        data-lock={layout_.lock}
-      >
-        <div className="editor-js">
-          <ContentEditor readOnly value={typeof layout_.content === 'string' ? null : layout_.content}/>
+  const gridElementMemo = useMemo(() => {
+    const pageLayout = pages[currentPage];
+    return pageLayout.map((layout_) => (
+        <div
+            className="widget"
+            key={layout_.id}
+            id={layout_.id}
+            data-lock={layout_.lock}
+            data-w={layout_.w}
+            data-h={layout_.h}
+            data-x={layout_.x}
+            data-y={layout_.y}
+        >
+          <div className="editor-js">
+            <ContentEditor
+                readOnly
+                value={typeof layout_.content === "string" ? null : layout_.content}
+            />
+          </div>
         </div>
-      </div>
     ));
-  }, [layout]);
-
+  }, [pages, currentPage]);
 
   return (
-      <Grid
-          layout={layout}
-          // @ts-ignore
-          layoutSettings={layoutSettings} // Pass layoutSettings to Grid
-          updateLayoutHandle={updateLayoutHandle}
-          addWidget={addWidget}
-          addWidgetWithContent={addWidgetWithContent}
-          removeWidget={removeWidget}
-          onChangeLayout={setLayout}
-      >
-        {gridElementMemo}
-      </Grid>
+      <div>
+        {/* Page Navigation */}
+        <div className="page-controls">
+          {Object.keys(pages).map((pageId) => (
+              <button
+                  key={pageId}
+                  onClick={() => setCurrentPage(pageId)}
+                  style={{ fontWeight: currentPage === pageId ? "bold" : "normal" }}
+              >
+                {pageId}
+              </button>
+          ))}
+        </div>
+
+        {/* Grid Component */}
+        <Grid
+            layout={pages[currentPage]} // Pass the layout for the current page
+            layoutSettings={layoutSettings}
+            updateLayoutHandle={updateLayoutHandle}
+            addWidget={addWidget}
+            addWidgetWithContent={addWidgetWithContent}
+            removeWidget={removeWidget}
+            onChangeLayout={(newLayout) =>
+                setPages((prev) => ({ ...prev, [currentPage]: newLayout }))
+            }
+        >
+          {gridElementMemo}
+        </Grid>
+      </div>
   );
 };
 
