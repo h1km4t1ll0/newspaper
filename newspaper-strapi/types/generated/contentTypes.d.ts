@@ -912,6 +912,7 @@ export interface ApiIssueIssue extends Schema.CollectionType {
       'manyToOne',
       'api::newspaper.newspaper'
     >;
+    status: Attribute.Enumeration<['published', 'draft']>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<

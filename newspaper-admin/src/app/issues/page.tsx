@@ -1,133 +1,142 @@
 "use client";
 
 import {
-  DateField,
-  DeleteButton,
-  EditButton,
-  List,
-  ShowButton,
-  useTable,
+    DeleteButton,
+    EditButton,
+    List,
+    ShowButton,
+    useTable,
 } from "@refinedev/antd";
-import { type BaseRecord } from "@refinedev/core";
-import { Space, Table, Button } from "antd";
+import {BaseKey, BaseRecord} from "@refinedev/core";
+import { Space, Card, Button, Col, Row, Tag } from "antd";
 import { useRouter, useSearchParams } from "next/navigation";
 
 const relationsQuery = {
-  populate: {
-    newspaper: {
-      populate: {
-          layout: {
-              populate: "*"
-          }
-      }
+    populate: {
+        newspaper: {
+            populate: {
+                layout: {
+                    populate: "*",
+                },
+            },
+        },
     },
-  },
 };
 
 type LayoutType = {
-    editorJSData: JSON,
-    columnCount: number,
-    pageHeight: number,
-    availableTextStyles: JSON,
-    pageWidth: number,
-    horizontalFieldsWidth: number,
-    verticalFieldsHeight: number,
-    fontFamily: string,
-    pagesCount: number,
+    editorJSData: JSON;
+    columnCount: number;
+    pageHeight: number;
+    availableTextStyles: JSON;
+    pageWidth: number;
+    horizontalFieldsWidth: number;
+    verticalFieldsHeight: number;
+    fontFamily: string;
+    pagesCount: number;
 };
 
 type NewspaperType = {
-    name: JSON,
-    cover: number,
-    layout: LayoutType,
+    name: JSON;
+    cover: number;
+    layout: LayoutType;
 };
 
 export default function BlogPostList() {
-  const searchParams = useSearchParams();
-  const newspaperId = searchParams.get("newspaperId");
+    const searchParams = useSearchParams();
+    const newspaperId = searchParams.get("newspaperId");
 
-  const { tableProps } = useTable<{
-    name: string;
-    PublishDate: Date;
-    newspaper: NewspaperType;
-    createdAt: Date;
-    updatedAt: Date;
-    id: number | string;
-  }[]>({
-    resource: "issues",
-    meta: relationsQuery,
-    filters: {
-      initial: [
-        {
-          field: "newspaper",
-          operator: "eq",
-          value: newspaperId,
+    const { tableProps } = useTable<{
+        name: string;
+        PublishDate: Date;
+        status: string; // Add status field to track draft/published state
+        newspaper: NewspaperType;
+        createdAt: Date;
+        updatedAt: Date;
+        id: number | string;
+    }[]>({
+        resource: "issues",
+        meta: relationsQuery,
+        filters: {
+            initial: [
+                {
+                    field: "newspaper",
+                    operator: "eq",
+                    value: newspaperId,
+                },
+            ],
         },
-      ],
-    },
-    sorters: {
-      initial: [
-        {
-          field: "id",
-          order: "desc",
+        sorters: {
+            initial: [
+                {
+                    field: "PublishDate", // Sort by PublishDate
+                    order: "desc", // Sort in descending order
+                },
+            ],
         },
-      ],
-    },
-  });
+    });
 
-  const router = useRouter();
+    const router = useRouter();
 
-  return (
-      <List>
-        {/* Add Create Button */}
-        <Space style={{ marginBottom: 16 }}>
-          <Button
-              type="primary"
-              onClick={() =>
-                  router.push(`/issues/create?newspaperId=${newspaperId}`)
-              }
-          >
-            Create Issue
-          </Button>
-        </Space>
+    // Function to toggle issue status (draft <-> published)
+    const toggleStatus = (id: BaseKey | undefined, currentStatus: string) => {
+        const newStatus = currentStatus === "draft" ? "published" : "draft";
+        // Make an API request or use refined API to update the status (this part depends on your backend logic)
+        console.log(`Changing status of issue ${id} to ${newStatus}`);
+    };
 
-        <Table {...tableProps} rowKey="id">
-          <Table.Column dataIndex="id" title={"ID"} />
-          <Table.Column dataIndex="name" title={"Name"} />
-          <Table.Column dataIndex="PublishDate" title={"Publish Date"} />
-            <Table.Column
-                title={"Newspaper"}
-                dataIndex="newspaper"
-                render={(_, record: BaseRecord) => JSON.stringify(record.layout)}
-            />
-          <Table.Column
-              title={"Actions"}
-              dataIndex="actions"
-              render={(_, record: BaseRecord) => (
-                  <Space>
-                    <EditButton
-                        hideText
-                        size="small"
-                        recordItemId={record.id}
-                        onClick={() =>
-                            router.push(`/issues/edit/${record.id}`)
-                        }
-                    />
-                    <ShowButton
-                        hideText
-                        size="small"
-                        recordItemId={record.id}
-                        onClick={() =>
-                            router.push(
-                                `/issues/show/${record.id}?newspaperId=${newspaperId}`
-                            )
-                        }
-                    />
-                    <DeleteButton hideText size="small" recordItemId={record.id} />
-                  </Space>
-              )}
-          />
-        </Table>
-      </List>
-  );
+    return (
+        <List>
+            {/* Add Create Button */}
+            <Space style={{ marginBottom: 16 }}>
+                <Button
+                    type="primary"
+                    onClick={() =>
+                        router.push(`/issues/create?newspaperId=${newspaperId}`)
+                    }
+                >
+                    Create Issue
+                </Button>
+            </Space>
+
+            <Row gutter={16}>
+                {tableProps.dataSource?.map((record: BaseRecord) => (
+                    <Col span={8} key={record.id}>
+                        <Card
+                            title={`Issue ${new Date(record.PublishDate).toLocaleDateString()}`} // Use the date for the title
+                            cover={<div style={{ height: 200, backgroundColor: "#f0f0f0" }} />}
+                            actions={[
+                                <EditButton
+                                    hideText
+                                    size="small"
+                                    recordItemId={record.id}
+                                    onClick={() => router.push(`/issues/edit/${record.id}`)}
+                                />,
+                                <ShowButton
+                                    hideText
+                                    size="small"
+                                    recordItemId={record.id}
+                                    onClick={() =>
+                                        router.push(`/issues/show/${record.id}?newspaperId=${newspaperId}`)
+                                    }
+                                />,
+                                <DeleteButton hideText size="small" recordItemId={record.id} />,
+                                <Button
+                                    size="small"
+                                    onClick={() => toggleStatus(record.id, record.status)}
+                                >
+                                    {record.status === "draft" ? "Publish" : "Set as Draft"}
+                                </Button>,
+                            ]}
+                        >
+                            <p><strong>Publish Date:</strong> {new Date(record.PublishDate).toLocaleDateString()}</p>
+                            <p><strong>Newspaper:</strong> {record.newspaper?.name}</p>
+                            <Tag color={record.status === "draft" ? "orange" : "green"}>
+                                {record.status}
+                            </Tag>
+                        </Card>
+                    </Col>
+                ))}
+            </Row>
+        </List>
+    );
 }

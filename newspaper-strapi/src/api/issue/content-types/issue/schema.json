@@ -23,6 +23,13 @@
       "relation": "manyToOne",
       "target": "api::newspaper.newspaper",
       "inversedBy": "issues"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "published",
+        "draft"
+      ]
     }
   }
 }

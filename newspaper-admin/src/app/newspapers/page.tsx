@@ -1,7 +1,7 @@
 "use client";
 
 import { useTable } from "@refinedev/antd";
-import { Space, Table, Button } from "antd";
+import { Space, Button, Card, Col, Row } from "antd";
 import { EditButton, ShowButton, DeleteButton } from "@refinedev/antd";
 import { BaseRecord } from "@refinedev/core";
 import { useRouter } from "next/navigation";
@@ -31,6 +31,7 @@ type LayoutType = {
 
 type IssueType = {
     name: string,
+    status: string,
     PublishDate: Date,
 }
 
@@ -38,7 +39,7 @@ export default function NewspaperList() {
     const { tableProps } = useTable<{
         id: number | string;
         name: string;
-        cover: string;
+        cover: string; // cover is a URL to the image
         layout: LayoutType;
         fontFamily: string;
         height: string;
@@ -58,6 +59,9 @@ export default function NewspaperList() {
 
     const router = useRouter();
 
+    // Assuming this is the base URL for your Strapi media (adjust this to your actual base URL)
+    const STRAPI_BASE_URL = "http://localhost:1337";  // or your production URL
+
     return (
         <div>
             <h1>All Newspapers</h1>
@@ -66,32 +70,24 @@ export default function NewspaperList() {
                     Create Newspaper
                 </Button>
             </Space>
-            <Table {...tableProps} rowKey="id">
-                <Table.Column title="ID" dataIndex="id" />
-                <Table.Column title="Name" dataIndex="name" />
-                <Table.Column title="Cover" dataIndex="cover" render={(photo: string) => <img src={photo} alt="newspaper" width={50} height={50} />} />
-                <Table.Column
-                    title={"Issues"}
-                    dataIndex="issues"
-                    render={(_, record: BaseRecord) => JSON.stringify(record.issues)}
-                />
-                <Table.Column
-                    title={"Layout"}
-                    dataIndex="layout"
-                    render={(_, record: BaseRecord) => JSON.stringify(record.layout)}
-                />
-                <Table.Column
-                    title="Actions"
-                    dataIndex="actions"
-                    render={(_, record: BaseRecord) => (
-                        <Space>
-                            <EditButton hideText size="small" recordItemId={record.id} />
-                            <ShowButton hideText size="small" recordItemId={record.id} onClick={() => router.push(`/issues?newspaperId=${record.id}`)} />
-                            <DeleteButton hideText size="small" recordItemId={record.id} />
-                        </Space>
-                    )}
-                />
-            </Table>
+            <Row gutter={[16, 16]}>
+                {tableProps?.dataSource?.map((newspaper) => (
+                    <Col span={8} key={newspaper.id}>
+                        <Card
+                            hoverable
+                            cover={<img alt="newspaper" src={`${STRAPI_BASE_URL}${newspaper.cover}`} />} // Load the image
+                        >
+                            <Card.Meta title={newspaper.name} />
+                            <p>Issues: {newspaper.issues.length}</p>
+                            <Space>
+                                <EditButton hideText size="small" recordItemId={newspaper.id} />
+                                <ShowButton hideText size="small" recordItemId={newspaper.id} onClick={() => router.push(`/issues?newspaperId=${newspaper.id}`)} />
+                                <DeleteButton hideText size="small" recordItemId={newspaper.id} />
+                            </Space>
+                        </Card>
+                    </Col>
+                ))}
+            </Row>
         </div>
     );
 }

@@ -28,6 +28,17 @@ export default function BlogPostCreate() {
                     <Input />
                 </Form.Item>
                 <Form.Item
+                    label={"Status"}
+                    name={["status"]}
+                    rules={[
+                        {
+                            required: true,
+                        },
+                    ]}
+                >
+                    <Input />
+                </Form.Item>
+                <Form.Item
                     label={"PublishDate"}
                     name={["PublishDate"]}
                     rules={[
