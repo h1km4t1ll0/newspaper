@@ -14,7 +14,7 @@ export type Layout = {
 }[];
 
 export type PageLayout = {
-  [pageId: string]: Layout
+  [pageId: string]: Layout;
 };
 
 type LayoutSettings = {
@@ -26,34 +26,34 @@ type LayoutSettings = {
   horizontalFieldsWidth: number;
   verticalFieldsHeight: number;
   fontFamily: string;
+  pagesCount: number;
 };
 
 type GridStackProps = {
-  layoutSettings?: LayoutSettings;
+  layoutSettings: LayoutSettings; // Required
 };
 
 const GridStack: FC<GridStackProps> = ({ layoutSettings }: GridStackProps) => {
-  const [pages, setPages] = useState<PageLayout>({
-    page1: [
-      { id: "page1-widget-1", x: 0, y: 0, w: 1, h: 1, content: "widget 1", lock: false },
-      { id: "page2-widget-2", x: 1, y: 0, w: 1, h: 1, content: "widget 2", lock: false },
-    ],
-  });
+  const { pagesCount } = layoutSettings;
+
+  // Initialize pages based on pagesCount
+  const initializePages = (): PageLayout => {
+    const initialPages: PageLayout = {};
+    for (let i = 1; i <= pagesCount; i++) {
+      initialPages[`page${i}`] = []; // Each page starts with an empty layout
+    }
+    return initialPages;
+  };
+
+  const [pages, setPages] = useState<PageLayout>(initializePages);
   const [currentPage, setCurrentPage] = useState<string>("page1");
 
   useEffect(() => {
     console.log(`Current page: ${currentPage}`, pages[currentPage]);
-    console.log('content', pages)
   }, [currentPage, pages]);
 
   const updateLayoutHandle = (layout: Layout) => {
     setPages((prev) => ({ ...prev, [currentPage]: layout }));
-  };
-
-  const addPage = () => {
-    const newPageId = `page${Object.keys(pages).length + 1}`;
-    setPages({ ...pages, [newPageId]: [] });
-    setCurrentPage(newPageId);
   };
 
   const addWidget = () => {
@@ -64,8 +64,12 @@ const GridStack: FC<GridStackProps> = ({ layoutSettings }: GridStackProps) => {
         ...pageLayout,
         {
           id: `${currentPage}-widget-${pageLayout.length + 1}`,
+          x: 0, // Default x position
+          y: Infinity, // Places the widget at the bottom
+          w: 1, // Default width
+          h: 1, // Default height
           content: `widget ${pageLayout.length + 1}`,
-          lock: false
+          lock: false,
         },
       ],
     });
@@ -79,6 +83,10 @@ const GridStack: FC<GridStackProps> = ({ layoutSettings }: GridStackProps) => {
         ...pageLayout,
         {
           id: `${currentPage}-widget-${pageLayout.length + 1}`,
+          x: 0, // Default x position
+          y: Infinity, // Places the widget at the bottom
+          w: 1, // Default width
+          h: 1, // Default height
           content,
           lock: false,
         },
@@ -102,9 +110,16 @@ const GridStack: FC<GridStackProps> = ({ layoutSettings }: GridStackProps) => {
             key={layout_.id}
             id={layout_.id}
             data-lock={layout_.lock}
+            data-w={layout_.w}
+            data-h={layout_.h}
+            data-x={layout_.x}
+            data-y={layout_.y}
         >
           <div className="editor-js">
-            <ContentEditor readOnly value={typeof layout_.content === "string" ? null : layout_.content} />
+            <ContentEditor
+                readOnly
+                value={typeof layout_.content === "string" ? null : layout_.content}
+            />
           </div>
         </div>
     ));
@@ -114,7 +129,6 @@ const GridStack: FC<GridStackProps> = ({ layoutSettings }: GridStackProps) => {
       <div>
         {/* Page Navigation */}
         <div className="page-controls">
-          <button onClick={addPage}>Add Page</button>
           {Object.keys(pages).map((pageId) => (
               <button
                   key={pageId}
@@ -128,8 +142,7 @@ const GridStack: FC<GridStackProps> = ({ layoutSettings }: GridStackProps) => {
 
         {/* Grid Component */}
         <Grid
-            layout={pages[currentPage]}
-            // @ts-ignore
+            layout={pages[currentPage]} // Pass the layout for the current page
             layoutSettings={layoutSettings}
             updateLayoutHandle={updateLayoutHandle}
             addWidget={addWidget}

@@ -33,6 +33,7 @@ type LayoutType = {
     horizontalFieldsWidth: number,
     verticalFieldsHeight: number,
     fontFamily: string,
+    pagesCount: number,
 };
 
 type NewspaperType = {

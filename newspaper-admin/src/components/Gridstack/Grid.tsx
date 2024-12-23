@@ -27,6 +27,7 @@ type LayoutSettings = {
     horizontalFieldsWidth: number;
     verticalFieldsHeight: number;
     fontFamily: string;
+    pagesCount: number,
 };
 
 type GridProps = {

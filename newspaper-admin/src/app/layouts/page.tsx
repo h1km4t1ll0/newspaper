@@ -22,6 +22,7 @@ export default function BlogPostList() {
     horizontalFieldsWidth: number,
     verticalFieldsHeight: number,
     fontFamily: string,
+    pagesCount: number,
     createdAt: Date,
     updatedAt: Date,
     id: number | string,
@@ -49,6 +50,7 @@ export default function BlogPostList() {
           <Table.Column dataIndex="horizontalFieldsWidth" title={"horizontalFieldsWidth"} />
           <Table.Column dataIndex="verticalFieldsHeight" title={"verticalFieldsHeight"} />
           <Table.Column dataIndex="fontFamily" title={"fontFamily"} />
+          <Table.Column dataIndex="pagesCount" title={"fontFamily"} />
           <Table.Column
               title={"Actions"}
               dataIndex="actions"

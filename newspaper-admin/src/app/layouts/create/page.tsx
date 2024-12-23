@@ -97,6 +97,17 @@ export default function BlogPostCreate() {
           >
               <Input />
           </Form.Item>
+          <Form.Item
+              label={"Pages Count"}
+              name={["pagesCount"]}
+              rules={[
+                  {
+                      required: false,
+                  },
+              ]}
+          >
+              <Input />
+          </Form.Item>
       </Form>
     </Create>
   );
