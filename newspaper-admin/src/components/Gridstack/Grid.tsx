@@ -11,12 +11,12 @@ import { GridStack } from "gridstack";
 import "gridstack/dist/gridstack.min.css";
 import "gridstack/dist/gridstack-extra.min.css";
 import { GridItem } from "./GridItem";
-import {Button, Card, Col, Modal, Row} from "antd";
-import {Layout} from "@components/Gridstack/index";
-import {API_URL} from "@utility/constants";
+import { Button, Card, Col, Modal, Row } from "antd";
+import { Layout } from "@components/Gridstack/index";
+import { API_URL } from "@utility/constants";
 import ContentEditor from "@components/editor-js/ContentEditor";
 import qs from "qs";
-import {useCustom} from "@refinedev/core";
+import { useCustom } from "@refinedev/core";
 
 type LayoutSettings = {
     editorJSData: JSON;
@@ -27,7 +27,7 @@ type LayoutSettings = {
     horizontalFieldsWidth: number;
     verticalFieldsHeight: number;
     fontFamily: string;
-    pagesCount: number,
+    pagesCount: number;
 };
 
 type GridProps = {
@@ -54,7 +54,6 @@ export const Grid: FC<GridProps> = ({
         [key: string]: React.MutableRefObject<HTMLDivElement>;
     }> = useRef({});
     const gridRef: React.MutableRefObject<undefined | GridStack> = useRef();
-
 
     const query = qs.stringify(
         {
@@ -112,9 +111,7 @@ export const Grid: FC<GridProps> = ({
     const getItems = useCallback(
         async () => {
             const data = await refetch();
-
-            console.log(data, 'data')
-
+            console.log(data, 'data');
             setItems(data.data?.data.data.map(
                 (rawData) => ({
                     title: rawData.attributes.name,
@@ -169,9 +166,6 @@ export const Grid: FC<GridProps> = ({
 
         const nextId =  (layout.length + 1).toString();
         console.log(grid.save())
-
-        // let insert = [ {w: 2, h: 2, content: 'new item', id: nextId, lock: false} ];
-        // GridStack.setupDragIn('.sidepanel>.grid-stack-item', undefined, insert);
 
         grid.on("added", (event, items) => {
             const itemId: string | undefined = items[items.length - 1]?.id;
@@ -240,62 +234,96 @@ export const Grid: FC<GridProps> = ({
 
     return (
         <>
-            <div style={{ display: "flex", flexDirection: "row", marginBottom: 20 }}>
-                <Button onClick={addWidget}>Add Widget</Button>
-                <Button onClick={saveData}>Save Layout</Button>
-                <Button onClick={() => console.log("Preview Page")}>Preview</Button>
-                <Button type="primary" onClick={showModal}>
-                    Open Popup
-                </Button>
-            </div>
-            <div
-                style={{
+            <div style={{
+                display: "flex",
+                flexDirection: "column",
+                height: '100%',
+                maxWidth: '1200px',
+                margin: '0 auto'
+            }}>
+                {/* Buttons above the header */}
+                <div style={{
                     backgroundColor: "#ffffff",
-                    border: "1px solid #ddd",
-                    height: layoutSettings.pageHeight,
-                    padding: `${layoutSettings.verticalFieldsHeight}px ${layoutSettings.horizontalFieldsWidth}px`,
-                }}
-            >
-                <div className="grid-stack">
-                    {Children.map(children, (child) => {
-                        const childLayout = layout[child?.props.id];
-
-                        return (
-                            <GridItem
-                                itemRef={gridItemsRefs.current[child?.props.id]}
-                                id={child?.props.id}
-                                gs-id={childLayout?.id}
-                                gs-x={childLayout?.x}
-                                gs-y={childLayout?.y}
-                                gs-w={childLayout?.w}
-                                gs-h={childLayout?.h}
-                            >
-                                <div >
-                                    {/* Remove Button positioned at the top-right corner */}
-                                    <button
-                                        style={{
-                                            position: "absolute",
-                                            top: 5,
-                                            right: 5,
-                                            backgroundColor: "transparent",
-                                            border: "none",
-                                            color: "#454545",
-                                            fontSize: "16px",
-                                            cursor: "pointer",
-                                        }}
-                                        onClick={() => {
-                                            removeWidget(child?.props.id);
-                                        }}
-                                    >
-                                        X
-                                    </button>
-
-                                    {child}
-                                </div>
-                            </GridItem>
-                        );
-                    })}
+                    padding: "20px 0",
+                    textAlign: "center",
+                    borderBottom: "1px solid #ddd"
+                }}>
+                    <Button onClick={addWidget}>Add Widget</Button>
+                    <Button onClick={saveData}>Save Layout</Button>
+                    <Button onClick={() => console.log("Preview Page")}>Preview</Button>
+                    <Button type="primary" onClick={showModal}>Open Popup</Button>
                 </div>
+
+                {/* Header */}
+                <header style={{
+                    backgroundColor: "#ffffff",
+                    padding: "10px 20px",
+                    textAlign: "center",
+                    borderBottom: "1px solid #ddd"
+                }}>
+                    <h1 style={{margin: 0, fontSize: "24px"}}>My Grid Layout</h1>
+                </header>
+
+                {/* Main Content Area */}
+                <div style={{flex: 1, padding: '20px', backgroundColor: "#ffffff", overflowY: 'auto'}}>
+                    <div
+                        style={{
+                            backgroundColor: "#ffffff",
+                            border: "1px solid #ddd",
+                            height: layoutSettings.pageHeight,
+                            padding: `${layoutSettings.verticalFieldsHeight}px ${layoutSettings.horizontalFieldsWidth}px`,
+                        }}
+                    >
+                        <div className="grid-stack">
+                            {Children.map(children, (child) => {
+                                const childLayout = layout[child?.props.id];
+                                return (
+                                    <GridItem
+                                        itemRef={gridItemsRefs.current[child?.props.id]}
+                                        id={child?.props.id}
+                                        gs-id={childLayout?.id}
+                                        gs-x={childLayout?.x}
+                                        gs-y={childLayout?.y}
+                                        gs-w={childLayout?.w}
+                                        gs-h={childLayout?.h}
+                                    >
+                                        <div>
+                                            <button
+                                                style={{
+                                                    position: "absolute",
+                                                    top: 5,
+                                                    right: 5,
+                                                    backgroundColor: "transparent",
+                                                    border: "none",
+                                                    color: "#454545",
+                                                    fontSize: "16px",
+                                                    cursor: "pointer",
+                                                }}
+                                                onClick={() => {
+                                                    removeWidget(child?.props.id);
+                                                }}
+                                            >
+                                                X
+                                            </button>
+
+                                            {child}
+                                        </div>
+                                    </GridItem>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Footer */}
+                <footer style={{
+                    backgroundColor: "#ffffff",
+                    padding: "10px 20px",
+                    textAlign: "center",
+                    borderTop: "1px solid #ddd"
+                }}>
+                    <p>Footer Content</p>
+                </footer>
             </div>
             <Modal
                 title="Scrollable Card List"
@@ -304,7 +332,7 @@ export const Grid: FC<GridProps> = ({
                 footer={null} // No footer buttons
                 width={600} // Set width of the modal
             >
-                <div style={{ height: '500px', overflowY: 'auto', padding: '16px', display: 'flex' }}>
+                <div style={{height: '500px', overflowY: 'auto', padding: '16px', display: 'flex'}}>
                     <Row gutter={[16, 16]}>
                         {items?.map(item => (
                             <Col span={24} key={item.id}>
@@ -317,16 +345,15 @@ export const Grid: FC<GridProps> = ({
                                     )}
                                     <Button type="primary" onClick={() => {
                                         addWidgetWithContent(item.content);
-                                        console.log(items, 'before')
+                                        console.log(items, 'before');
                                         setItems((prev) => prev?.filter((each) => each.id !== item.id));
-                                        console.log(items, 'after')
+                                        console.log(items, 'after');
                                     }}>Add to issue</Button>
                                 </Card>
                             </Col>
                         ))}
                     </Row>
                 </div>
-            </Modal>
-        </>
+            </Modal></>
     );
 };
