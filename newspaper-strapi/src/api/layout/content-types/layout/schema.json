@@ -35,6 +35,9 @@
     },
     "fontFamily": {
       "type": "string"
+    },
+    "pagesCount": {
+      "type": "integer"
     }
   }
 }
