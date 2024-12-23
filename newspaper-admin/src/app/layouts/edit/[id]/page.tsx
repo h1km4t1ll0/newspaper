@@ -93,6 +93,17 @@ export default function BlogPostEdit() {
               <Input />
           </Form.Item>
           <Form.Item
+              label={"Font Family"}
+              name={["fontFamily"]}
+              rules={[
+                  {
+                      required: false,
+                  },
+              ]}
+          >
+              <Input />
+          </Form.Item>
+          <Form.Item
               label={"Pages Count"}
               name={["pagesCount"]}
               rules={[
