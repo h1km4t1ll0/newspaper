@@ -30,17 +30,17 @@ type LayoutSettings = {
 };
 
 type GridStackProps = {
-  layoutSettings: LayoutSettings; // Required
-  issueDate: string,
-  newspaperName: string,
+  layoutSettings: LayoutSettings;
+  issueDate: string;
+  newspaperName: string;
 };
 
 const GridStack: FC<GridStackProps> = ({
                                          layoutSettings,
                                          issueDate,
                                          newspaperName,
-}: GridStackProps) => {
-  const { pagesCount } = layoutSettings;
+                                       }: GridStackProps) => {
+  const { pagesCount, availableTextStyles } = layoutSettings;
 
   // Initialize pages based on pagesCount
   const initializePages = (): PageLayout => {
@@ -53,6 +53,9 @@ const GridStack: FC<GridStackProps> = ({
 
   const [pages, setPages] = useState<PageLayout>(initializePages);
   const [currentPage, setCurrentPage] = useState<string>("page1");
+  const [selectedFont, setSelectedFont] = useState<string>(
+      layoutSettings.fontFamily
+  );
 
   useEffect(() => {
     console.log(`Current page: ${currentPage}`, pages[currentPage]);
@@ -108,6 +111,24 @@ const GridStack: FC<GridStackProps> = ({
     });
   };
 
+  const handleFontChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newFont = e.target.value;
+    setSelectedFont(newFont);
+
+    // Apply font change to all widgets in the current page
+    const updatedLayout = pages[currentPage].map((widget) => ({
+      ...widget,
+      content: {
+        ...widget.content,
+        fontFamily: newFont,
+      },
+    }));
+    setPages({
+      ...pages,
+      [currentPage]: updatedLayout,
+    });
+  };
+
   const gridElementMemo = useMemo(() => {
     const pageLayout = pages[currentPage];
     return pageLayout.map((layout_) => (
@@ -120,6 +141,7 @@ const GridStack: FC<GridStackProps> = ({
             data-h={layout_.h}
             data-x={layout_.x}
             data-y={layout_.y}
+            style={{ fontFamily: layout_.content.fontFamily }}
         >
           <div className="editor-js">
             <ContentEditor
@@ -133,6 +155,18 @@ const GridStack: FC<GridStackProps> = ({
 
   return (
       <div>
+        {/* Font Selection */}
+        <div className="font-selector">
+          <label>Select Font: </label>
+          <select onChange={handleFontChange} value={selectedFont}>
+            {availableTextStyles.fonts.map((font: any) => (
+                <option key={font.name} value={font.fontFamily}>
+                  {font.name}
+                </option>
+            ))}
+          </select>
+        </div>
+
         {/* Page Navigation */}
         <div className="page-controls">
           {Object.keys(pages).map((pageId, index) => (
