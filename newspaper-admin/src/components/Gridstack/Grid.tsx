@@ -43,6 +43,7 @@ type GridProps = {
     totalPages: number; // Pass the total number of pages
     issueDate: string;
     newspaperName: string;
+    currentFont: string;
 };
 
 export const Grid: FC<GridProps> = ({
@@ -57,6 +58,7 @@ export const Grid: FC<GridProps> = ({
                                         totalPages,
                                         issueDate,
                                         newspaperName,
+                                        currentFont,
                                     }) => {
     const issueDateBeautified = new Intl.DateTimeFormat("en-US", {
         year: "numeric",
@@ -285,10 +287,11 @@ export const Grid: FC<GridProps> = ({
                     {(currentPageNumber !== 1) && (<Button type="primary" onClick={showModal}>Open Popup</Button>)}
                 </div>
 
-                <div className={`newspaper-page-${currentPageNumber}`} style={{
+                <div className={`newspaper-page`} style={{
                     padding: `${layoutSettings.verticalFieldsHeight}px ${layoutSettings.horizontalFieldsWidth}px`,
                     backgroundColor: "#ffffff",
                     height: layoutSettings.pageHeight,
+                    fontFamily: currentFont,
                 }}>
                     {/* Header */}
                     {(currentPageNumber !== 1 && currentPageNumber !== totalPages) && (<header

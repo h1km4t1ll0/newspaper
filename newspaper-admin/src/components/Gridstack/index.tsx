@@ -195,6 +195,7 @@ const GridStack: FC<GridStackProps> = ({
             totalPages={Object.keys(pages).length}
             issueDate={issueDate}
             newspaperName={newspaperName}
+            currentFont={selectedFont}
         >
           {gridElementMemo}
         </Grid>
