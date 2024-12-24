@@ -39,6 +39,7 @@ type GridStackProps = {
   newspaperName: string;
   issueCover: any;
   issueId: number | string;
+  issueStatus: string;
 };
 
 const GridStack: FC<GridStackProps> = ({
@@ -46,7 +47,8 @@ const GridStack: FC<GridStackProps> = ({
                                          issueDate,
                                          newspaperName,
                                          issueId,
-                                         issueCover
+                                         issueCover,
+                                         issueStatus
                                        }: GridStackProps) => {
   const { pagesCount, availableTextStyles } = layoutSettings;
 
@@ -242,6 +244,7 @@ const GridStack: FC<GridStackProps> = ({
             newspaperName={newspaperName}
             currentFont={selectedFont}
             issueCover={issueCover}
+            issueStatus={issueStatus}
         >
           {gridElementMemo}
         </Grid>
