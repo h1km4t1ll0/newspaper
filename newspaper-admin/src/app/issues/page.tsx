@@ -7,7 +7,7 @@ import {
     ShowButton,
     useTable,
 } from "@refinedev/antd";
-import {BaseKey, BaseRecord} from "@refinedev/core";
+import {BaseKey, BaseRecord, useUpdate} from "@refinedev/core";
 import { Space, Card, Button, Col, Row, Tag } from "antd";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -81,12 +81,20 @@ export default function BlogPostList() {
     });
 
     const router = useRouter();
-
+    const { mutate } = useUpdate();
     // Function to toggle issue status (draft <-> published)
     const toggleStatus = (id: BaseKey | undefined, currentStatus: string) => {
         const newStatus = currentStatus === "draft" ? "published" : "draft";
-        // Make an API request or use refined API to update the status (this part depends on your backend logic)
-        console.log(`Changing status of issue ${id} to ${newStatus}`);
+        mutate({
+            resource: "issues",
+            id,
+            values: {
+                status: newStatus,
+            },
+            meta: {
+                method: "post",
+            }
+        })
     };
 
     return (

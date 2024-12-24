@@ -107,6 +107,7 @@ export default function IssueShowPage() {
                        newspaperName={issue.newspaper.name}
                        issueCover={issue.cover.url}
                        issueId={issue.id}
+                       issueStatus={issue.status}
             />
         </div>
     );
