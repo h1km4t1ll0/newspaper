@@ -170,6 +170,7 @@ export const Grid: FC<GridProps> = ({
                 acceptWidgets: function(el) { return true },
                 column: layoutSettings.columnCount,
                 cellHeight: rowHeight,
+                sizeToContent: true,
                 margin: 5,
                 float: true,
                 maxRow: rowCount,
