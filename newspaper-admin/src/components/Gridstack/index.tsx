@@ -39,6 +39,7 @@ type GridStackProps = {
   issueDate: string;
   newspaperName: string;
   issueId: number;
+  issueCover: any;
 };
 
 const GridStack: FC<GridStackProps> = ({
@@ -46,6 +47,7 @@ const GridStack: FC<GridStackProps> = ({
                                          issueDate,
                                          newspaperName,
                                          issueId,
+                                         issueCover
                                        }: GridStackProps) => {
   const { pagesCount, availableTextStyles } = layoutSettings;
 
@@ -90,25 +92,6 @@ const GridStack: FC<GridStackProps> = ({
 
   const updateLayoutHandle = useCallback((layout: Layout) => {
     setPages((prev) => ({ ...prev, [currentPage]: layout }));
-  }, [currentPage]);
-
-  const addWidget = useCallback(() => {
-    const pageLayout = pages[currentPage];
-    setPages({
-      ...pages,
-      [currentPage]: [
-        ...pageLayout,
-        {
-          id: `${currentPage}-widget-${pageLayout.length + 1}`,
-          x: 0, // Default x position
-          y: 0, // Places the widget at the bottom
-          w: 1, // Default width
-          h: 1, // Default height
-          content: `widget ${pageLayout.length + 1}`,
-          lock: false,
-        },
-      ],
-    });
   }, [currentPage]);
 
   const addWidgetWithContent = (content: any) => {
@@ -171,14 +154,31 @@ const GridStack: FC<GridStackProps> = ({
             style={{ fontFamily: layout_.content?.fontFamily ?? 'Arial' }}
         >
           {layout_.content?.type === 'image' &&
-              <img src={`${API_URL}${layout_.content.url}`} style={{width: "100%", height: "auto"}}/>
+              <div style={{
+                height: `${layoutSettings.pageHeight * 0.5}px`, // Fixed height for the container
+                overflow: 'hidden', // Hide overflow to prevent cropping
+                display: 'flex', // Use flexbox to center the image
+                justifyContent: 'center', // Center horizontally
+                alignItems: 'center', // Center vertically
+                padding: '10px' // Add padding around the image
+              }}>
+                <img
+                    alt="issueCover"
+                    style={{
+                      maxHeight: '100%', // Ensure the image does not exceed the container height
+                      maxWidth: '100%', // Ensure the image does not exceed the container width
+                      objectFit: 'contain' // Maintain aspect ratio and fit within the container
+                    }}
+                    src={`${API_URL}${layout_.content.url}`}
+                />
+              </div>
           }
           {layout_.content?.type !== 'image' &&
               <div className="editor-js">
-                  <ContentEditor
-                      readOnly
-                      value={typeof layout_.content === "string" ? null : layout_.content}
-                  />
+                <ContentEditor
+                    readOnly
+                    value={typeof layout_.content === "string" ? null : layout_.content}
+                />
               </div>
           }
         </div>
@@ -186,9 +186,9 @@ const GridStack: FC<GridStackProps> = ({
   }, [pages, currentPage]);
 
   return (
-    <div>
-      {/* Font Selection */}
-      <div className="font-selector">
+      <div>
+        {/* Font Selection */}
+        <div className="font-selector">
         <label>Select Font: </label>
         <select onChange={handleFontChange} value={selectedFont}>
             {availableTextStyles.fonts.map((font: any) => (
@@ -217,7 +217,6 @@ const GridStack: FC<GridStackProps> = ({
             layout={pages[currentPage]} // Pass the layout for the current page
             layoutSettings={layoutSettings}
             updateLayoutHandle={updateLayoutHandle}
-            addWidget={addWidget}
             addWidgetWithContent={addWidgetWithContent}
             removeWidget={removeWidget}
             onChangeLayout={(newLayout) =>
@@ -228,6 +227,7 @@ const GridStack: FC<GridStackProps> = ({
             issueDate={issueDate}
             newspaperName={newspaperName}
             currentFont={selectedFont}
+            issueCover={issueCover}
         >
           {gridElementMemo}
         </Grid>

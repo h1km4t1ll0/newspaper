@@ -18,6 +18,9 @@ const relationsQuery = {
                     populate: "*"
                 }
             }
+        },
+        cover: {
+            populate: "*"
         }
     }
 };
@@ -47,6 +50,7 @@ type IssueType = {
     name: string;
     PublishDate: string;
     newspaper: NewspaperType;
+    cover: any;
 };
 
 export default function IssueShowPage() {
@@ -100,7 +104,8 @@ export default function IssueShowPage() {
             {/* Render GridStack */}
             <GridStack layoutSettings={issue.newspaper.layout}
                        issueDate={issue.PublishDate}
-                       newspaperName={issue.newspaper.name}/>
+                       newspaperName={issue.newspaper.name}
+                       issueCover={issue.cover.url}/>
         </div>
     );
 }
