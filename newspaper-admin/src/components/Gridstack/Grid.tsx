@@ -300,7 +300,7 @@ export const Grid: FC<GridProps> = ({
                         flex: 1,
                         padding: '20px 0px',
                         backgroundColor: "#ffffff",
-                        overflowY: 'auto',
+                        overflowY: 'clip',
                         height: mainContentHeight,
                         position: 'relative',
                     }}>
