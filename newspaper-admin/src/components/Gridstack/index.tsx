@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo, useState } from "react";
+import React, {FC, useCallback, useEffect, useMemo, useState} from "react";
 import "./grid-stack.css";
 import { Grid } from "./Grid";
 import ContentEditor from "@components/editor-js/ContentEditor";
@@ -62,11 +62,11 @@ const GridStack: FC<GridStackProps> = ({
     console.log(`Current page: ${currentPage}`, pages[currentPage]);
   }, [currentPage, pages]);
 
-  const updateLayoutHandle = (layout: Layout) => {
+  const updateLayoutHandle = useCallback((layout: Layout) => {
     setPages((prev) => ({ ...prev, [currentPage]: layout }));
-  };
+  }, [currentPage]);
 
-  const addWidget = () => {
+  const addWidget = useCallback(() => {
     const pageLayout = pages[currentPage];
     setPages({
       ...pages,
@@ -75,7 +75,7 @@ const GridStack: FC<GridStackProps> = ({
         {
           id: `${currentPage}-widget-${pageLayout.length + 1}`,
           x: 0, // Default x position
-          y: Infinity, // Places the widget at the bottom
+          y: 0, // Places the widget at the bottom
           w: 1, // Default width
           h: 1, // Default height
           content: `widget ${pageLayout.length + 1}`,
@@ -83,7 +83,7 @@ const GridStack: FC<GridStackProps> = ({
         },
       ],
     });
-  };
+  }, [currentPage]);
 
   const addWidgetWithContent = (content: any) => {
     const pageLayout = pages[currentPage];
@@ -94,7 +94,7 @@ const GridStack: FC<GridStackProps> = ({
         {
           id: `${currentPage}-widget-${pageLayout.length + 1}`,
           x: 0, // Default x position
-          y: Infinity, // Places the widget at the bottom
+          y: 0, // Places the widget at the bottom
           w: 1, // Default width
           h: 1, // Default height
           content,
@@ -142,9 +142,9 @@ const GridStack: FC<GridStackProps> = ({
             data-h={layout_.h}
             data-x={layout_.x}
             data-y={layout_.y}
-            style={{ fontFamily: layout_.content.fontFamily }}
+            style={{ fontFamily: layout_.content?.fontFamily ?? 'Arial' }}
         >
-          {layout_.content.type === 'image' &&
+          {layout_.content?.type === 'image' &&
               <img src={`${API_URL}${layout_.content.url}`} style={{width: "100%", height: "auto"}}/>
           }
           {layout_.content?.type !== 'image' &&
