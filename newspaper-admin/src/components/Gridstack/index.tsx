@@ -2,6 +2,7 @@ import React, { FC, useEffect, useMemo, useState } from "react";
 import "./grid-stack.css";
 import { Grid } from "./Grid";
 import ContentEditor from "@components/editor-js/ContentEditor";
+import {API_URL} from "@utility/constants";
 
 export type Layout = {
   id: string;
@@ -143,22 +144,27 @@ const GridStack: FC<GridStackProps> = ({
             data-y={layout_.y}
             style={{ fontFamily: layout_.content.fontFamily }}
         >
-          <div className="editor-js">
-            <ContentEditor
-                readOnly
-                value={typeof layout_.content === "string" ? null : layout_.content}
-            />
-          </div>
+          {layout_.content.type === 'image' &&
+              <img src={`${API_URL}${layout_.content.url}`} style={{width: 300, height: 200}}/>
+          }
+          {layout_.content?.type !== 'image' &&
+              <div className="editor-js">
+                  <ContentEditor
+                      readOnly
+                      value={typeof layout_.content === "string" ? null : layout_.content}
+                  />
+              </div>
+          }
         </div>
     ));
   }, [pages, currentPage]);
 
   return (
-      <div>
-        {/* Font Selection */}
-        <div className="font-selector">
-          <label>Select Font: </label>
-          <select onChange={handleFontChange} value={selectedFont}>
+    <div>
+      {/* Font Selection */}
+      <div className="font-selector">
+        <label>Select Font: </label>
+        <select onChange={handleFontChange} value={selectedFont}>
             {availableTextStyles.fonts.map((font: any) => (
                 <option key={font.name} value={font.fontFamily}>
                   {font.name}
