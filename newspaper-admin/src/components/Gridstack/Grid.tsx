@@ -123,22 +123,31 @@ export const Grid: FC<GridProps> = ({
     url: `${API_URL}/api/articles?${query}`,
     method: "get",
   });
-  const [items, setItems] = useState<{ title: string, content: any, id: number, images: string[] }[]>();
+  const [items, setItems] = useState<{ title: string, content: any, id: number }[]>();
+  const [images, setImages] = useState<{ name: string, url: string, id: number }[]>();
 
   const getItems = useCallback(
     async () => {
       const data = await refetch();
       console.log(data, 'data');
+      const imagesArray: { name: string, url: string, id: number }[] = [];
       setItems(data.data?.data.data.map(
-        (rawData) => ({
-          title: rawData.attributes.name,
-          content: rawData.attributes.text,
-          id: rawData.id,
-          images: rawData.attributes.photos.data.map(
-            (image) => image.attributes.photo.data.attributes.url,
-          ),
-        }),
+        (rawData) => {
+          imagesArray.push(...rawData.attributes.photos.data.map(
+            (image) => ({
+              name: image.attributes.name,
+              url: image.attributes.photo.data.attributes.url,
+              id: image.id,
+            }),
+          ));
+
+          return {
+            title: rawData.attributes.name,
+            content: rawData.attributes.text,
+            id: rawData.id,
+        }},
       ));
+      setImages(imagesArray);
     }, [items]
   );
 
@@ -275,19 +284,31 @@ export const Grid: FC<GridProps> = ({
   return (
     <div style={{display: 'flex', width: '100%'}}>
       <div style={{width: '20%', overflowX: 'auto'}}>
-        <div style={{height: '100%', overflowY: 'auto', padding: '16px', display: 'flex', marginTop: '40px'}}>
+        <div style={{height: `${layoutSettings.pageHeight / 2}px`, overflowY: 'auto', padding: '16px', display: 'flex', marginTop: '40px'}}>
           <Row gutter={[16, 16]}>
             {items?.map(item => (
               <Col span={24} key={item.id}>
                 <Card title={item.title} bordered={true}>
-                  {item.images.length > 0 && (
-                    <img src={`${API_URL}${item.images[0]}`} style={{width: 300, height: 200}}/>
-                  )}
                   {item.content && (
                     <ContentEditor readOnly value={item.content}/>
                   )}
                   <Button type="primary" onClick={() => {
                     addWidgetWithContent(item.content);
+                    setItems((prev) => prev?.filter((each) => each.id !== item.id));
+                  }}>Add to issue</Button>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        </div>
+        <div style={{height: `${layoutSettings.pageHeight / 2}px`, overflowY: 'auto', padding: '16px', display: 'flex', marginTop: '40px'}}>
+          <Row gutter={[16, 16]}>
+            {images?.map(item => (
+              <Col span={24} key={item.id}>
+                <Card title={item.name} bordered={true}>
+                    <img src={`${API_URL}${item.url}`} style={{width: 300, height: 200}}/>
+                  <Button type="primary" onClick={() => {
+                    addWidgetWithContent({type: 'image', url: item.url});
                     setItems((prev) => prev?.filter((each) => each.id !== item.id));
                   }}>Add to issue</Button>
                 </Card>
