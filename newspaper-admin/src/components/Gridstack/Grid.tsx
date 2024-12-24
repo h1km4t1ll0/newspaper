@@ -36,7 +36,6 @@ type GridProps = {
   layout: Layout;
   layoutSettings: LayoutSettings;
   updateLayoutHandle: (layout: Layout) => void;
-  addWidget: MouseEventHandler<HTMLButtonElement>;
   addWidgetWithContent: MouseEventHandler<HTMLButtonElement>;
   removeWidget: (id: string) => void;
   children?: ReactElement | ReactElement[];
@@ -46,12 +45,12 @@ type GridProps = {
   issueDate: string;
   newspaperName: string;
   currentFont: string;
+  issueCover: any;
 };
 
 export const Grid: FC<GridProps> = ({
                                       layout,
                                       layoutSettings,
-                                      addWidget,
                                       removeWidget,
                                       children,
                                       onChangeLayout,
@@ -61,6 +60,7 @@ export const Grid: FC<GridProps> = ({
                                       issueDate,
                                       newspaperName,
                                       currentFont,
+                                      issueCover
                                     }) => {
   const issueDateBeautified = new Intl.DateTimeFormat("en-US", {
     year: "numeric",
@@ -198,12 +198,29 @@ export const Grid: FC<GridProps> = ({
 
     const nextId = (layout.length + 1).toString();
     console.log(grid.save())
+    const initialWidthWidth = layoutSettings.columnCount;
 
     if (currentPageNumber === 1 && layout.length === 0) {
       const initialWidgets = [
-        {id: "widget-1", x: 0, y: 0, w: 4, h: 2, lock: true, content: "Widget 1 content"},
-        {id: "widget-2", x: 0, y: 2, w: 4, h: 2, lock: true, content: "Widget 2 content"},
-        {id: "widget-3", x: 0, y: 4, w: 4, h: 2, lock: true, content: "Widget 3 content"},
+        {id: "widget-1", x: 0, y: 0, w: initialWidthWidth, h: 2, lock: true, content: {
+          blocks: [{
+            id: "widget-1",
+            data:{
+              text:`${newspaperName}`
+            },
+            type:"paragraph"
+          }]
+          }},
+        {id: "widget-2", x: 0, y: 2, w: initialWidthWidth, h: 2, lock: true, content: {type: "image", url: `${issueCover}`}},
+        {id: "widget-3", x: 0, y: 0, w: initialWidthWidth, h: 2, lock: true, content: {
+            blocks: [{
+              id: "widget-3",
+              data:{
+                text:`${issueDateBeautified}`
+              },
+              type:"paragraph"
+            }]
+          }},
       ];
       onChangeLayout(initialWidgets);
     }
@@ -280,7 +297,7 @@ export const Grid: FC<GridProps> = ({
     - 40;                                   // Footer height (adjust if needed)
   const mainContentHeight = remainingHeight > 0 ? remainingHeight : 0;
   const columnWidth = (layoutSettings.pageWidth - layoutSettings.horizontalFieldsWidth * 2) / layoutSettings.columnCount;
-
+  const isFirstOrLast = (currentPageNumber === 1 || currentPageNumber === totalPages);
   return (
     <div style={{display: 'flex', width: '100%'}}>
       <div style={{width: '20%', overflowX: 'auto'}}>
@@ -292,7 +309,7 @@ export const Grid: FC<GridProps> = ({
                   {item.content && (
                     <ContentEditor readOnly value={item.content}/>
                   )}
-                  <Button type="primary" onClick={() => {
+                  <Button disabled={isFirstOrLast} type="primary" onClick={() => {
                     addWidgetWithContent(item.content);
                     setItems((prev) => prev?.filter((each) => each.id !== item.id));
                   }}>Add to issue</Button>
@@ -307,7 +324,7 @@ export const Grid: FC<GridProps> = ({
               <Col span={24} key={item.id}>
                 <Card title={item.name} bordered={true}>
                     <img src={`${API_URL}${item.url}`} style={{maxWidth: "100%", height: "auto"}}/>
-                  <Button type="primary" onClick={() => {
+                  <Button disabled={isFirstOrLast} type="primary" onClick={() => {
                     addWidgetWithContent({type: 'image', url: item.url});
                     setItems((prev) => prev?.filter((each) => each.id !== item.id));
                   }}>Add to issue</Button>
@@ -331,7 +348,6 @@ export const Grid: FC<GridProps> = ({
             textAlign: "center",
             borderBottom: "1px solid #ddd"
           }}>
-            {(currentPageNumber !== 1) && (<Button onClick={addWidget}>Add Widget</Button>)}
             <Button onClick={saveData}>Save Layout</Button>
             <Button onClick={() => console.log("Preview Page")}>Preview</Button>
           </div>
