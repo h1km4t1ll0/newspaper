@@ -378,23 +378,32 @@ export const Grid: FC<GridProps> = ({
             </div>
 
             <Modal
-                title="Select Article"
-                visible={visible}
+                title="Scrollable Card List"
+                open={visible}
                 onCancel={handleCancel}
-                footer={null}
+                footer={null} // No footer buttons
+                width={600} // Set width of the modal
             >
-                <Row>
-                    <Col span={24}>
-                        {items?.map((item) => (
-                            <Card key={item.id} title={item.title} bordered={false}>
-                                <p>{item.content}</p>
-                                {item.images.map((image, index) => (
-                                    <img key={index} src={image} alt="Article" style={{width: '100%'}} />
-                                ))}
-                            </Card>
+                <div style={{height: '500px', overflowY: 'auto', padding: '16px', display: 'flex'}}>
+                    <Row gutter={[16, 16]}>
+                        {items?.map(item => (
+                            <Col span={24} key={item.id}>
+                                <Card title={item.title} bordered={true}>
+                                    {item.images.length > 0 && (
+                                        <img src={`${API_URL}${item.images[0]}`} style={{width: 300, height: 200}}/>
+                                    )}
+                                    {item.content && (
+                                        <ContentEditor readOnly value={item.content}/>
+                                    )}
+                                    <Button type="primary" onClick={() => {
+                                        addWidgetWithContent(item.content);
+                                        setItems((prev) => prev?.filter((each) => each.id !== item.id));
+                                    }}>Add to issue</Button>
+                                </Card>
+                            </Col>
                         ))}
-                    </Col>
-                </Row>
+                    </Row>
+                </div>
             </Modal>
         </>
     );
