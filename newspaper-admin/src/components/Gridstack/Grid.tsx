@@ -288,7 +288,7 @@ export const Grid: FC<GridProps> = ({
           <Row gutter={[16, 16]}>
             {items?.map(item => (
               <Col span={24} key={item.id}>
-                <Card title={item.title} bordered={true}>
+                <Card title={item.title} bordered={true} style={{wordBreak: 'break-word', maxWidth: '100%'}}>
                   {item.content && (
                     <ContentEditor readOnly value={item.content}/>
                   )}
@@ -306,7 +306,7 @@ export const Grid: FC<GridProps> = ({
             {images?.map(item => (
               <Col span={24} key={item.id}>
                 <Card title={item.name} bordered={true}>
-                    <img src={`${API_URL}${item.url}`} style={{width: 300, height: 200}}/>
+                    <img src={`${API_URL}${item.url}`} style={{maxWidth: "100%", height: "auto"}}/>
                   <Button type="primary" onClick={() => {
                     addWidgetWithContent({type: 'image', url: item.url});
                     setItems((prev) => prev?.filter((each) => each.id !== item.id));
