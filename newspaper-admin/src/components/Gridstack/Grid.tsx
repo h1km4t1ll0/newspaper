@@ -178,9 +178,8 @@ export const Grid: FC<GridProps> = ({
   useEffect(() => {
     if (!children) return;
 
-    gridRef.current =
-      gridRef.current ||
-      GridStack.init({
+    if (!gridRef.current) {
+      gridRef.current = GridStack.init({
         removable: '.trash',
         acceptWidgets: function (el) {
           return true
@@ -192,8 +191,10 @@ export const Grid: FC<GridProps> = ({
         float: true,
         maxRow: rowCount,
       });
+    }
 
     const grid = gridRef.current;
+    grid.off("added change");
 
     const nextId = (layout.length + 1).toString();
     console.log(grid.save())
@@ -277,7 +278,6 @@ export const Grid: FC<GridProps> = ({
     - layoutSettings.horizontalFieldsWidth  // Padding for horizontal fields
     - 20                                    // Header height (adjust if needed)
     - 40;                                   // Footer height (adjust if needed)
-
   const mainContentHeight = remainingHeight > 0 ? remainingHeight : 0;
   const columnWidth = (layoutSettings.pageWidth - layoutSettings.horizontalFieldsWidth * 2) / layoutSettings.columnCount;
 
@@ -382,16 +382,12 @@ export const Grid: FC<GridProps> = ({
               <div>
                 <div className="grid-stack">
                   {Children.map(children, (child) => {
-                    const childLayout = layout[child?.props.id];
+                    const childLayout = layout.find(hui => hui.id === child?.props.id);
                     return (
                       <GridItem
                         itemRef={gridItemsRefs.current[child?.props.id]}
                         id={child?.props.id}
-                        gs-id={childLayout?.id}
-                        gs-x={childLayout?.x}
-                        gs-y={childLayout?.y}
-                        gs-w={childLayout?.w}
-                        gs-h={childLayout?.h}
+                        childLayout={childLayout}
                       >
                         <div>
                           {(currentPageNumber !== 1) && (<button
@@ -411,7 +407,6 @@ export const Grid: FC<GridProps> = ({
                           >
                             X
                           </button>)}
-
                           {child}
                         </div>
                       </GridItem>
