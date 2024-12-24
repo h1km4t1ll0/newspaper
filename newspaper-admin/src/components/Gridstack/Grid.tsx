@@ -246,6 +246,14 @@ export const Grid: FC<GridProps> = ({
         grid.batchUpdate(false);
     }, [children, rowHeight, rowCount]);
 
+    const remainingHeight = layoutSettings.pageHeight
+        - layoutSettings.verticalFieldsHeight   // Padding for vertical fields
+        - layoutSettings.horizontalFieldsWidth  // Padding for horizontal fields
+        - 20                                    // Header height (adjust if needed)
+        - 40;                                   // Footer height (adjust if needed)
+
+    const mainContentHeight = remainingHeight > 0 ? remainingHeight : 0;
+
     return (
         <>
             <div style={{
@@ -267,12 +275,16 @@ export const Grid: FC<GridProps> = ({
                     <Button type="primary" onClick={showModal}>Open Popup</Button>
                 </div>
 
-                <div className={`newspaper-page-${currentPageNumber}`}>
+                <div className={`newspaper-page-${currentPageNumber}`} style={{
+                    padding: `${layoutSettings.verticalFieldsHeight}px ${layoutSettings.horizontalFieldsWidth}px`,
+                    backgroundColor: "#ffffff",
+                    height: layoutSettings.pageHeight,
+
+                }}>
                 {/* Header */}
                 <header
                     style={{
-                        backgroundColor: "#ffffff",
-                        padding: `0px ${layoutSettings.horizontalFieldsWidth}px`,
+                        height: "20px",
                         display: "flex",
                         justifyContent: "space-between",
                         alignItems: "center",
@@ -285,14 +297,8 @@ export const Grid: FC<GridProps> = ({
 
 
                 {/* Main Content Area */}
-                <div style={{flex: 1, padding: '20px', backgroundColor: "#ffffff", overflowY: 'auto'}}>
-                    <div
-                        style={{
-                            backgroundColor: "#ffffff",
-                            height: layoutSettings.pageHeight,
-                            padding: `${layoutSettings.verticalFieldsHeight}px ${layoutSettings.horizontalFieldsWidth}px`,
-                        }}
-                    >
+                <div style={{flex: 1, padding: '20px', backgroundColor: "#ffffff", overflowY: 'auto', height: mainContentHeight}}>
+                    <div>
                         <div className="grid-stack">
                             {Children.map(children, (child) => {
                                 const childLayout = layout[child?.props.id];
@@ -337,8 +343,8 @@ export const Grid: FC<GridProps> = ({
                 {/* Footer */}
                 <footer
                     style={{
-                        backgroundColor: "#ffffff",
-                        padding: "10px 20px",
+                        height: "20px",
+                        padding: "10px 0px",
                         textAlign: "center",
                         borderTop: "1px solid #ddd",
                     }}
