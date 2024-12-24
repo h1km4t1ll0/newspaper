@@ -129,13 +129,13 @@ const GridStack: FC<GridStackProps> = ({ layoutSettings }: GridStackProps) => {
       <div>
         {/* Page Navigation */}
         <div className="page-controls">
-          {Object.keys(pages).map((pageId) => (
+          {Object.keys(pages).map((pageId, index) => (
               <button
                   key={pageId}
                   onClick={() => setCurrentPage(pageId)}
                   style={{ fontWeight: currentPage === pageId ? "bold" : "normal" }}
               >
-                {pageId}
+                Page {index + 1}
               </button>
           ))}
         </div>
@@ -151,6 +151,8 @@ const GridStack: FC<GridStackProps> = ({ layoutSettings }: GridStackProps) => {
             onChangeLayout={(newLayout) =>
                 setPages((prev) => ({ ...prev, [currentPage]: newLayout }))
             }
+            currentPageNumber={Object.keys(pages).indexOf(currentPage) + 1}
+            totalPages={Object.keys(pages).length}
         >
           {gridElementMemo}
         </Grid>

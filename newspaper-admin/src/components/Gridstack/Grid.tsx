@@ -39,6 +39,8 @@ type GridProps = {
     removeWidget: (id: string) => void;
     children?: ReactElement | ReactElement[];
     onChangeLayout: (layout: Layout) => void;
+    currentPageNumber: number; // Pass the current page number
+    totalPages: number; // Pass the total number of pages
 };
 
 export const Grid: FC<GridProps> = ({
@@ -49,6 +51,8 @@ export const Grid: FC<GridProps> = ({
                                         children,
                                         onChangeLayout,
                                         addWidgetWithContent,
+                                        currentPageNumber,
+                                        totalPages,
                                     }) => {
     const gridItemsRefs: React.MutableRefObject<{
         [key: string]: React.MutableRefObject<HTMLDivElement>;
@@ -316,13 +320,17 @@ export const Grid: FC<GridProps> = ({
                 </div>
 
                 {/* Footer */}
-                <footer style={{
-                    backgroundColor: "#ffffff",
-                    padding: "10px 20px",
-                    textAlign: "center",
-                    borderTop: "1px solid #ddd"
-                }}>
-                    <p>Footer Content</p>
+                <footer
+                    style={{
+                        backgroundColor: "#ffffff",
+                        padding: "10px 20px",
+                        textAlign: "center",
+                        borderTop: "1px solid #ddd",
+                    }}
+                >
+                    <p>
+                        Page {currentPageNumber} of {totalPages}
+                    </p>
                 </footer>
             </div>
             <Modal
