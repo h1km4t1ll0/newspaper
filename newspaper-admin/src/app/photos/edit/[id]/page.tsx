@@ -86,7 +86,6 @@ export default function BlogPostEdit() {
               form?.setFieldValue('photo', value);
             }}/>
           </Form.Item>
-          {console.log(photo, 'photo')}
           {photo && (<Popconfirm
             title='Delete the attachment item'
             description='Are you sure you want to delete this attachment?'

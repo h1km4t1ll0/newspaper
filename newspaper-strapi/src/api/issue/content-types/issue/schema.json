@@ -30,6 +30,13 @@
         "published",
         "draft"
       ]
+    },
+    "cover": {
+      "allowedTypes": [
+        "images"
+      ],
+      "type": "media",
+      "multiple": false
     }
   }
 }
