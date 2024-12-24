@@ -181,6 +181,15 @@ export const Grid: FC<GridProps> = ({
         const nextId = (layout.length + 1).toString();
         console.log(grid.save())
 
+        if (currentPageNumber === 1 && layout.length === 0) {
+            const initialWidgets = [
+                { id: "widget-1", x:0, y:0, w:4, h:2, lock:true, content: "Widget 1 content"},
+                { id: "widget-2", x:0, y:2, w:4, h:2, lock:true, content: "Widget 2 content"},
+                { id: "widget-3", x:0, y:4, w:4, h:2, lock:true, content: "Widget 3 content"},
+            ];
+            onChangeLayout(initialWidgets);
+        }
+
         grid.on("added", (event, items) => {
             const itemId: string | undefined = items[items.length - 1]?.id;
             if (!itemId) {
@@ -270,10 +279,10 @@ export const Grid: FC<GridProps> = ({
                     textAlign: "center",
                     borderBottom: "1px solid #ddd"
                 }}>
-                    <Button onClick={addWidget}>Add Widget</Button>
+                    {(currentPageNumber !== 1) && (<Button onClick={addWidget}>Add Widget</Button>)}
                     <Button onClick={saveData}>Save Layout</Button>
                     <Button onClick={() => console.log("Preview Page")}>Preview</Button>
-                    <Button type="primary" onClick={showModal}>Open Popup</Button>
+                    {(currentPageNumber !== 1) && (<Button type="primary" onClick={showModal}>Open Popup</Button>)}
                 </div>
 
                 <div className={`newspaper-page-${currentPageNumber}`} style={{
@@ -282,7 +291,7 @@ export const Grid: FC<GridProps> = ({
                     height: layoutSettings.pageHeight,
                 }}>
                     {/* Header */}
-                    {(currentPageNumber !== 1 && currentPageNumber !== layoutSettings.pagesCount) && (<header
+                    {(currentPageNumber !== 1 && currentPageNumber !== totalPages) && (<header
                         style={{
                             height: "20px",
                             display: "flex",
@@ -334,7 +343,7 @@ export const Grid: FC<GridProps> = ({
                                             gs-h={childLayout?.h}
                                         >
                                             <div>
-                                                <button
+                                                {(currentPageNumber !== 1) && (<button
                                                     style={{
                                                         position: "absolute",
                                                         top: 5,
@@ -350,7 +359,7 @@ export const Grid: FC<GridProps> = ({
                                                     }}
                                                 >
                                                     X
-                                                </button>
+                                                </button>)}
 
                                                 {child}
                                             </div>
@@ -362,7 +371,7 @@ export const Grid: FC<GridProps> = ({
                     </div>
 
                     {/* Footer */}
-                    {(currentPageNumber !== 1 && currentPageNumber !== layoutSettings.pagesCount) && (<footer
+                    {(currentPageNumber !== 1 && currentPageNumber !== totalPages) && (<footer
                         style={{
                             height: "20px",
                             padding: "10px 0px",
