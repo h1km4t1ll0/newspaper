@@ -145,7 +145,7 @@ const GridStack: FC<GridStackProps> = ({
             style={{ fontFamily: layout_.content.fontFamily }}
         >
           {layout_.content.type === 'image' &&
-              <img src={`${API_URL}${layout_.content.url}`} style={{width: 300, height: 200}}/>
+              <img src={`${API_URL}${layout_.content.url}`} style={{width: "100%", height: "auto"}}/>
           }
           {layout_.content?.type !== 'image' &&
               <div className="editor-js">
