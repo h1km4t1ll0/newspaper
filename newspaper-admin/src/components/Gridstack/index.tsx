@@ -31,9 +31,15 @@ type LayoutSettings = {
 
 type GridStackProps = {
   layoutSettings: LayoutSettings; // Required
+  issueDate: string,
+  newspaperName: string,
 };
 
-const GridStack: FC<GridStackProps> = ({ layoutSettings }: GridStackProps) => {
+const GridStack: FC<GridStackProps> = ({
+                                         layoutSettings,
+                                         issueDate,
+                                         newspaperName,
+}: GridStackProps) => {
   const { pagesCount } = layoutSettings;
 
   // Initialize pages based on pagesCount
@@ -153,6 +159,8 @@ const GridStack: FC<GridStackProps> = ({ layoutSettings }: GridStackProps) => {
             }
             currentPageNumber={Object.keys(pages).indexOf(currentPage) + 1}
             totalPages={Object.keys(pages).length}
+            issueDate={issueDate}
+            newspaperName={newspaperName}
         >
           {gridElementMemo}
         </Grid>
