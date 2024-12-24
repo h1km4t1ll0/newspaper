@@ -251,12 +251,11 @@ export const Grid: FC<GridProps> = ({
                 display: "flex",
                 flexDirection: "column",
                 height: '100%',
-                maxWidth: '1200px',
+                maxWidth: layoutSettings.pageWidth,
                 margin: '0 auto'
             }}>
                 {/* Buttons above the header */}
                 <div style={{
-                    backgroundColor: "#ffffff",
                     padding: "20px 0",
                     textAlign: "center",
                     borderBottom: "1px solid #ddd"
@@ -271,7 +270,7 @@ export const Grid: FC<GridProps> = ({
                 <header
                     style={{
                         backgroundColor: "#ffffff",
-                        padding: "10px 20px",
+                        padding: `0px ${layoutSettings.horizontalFieldsWidth}px`,
                         display: "flex",
                         justifyContent: "space-between",
                         alignItems: "center",
@@ -288,7 +287,6 @@ export const Grid: FC<GridProps> = ({
                     <div
                         style={{
                             backgroundColor: "#ffffff",
-                            border: "1px solid #ddd",
                             height: layoutSettings.pageHeight,
                             padding: `${layoutSettings.verticalFieldsHeight}px ${layoutSettings.horizontalFieldsWidth}px`,
                         }}
