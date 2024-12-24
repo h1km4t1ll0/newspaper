@@ -50,7 +50,7 @@ export default function BlogPostList() {
           <Table.Column dataIndex="horizontalFieldsWidth" title={"horizontalFieldsWidth"} />
           <Table.Column dataIndex="verticalFieldsHeight" title={"verticalFieldsHeight"} />
           <Table.Column dataIndex="fontFamily" title={"fontFamily"} />
-          <Table.Column dataIndex="pagesCount" title={"fontFamily"} />
+          <Table.Column dataIndex="pagesCount" title={"pagesCount"} />
           <Table.Column
               title={"Actions"}
               dataIndex="actions"
