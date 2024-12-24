@@ -178,7 +178,7 @@ export const Grid: FC<GridProps> = ({
 
         const grid = gridRef.current;
 
-        const nextId =  (layout.length + 1).toString();
+        const nextId = (layout.length + 1).toString();
         console.log(grid.save())
 
         grid.on("added", (event, items) => {
@@ -253,6 +253,7 @@ export const Grid: FC<GridProps> = ({
         - 40;                                   // Footer height (adjust if needed)
 
     const mainContentHeight = remainingHeight > 0 ? remainingHeight : 0;
+    const columnWidth = (layoutSettings.pageWidth - layoutSettings.horizontalFieldsWidth * 2) / layoutSettings.columnCount;
 
     return (
         <>
@@ -279,111 +280,122 @@ export const Grid: FC<GridProps> = ({
                     padding: `${layoutSettings.verticalFieldsHeight}px ${layoutSettings.horizontalFieldsWidth}px`,
                     backgroundColor: "#ffffff",
                     height: layoutSettings.pageHeight,
-
                 }}>
-                {/* Header */}
-                <header
-                    style={{
-                        height: "20px",
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        borderBottom: "1px solid #ddd",
-                    }}
-                >
-                    <p style={{margin: 0}}>{issueDateBeautified}</p>
-                    <p style={{margin: 0}}>{newspaperName}</p>
-                </header>
+                    {/* Header */}
+                    <header
+                        style={{
+                            height: "20px",
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            borderBottom: "1px solid #ddd",
+                        }}
+                    >
+                        <p style={{margin: 0}}>{issueDateBeautified}</p>
+                        <p style={{margin: 0}}>{newspaperName}</p>
+                    </header>
 
+                    {/* Main Content Area */}
+                    <div style={{
+                        flex: 1,
+                        padding: '20px 0px',
+                        backgroundColor: "#ffffff",
+                        overflowY: 'auto',
+                        height: mainContentHeight,
+                        position: 'relative',
+                    }}>
+                        {/* Add vertical dividers for each column */}
+                        {[...Array(layoutSettings.columnCount - 1)].map((_, index) => (
+                            <div
+                                key={index}
+                                style={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: (index + 1) * columnWidth,
+                                    width: '1px',
+                                    height: '100%',
+                                    backgroundColor: 'rgba(0,0,0,0.1)',
+                                }}
+                            />
+                        ))}
 
-                {/* Main Content Area */}
-                <div style={{flex: 1, padding: '20px', backgroundColor: "#ffffff", overflowY: 'auto', height: mainContentHeight}}>
-                    <div>
-                        <div className="grid-stack">
-                            {Children.map(children, (child) => {
-                                const childLayout = layout[child?.props.id];
-                                return (
-                                    <GridItem
-                                        itemRef={gridItemsRefs.current[child?.props.id]}
-                                        id={child?.props.id}
-                                        gs-id={childLayout?.id}
-                                        gs-x={childLayout?.x}
-                                        gs-y={childLayout?.y}
-                                        gs-w={childLayout?.w}
-                                        gs-h={childLayout?.h}
-                                    >
-                                        <div>
-                                            <button
-                                                style={{
-                                                    position: "absolute",
-                                                    top: 5,
-                                                    right: 5,
-                                                    backgroundColor: "transparent",
-                                                    border: "none",
-                                                    color: "#454545",
-                                                    fontSize: "16px",
-                                                    cursor: "pointer",
-                                                }}
-                                                onClick={() => {
-                                                    removeWidget(child?.props.id);
-                                                }}
-                                            >
-                                                X
-                                            </button>
+                        <div>
+                            <div className="grid-stack">
+                                {Children.map(children, (child) => {
+                                    const childLayout = layout[child?.props.id];
+                                    return (
+                                        <GridItem
+                                            itemRef={gridItemsRefs.current[child?.props.id]}
+                                            id={child?.props.id}
+                                            gs-id={childLayout?.id}
+                                            gs-x={childLayout?.x}
+                                            gs-y={childLayout?.y}
+                                            gs-w={childLayout?.w}
+                                            gs-h={childLayout?.h}
+                                        >
+                                            <div>
+                                                <button
+                                                    style={{
+                                                        position: "absolute",
+                                                        top: 5,
+                                                        right: 5,
+                                                        backgroundColor: "transparent",
+                                                        border: "none",
+                                                        color: "#454545",
+                                                        fontSize: "16px",
+                                                        cursor: "pointer",
+                                                    }}
+                                                    onClick={() => {
+                                                        removeWidget(child?.props.id);
+                                                    }}
+                                                >
+                                                    X
+                                                </button>
 
-                                            {child}
-                                        </div>
-                                    </GridItem>
-                                );
-                            })}
+                                                {child}
+                                            </div>
+                                        </GridItem>
+                                    );
+                                })}
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                {/* Footer */}
-                <footer
-                    style={{
-                        height: "20px",
-                        padding: "10px 0px",
-                        textAlign: "center",
-                        borderTop: "1px solid #ddd",
-                    }}
-                >
-                    <p>
-                        Page {currentPageNumber} of {totalPages}
-                    </p>
-                </footer>
+                    {/* Footer */}
+                    <footer
+                        style={{
+                            height: "20px",
+                            padding: "10px 0px",
+                            textAlign: "center",
+                            borderTop: "1px solid #ddd",
+                        }}
+                    >
+                        <p>
+                            Page {currentPageNumber} of {totalPages}
+                        </p>
+                    </footer>
                 </div>
             </div>
+
             <Modal
-                title="Scrollable Card List"
-                open={visible}
+                title="Select Article"
+                visible={visible}
                 onCancel={handleCancel}
-                footer={null} // No footer buttons
-                width={600} // Set width of the modal
+                footer={null}
             >
-                <div style={{height: '500px', overflowY: 'auto', padding: '16px', display: 'flex'}}>
-                    <Row gutter={[16, 16]}>
-                        {items?.map(item => (
-                            <Col span={24} key={item.id}>
-                                <Card title={item.title} bordered={true}>
-                                    {item.images.length > 0 && (
-                                        <img src={`${API_URL}${item.images[0]}`} style={{width: 300, height: 200}}/>
-                                    )}
-                                    {item.content && (
-                                        <ContentEditor readOnly value={item.content}/>
-                                    )}
-                                    <Button type="primary" onClick={() => {
-                                        addWidgetWithContent(item.content);
-                                        console.log(items, 'before');
-                                        setItems((prev) => prev?.filter((each) => each.id !== item.id));
-                                        console.log(items, 'after');
-                                    }}>Add to issue</Button>
-                                </Card>
-                            </Col>
+                <Row>
+                    <Col span={24}>
+                        {items?.map((item) => (
+                            <Card key={item.id} title={item.title} bordered={false}>
+                                <p>{item.content}</p>
+                                {item.images.map((image, index) => (
+                                    <img key={index} src={image} alt="Article" style={{width: '100%'}} />
+                                ))}
+                            </Card>
                         ))}
-                    </Row>
-                </div>
-            </Modal></>
+                    </Col>
+                </Row>
+            </Modal>
+        </>
     );
 };
