@@ -98,7 +98,9 @@ export default function IssueShowPage() {
             </p>
 
             {/* Render GridStack */}
-            <GridStack layoutSettings={issue.newspaper.layout}/>
+            <GridStack layoutSettings={issue.newspaper.layout}
+                       issueDate={issue.PublishDate}
+                       newspaperName={issue.newspaper.name}/>
         </div>
     );
 }

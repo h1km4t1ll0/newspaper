@@ -41,6 +41,8 @@ type GridProps = {
     onChangeLayout: (layout: Layout) => void;
     currentPageNumber: number; // Pass the current page number
     totalPages: number; // Pass the total number of pages
+    issueDate: string;
+    newspaperName: string;
 };
 
 export const Grid: FC<GridProps> = ({
@@ -53,7 +55,14 @@ export const Grid: FC<GridProps> = ({
                                         addWidgetWithContent,
                                         currentPageNumber,
                                         totalPages,
+                                        issueDate,
+                                        newspaperName,
                                     }) => {
+    const issueDateBeautified = new Intl.DateTimeFormat("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+    }).format(new Date(issueDate));
     const gridItemsRefs: React.MutableRefObject<{
         [key: string]: React.MutableRefObject<HTMLDivElement>;
     }> = useRef({});
@@ -259,14 +268,20 @@ export const Grid: FC<GridProps> = ({
                 </div>
 
                 {/* Header */}
-                <header style={{
-                    backgroundColor: "#ffffff",
-                    padding: "10px 20px",
-                    textAlign: "center",
-                    borderBottom: "1px solid #ddd"
-                }}>
-                    <h1 style={{margin: 0, fontSize: "24px"}}>My Grid Layout</h1>
+                <header
+                    style={{
+                        backgroundColor: "#ffffff",
+                        padding: "10px 20px",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        borderBottom: "1px solid #ddd",
+                    }}
+                >
+                    <p style={{margin: 0}}>{issueDateBeautified}</p>
+                    <p style={{margin: 0}}>{newspaperName}</p>
                 </header>
+
 
                 {/* Main Content Area */}
                 <div style={{flex: 1, padding: '20px', backgroundColor: "#ffffff", overflowY: 'auto'}}>
