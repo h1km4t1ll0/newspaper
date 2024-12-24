@@ -914,6 +914,7 @@ export interface ApiIssueIssue extends Schema.CollectionType {
     >;
     status: Attribute.Enumeration<['published', 'draft']>;
     cover: Attribute.Media<'images'>;
+    issueData: Attribute.JSON;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<

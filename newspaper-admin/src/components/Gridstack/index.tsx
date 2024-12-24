@@ -3,6 +3,10 @@ import "./grid-stack.css";
 import { Grid } from "./Grid";
 import ContentEditor from "@components/editor-js/ContentEditor";
 import {API_URL} from "@utility/constants";
+import {useCustom, useNotification} from "@refinedev/core";
+import axios from "axios";
+import { useUpdate } from "@refinedev/core";
+
 
 export type Layout = {
   id: string;
@@ -34,14 +38,18 @@ type GridStackProps = {
   layoutSettings: LayoutSettings;
   issueDate: string;
   newspaperName: string;
+  issueId: number;
 };
 
 const GridStack: FC<GridStackProps> = ({
                                          layoutSettings,
                                          issueDate,
                                          newspaperName,
+                                         issueId,
                                        }: GridStackProps) => {
   const { pagesCount, availableTextStyles } = layoutSettings;
+
+  const { mutate } = useUpdate();
 
   // Initialize pages based on pagesCount
   const initializePages = (): PageLayout => {
@@ -58,9 +66,27 @@ const GridStack: FC<GridStackProps> = ({
       layoutSettings.fontFamily
   );
 
+  const { open } = useNotification();
+
   useEffect(() => {
     console.log(`Current page: ${currentPage}`, pages[currentPage]);
-  }, [currentPage, pages]);
+    open?.({
+      type: 'success',
+      message: 'You must select at least one row',
+      description: 'An error occurred',
+    });
+
+    mutate({
+      resource: "posts",
+      id: 1,
+      values: {
+        title: "New title",
+      },
+      meta: {
+        method: "post",
+      },
+    });
+  }, [pages]);
 
   const updateLayoutHandle = useCallback((layout: Layout) => {
     setPages((prev) => ({ ...prev, [currentPage]: layout }));
