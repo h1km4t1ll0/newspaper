@@ -267,6 +267,7 @@ export const Grid: FC<GridProps> = ({
                     <Button type="primary" onClick={showModal}>Open Popup</Button>
                 </div>
 
+                <div className={`newspaper-page-${currentPageNumber}`}>
                 {/* Header */}
                 <header
                     style={{
@@ -346,6 +347,7 @@ export const Grid: FC<GridProps> = ({
                         Page {currentPageNumber} of {totalPages}
                     </p>
                 </footer>
+                </div>
             </div>
             <Modal
                 title="Scrollable Card List"
