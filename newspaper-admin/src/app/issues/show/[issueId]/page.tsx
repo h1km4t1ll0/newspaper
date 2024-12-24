@@ -105,7 +105,9 @@ export default function IssueShowPage() {
             <GridStack layoutSettings={issue.newspaper.layout}
                        issueDate={issue.PublishDate}
                        newspaperName={issue.newspaper.name}
-                       issueCover={issue.cover.url}/>
+                       issueCover={issue.cover.url}
+                       issueId={issue.id}
+            />
         </div>
     );
 }

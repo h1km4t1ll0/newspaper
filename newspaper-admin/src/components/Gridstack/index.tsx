@@ -3,8 +3,7 @@ import "./grid-stack.css";
 import { Grid } from "./Grid";
 import ContentEditor from "@components/editor-js/ContentEditor";
 import {API_URL} from "@utility/constants";
-import {useCustom, useNotification} from "@refinedev/core";
-import axios from "axios";
+import {useCustom} from "@refinedev/core";
 import { useUpdate } from "@refinedev/core";
 
 
@@ -38,8 +37,8 @@ type GridStackProps = {
   layoutSettings: LayoutSettings;
   issueDate: string;
   newspaperName: string;
-  issueId: number;
   issueCover: any;
+  issueId: number | string;
 };
 
 const GridStack: FC<GridStackProps> = ({
@@ -52,6 +51,18 @@ const GridStack: FC<GridStackProps> = ({
   const { pagesCount, availableTextStyles } = layoutSettings;
 
   const { mutate } = useUpdate();
+  const {data, isLoading, refetch} = useCustom<{
+    data: {
+      id: number,
+      attributes: {
+        id: number,
+        issueData: any,
+      },
+    },
+  }>({
+    url: `${API_URL}/api/issues/${issueId}`,
+    method: "get",
+  });
 
   // Initialize pages based on pagesCount
   const initializePages = (): PageLayout => {
@@ -63,26 +74,29 @@ const GridStack: FC<GridStackProps> = ({
   };
 
   const [pages, setPages] = useState<PageLayout>(initializePages);
+
+  const getIssueData = useCallback(
+    async () => {
+      const data = await refetch();
+      setPages(data.data?.data.data.attributes.issueData);
+    }, []
+  );
+
+  useEffect(() => {
+    getIssueData().then(() => console.log('done'));
+  }, []);
+
   const [currentPage, setCurrentPage] = useState<string>("page1");
   const [selectedFont, setSelectedFont] = useState<string>(
       layoutSettings.fontFamily
   );
 
-  const { open } = useNotification();
-
   useEffect(() => {
-    console.log(`Current page: ${currentPage}`, pages[currentPage]);
-    open?.({
-      type: 'success',
-      message: 'You must select at least one row',
-      description: 'An error occurred',
-    });
-
     mutate({
-      resource: "posts",
-      id: 1,
+      resource: "issues",
+      id: issueId,
       values: {
-        title: "New title",
+        issueData: pages,
       },
       meta: {
         method: "post",
