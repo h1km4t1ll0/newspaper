@@ -913,6 +913,7 @@ export interface ApiIssueIssue extends Schema.CollectionType {
       'api::newspaper.newspaper'
     >;
     status: Attribute.Enumeration<['published', 'draft']>;
+    cover: Attribute.Media<'images'>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -981,7 +982,7 @@ export interface ApiNewspaperNewspaper extends Schema.CollectionType {
   };
   attributes: {
     name: Attribute.String;
-    cover: Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    photo: Attribute.Media<'images'>;
     issues: Attribute.Relation<
       'api::newspaper.newspaper',
       'oneToMany',

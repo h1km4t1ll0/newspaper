@@ -20,6 +20,9 @@ const relationsQuery = {
                 },
             },
         },
+        cover: {
+            populate: '*',
+        },
     },
 };
 
@@ -40,6 +43,8 @@ type NewspaperType = {
     cover: number;
     layout: LayoutType;
 };
+
+const STRAPI_BASE_URL = "http://localhost:1338";
 
 export default function BlogPostList() {
     const searchParams = useSearchParams();
@@ -103,26 +108,51 @@ export default function BlogPostList() {
                     <Col span={8} key={record.id}>
                         <Card
                             title={`Issue ${new Date(record.PublishDate).toLocaleDateString()}`} // Use the date for the title
-                            cover={<div style={{ height: 200, backgroundColor: "#f0f0f0" }} />}
+                            cover={record.cover?.url ? <div style={{
+                                height: '200px', // Fixed height for the container
+                                overflow: 'hidden', // Hide overflow to prevent cropping
+                                display: 'flex', // Use flexbox to center the image
+                                justifyContent: 'center', // Center horizontally
+                                alignItems: 'center', // Center vertically
+                                padding: '10px' // Add padding around the image
+                            }}>
+                                <img
+                                  alt="newspaper"
+                                  style={{
+                                      maxHeight: '100%', // Ensure the image does not exceed the container height
+                                      maxWidth: '100%', // Ensure the image does not exceed the container width
+                                      objectFit: 'contain' // Maintain aspect ratio and fit within the container
+                                  }}
+                                  src={`${STRAPI_BASE_URL}${record.cover.url}`}
+                                />
+                            </div> : <div style={{
+                                height: '200px', // Fixed height for the container
+                                overflow: 'hidden', // Hide overflow to prevent cropping
+                                display: 'flex', // Use flexbox to center the image
+                                justifyContent: 'center', // Center horizontally
+                                alignItems: 'center', // Center vertically
+                                padding: '10px', // Add padding around the image
+                                backgroundColor: "#f0f0f0"
+                            }}>No  image</div>}
                             actions={[
                                 <EditButton
-                                    hideText
-                                    size="small"
-                                    recordItemId={record.id}
-                                    onClick={() => router.push(`/issues/edit/${record.id}`)}
+                                  hideText
+                                  size="small"
+                                  recordItemId={record.id}
+                                  onClick={() => router.push(`/issues/edit/${record.id}`)}
                                 />,
                                 <ShowButton
-                                    hideText
-                                    size="small"
-                                    recordItemId={record.id}
-                                    onClick={() =>
-                                        router.push(`/issues/show/${record.id}?newspaperId=${newspaperId}`)
-                                    }
+                                  hideText
+                                  size="small"
+                                  recordItemId={record.id}
+                                  onClick={() =>
+                                    router.push(`/issues/show/${record.id}?newspaperId=${newspaperId}`)
+                                  }
                                 />,
-                                <DeleteButton hideText size="small" recordItemId={record.id} />,
+                                <DeleteButton hideText size="small" recordItemId={record.id}/>,
                                 <Button
-                                    size="small"
-                                    onClick={() => toggleStatus(record.id, record.status)}
+                                  size="small"
+                                  onClick={() => toggleStatus(record.id, record.status)}
                                 >
                                     {record.status === "draft" ? "Publish" : "Set as Draft"}
                                 </Button>,
