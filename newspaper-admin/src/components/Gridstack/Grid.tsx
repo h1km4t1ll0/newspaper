@@ -282,7 +282,7 @@ export const Grid: FC<GridProps> = ({
                     height: layoutSettings.pageHeight,
                 }}>
                     {/* Header */}
-                    <header
+                    {(currentPageNumber !== 1 && currentPageNumber !== layoutSettings.pagesCount) && (<header
                         style={{
                             height: "20px",
                             display: "flex",
@@ -293,7 +293,7 @@ export const Grid: FC<GridProps> = ({
                     >
                         <p style={{margin: 0}}>{issueDateBeautified}</p>
                         <p style={{margin: 0}}>{newspaperName}</p>
-                    </header>
+                    </header>)}
 
                     {/* Main Content Area */}
                     <div style={{
@@ -362,7 +362,7 @@ export const Grid: FC<GridProps> = ({
                     </div>
 
                     {/* Footer */}
-                    <footer
+                    {(currentPageNumber !== 1 && currentPageNumber !== layoutSettings.pagesCount) && (<footer
                         style={{
                             height: "20px",
                             padding: "10px 0px",
@@ -373,7 +373,7 @@ export const Grid: FC<GridProps> = ({
                         <p>
                             Page {currentPageNumber} of {totalPages}
                         </p>
-                    </footer>
+                    </footer>)}
                 </div>
             </div>
 
