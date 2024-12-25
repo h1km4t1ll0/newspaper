@@ -393,7 +393,6 @@ const ContentEditor: FC<IEditorProps> = (
 
   return (
     <div className={styles.root}>
-      {isEditorReady ? 'yes' : 'no'}
       {/* eslint-disable-next-line jsx-a11y/control-has-associated-label,jsx-a11y/interactive-supports-focus */}
       <div
         ref={editorElementRef}

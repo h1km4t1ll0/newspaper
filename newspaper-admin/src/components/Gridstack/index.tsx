@@ -6,7 +6,6 @@ import {API_URL} from "@utility/constants";
 import {useCustom} from "@refinedev/core";
 import { useUpdate } from "@refinedev/core";
 
-
 export type Layout = {
   id: string;
   x?: number;
@@ -171,7 +170,7 @@ const GridStack: FC<GridStackProps> = ({
         >
           {layout_.content?.type === 'image' &&
               <div style={{
-                height: `${layoutSettings.pageHeight * 0.5}px`, // Fixed height for the container
+                // height: `${layoutSettings.pageHeight * 0.5}px`, // Fixed height for the container
                 overflow: 'hidden', // Hide overflow to prevent cropping
                 display: 'flex', // Use flexbox to center the image
                 justifyContent: 'center', // Center horizontally

@@ -9,6 +9,7 @@ import {useCustom} from "@refinedev/core";
 import {API_URL} from "@utility/constants";
 import qs from "qs";
 import ContentEditor from "@components/editor-js/ContentEditor";
+import ReactPDF from '@react-pdf/renderer';
 
 const relationsQuery = {
     populate: {
@@ -105,7 +106,7 @@ export default function IssueShowPage() {
             <GridStack layoutSettings={issue.newspaper.layout}
                        issueDate={issue.PublishDate}
                        newspaperName={issue.newspaper.name}
-                       issueCover={issue.cover.url}
+                       issueCover={issue.cover?.url}
                        issueId={issue.id}
                        issueStatus={issue.status}
             />
