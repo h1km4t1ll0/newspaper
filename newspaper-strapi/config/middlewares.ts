@@ -1,4 +1,11 @@
 export default [
+  {
+    name: 'strapi::cors',
+    config: {
+      headers: '*',
+      origin: '*',
+    }
+  },
   'strapi::logger',
   'strapi::errors',
   'strapi::security',

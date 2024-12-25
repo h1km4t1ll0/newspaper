@@ -21,8 +21,6 @@ export default function BlogPostShow() {
         <TextField value={record?.id} />
         <Title level={5}>{"Name"}</Title>
         <TextField value={record?.name} />
-        <Title level={5}>{"Author"}</Title>
-        <TextField value={record?.author} />
         <Title level={5}>{"Photos"}</Title>
         <TextField value={record?.photos} />
         <Title level={5}>{"Text"}</Title>

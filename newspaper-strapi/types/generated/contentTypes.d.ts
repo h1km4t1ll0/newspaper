@@ -771,16 +771,6 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
       'manyToOne',
       'plugin::users-permissions.role'
     >;
-    article: Attribute.Relation<
-      'plugin::users-permissions.user',
-      'oneToOne',
-      'api::article.article'
-    >;
-    photo: Attribute.Relation<
-      'plugin::users-permissions.user',
-      'oneToOne',
-      'api::photo.photo'
-    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -839,7 +829,7 @@ export interface ApiAdvertismentAdvertisment extends Schema.CollectionType {
     description: '';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     DateFrom: Attribute.DateTime;
@@ -850,9 +840,9 @@ export interface ApiAdvertismentAdvertisment extends Schema.CollectionType {
       'oneToOne',
       'api::advertisement-template.advertisement-template'
     >;
+    photo: Attribute.Media<'images'>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
-    publishedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
       'api::advertisment.advertisment',
       'oneToOne',
@@ -881,11 +871,6 @@ export interface ApiArticleArticle extends Schema.CollectionType {
   };
   attributes: {
     name: Attribute.String;
-    author: Attribute.Relation<
-      'api::article.article',
-      'oneToOne',
-      'plugin::users-permissions.user'
-    >;
     photos: Attribute.Relation<
       'api::article.article',
       'oneToMany',
@@ -909,137 +894,30 @@ export interface ApiArticleArticle extends Schema.CollectionType {
   };
 }
 
-export interface ApiBlockBlock extends Schema.CollectionType {
-  collectionName: 'blocks';
-  info: {
-    singularName: 'block';
-    pluralName: 'blocks';
-    displayName: 'Block';
-    description: '';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    block_group: Attribute.Relation<
-      'api::block.block',
-      'manyToOne',
-      'api::block-group.block-group'
-    >;
-    column: Attribute.Relation<
-      'api::block.block',
-      'oneToOne',
-      'api::column.column'
-    >;
-    createdAt: Attribute.DateTime;
-    updatedAt: Attribute.DateTime;
-    publishedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<
-      'api::block.block',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-    updatedBy: Attribute.Relation<
-      'api::block.block',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-  };
-}
-
-export interface ApiBlockGroupBlockGroup extends Schema.CollectionType {
-  collectionName: 'block_groups';
-  info: {
-    singularName: 'block-group';
-    pluralName: 'block-groups';
-    displayName: 'BlockGroup';
-    description: '';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    blocks: Attribute.Relation<
-      'api::block-group.block-group',
-      'oneToMany',
-      'api::block.block'
-    >;
-    layout: Attribute.Relation<
-      'api::block-group.block-group',
-      'manyToOne',
-      'api::layout.layout'
-    >;
-    createdAt: Attribute.DateTime;
-    updatedAt: Attribute.DateTime;
-    publishedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<
-      'api::block-group.block-group',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-    updatedBy: Attribute.Relation<
-      'api::block-group.block-group',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-  };
-}
-
-export interface ApiColumnColumn extends Schema.CollectionType {
-  collectionName: 'columns';
-  info: {
-    singularName: 'column';
-    pluralName: 'columns';
-    displayName: 'Column';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    width: Attribute.Integer;
-    createdAt: Attribute.DateTime;
-    updatedAt: Attribute.DateTime;
-    publishedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<
-      'api::column.column',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-    updatedBy: Attribute.Relation<
-      'api::column.column',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-  };
-}
-
 export interface ApiIssueIssue extends Schema.CollectionType {
   collectionName: 'issues';
   info: {
     singularName: 'issue';
     pluralName: 'issues';
     displayName: 'Issue';
+    description: '';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     name: Attribute.String;
-    layout: Attribute.Relation<
-      'api::issue.issue',
-      'oneToOne',
-      'api::layout.layout'
-    >;
     PublishDate: Attribute.DateTime;
+    newspaper: Attribute.Relation<
+      'api::issue.issue',
+      'manyToOne',
+      'api::newspaper.newspaper'
+    >;
+    status: Attribute.Enumeration<['published', 'draft']>;
+    cover: Attribute.Media<'images'>;
+    issueData: Attribute.JSON;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
-    publishedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
       'api::issue.issue',
       'oneToOne',
@@ -1069,18 +947,13 @@ export interface ApiLayoutLayout extends Schema.CollectionType {
   attributes: {
     editorJSData: Attribute.JSON;
     columnCount: Attribute.Integer;
-    headerHeight: Attribute.Integer;
+    pageHeight: Attribute.Integer;
     availableTextStyles: Attribute.JSON;
-    block_groups: Attribute.Relation<
-      'api::layout.layout',
-      'oneToMany',
-      'api::block-group.block-group'
-    >;
-    column: Attribute.Relation<
-      'api::layout.layout',
-      'oneToOne',
-      'api::column.column'
-    >;
+    pageWidth: Attribute.Integer;
+    horizontalFieldsWidth: Attribute.Integer;
+    verticalFieldsHeight: Attribute.Integer;
+    fontFamily: Attribute.String;
+    pagesCount: Attribute.Integer;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -1098,12 +971,54 @@ export interface ApiLayoutLayout extends Schema.CollectionType {
   };
 }
 
+export interface ApiNewspaperNewspaper extends Schema.CollectionType {
+  collectionName: 'newspapers';
+  info: {
+    singularName: 'newspaper';
+    pluralName: 'newspapers';
+    displayName: 'Newspaper';
+    description: '';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    name: Attribute.String;
+    photo: Attribute.Media<'images'>;
+    issues: Attribute.Relation<
+      'api::newspaper.newspaper',
+      'oneToMany',
+      'api::issue.issue'
+    >;
+    layout: Attribute.Relation<
+      'api::newspaper.newspaper',
+      'oneToOne',
+      'api::layout.layout'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::newspaper.newspaper',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::newspaper.newspaper',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
 export interface ApiPhotoPhoto extends Schema.CollectionType {
   collectionName: 'photos';
   info: {
     singularName: 'photo';
     pluralName: 'photos';
     displayName: 'Photo';
+    description: '';
   };
   options: {
     draftAndPublish: false;
@@ -1112,11 +1027,6 @@ export interface ApiPhotoPhoto extends Schema.CollectionType {
     name: Attribute.String;
     width: Attribute.Integer;
     height: Attribute.Integer;
-    author: Attribute.Relation<
-      'api::photo.photo',
-      'oneToOne',
-      'plugin::users-permissions.user'
-    >;
     photo: Attribute.Media<'images'>;
     article: Attribute.Relation<
       'api::photo.photo',
@@ -1161,11 +1071,9 @@ declare module '@strapi/types' {
       'api::advertisement-template.advertisement-template': ApiAdvertisementTemplateAdvertisementTemplate;
       'api::advertisment.advertisment': ApiAdvertismentAdvertisment;
       'api::article.article': ApiArticleArticle;
-      'api::block.block': ApiBlockBlock;
-      'api::block-group.block-group': ApiBlockGroupBlockGroup;
-      'api::column.column': ApiColumnColumn;
       'api::issue.issue': ApiIssueIssue;
       'api::layout.layout': ApiLayoutLayout;
+      'api::newspaper.newspaper': ApiNewspaperNewspaper;
       'api::photo.photo': ApiPhotoPhoto;
     }
   }

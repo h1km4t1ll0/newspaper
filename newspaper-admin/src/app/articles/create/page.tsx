@@ -1,14 +1,11 @@
 "use client";
 
-import { Create, useForm, useSelect } from "@refinedev/antd";
-import { Form, Input, Select } from "antd";
+import { Create, useForm } from "@refinedev/antd";
+import { Form, Input } from "antd";
+import EditorJSInput from "@components/editor-js/EditorJSInput";
 
 export default function BlogPostCreate() {
   const { formProps, saveButtonProps } = useForm({});
-
-  const { selectProps: categorySelectProps } = useSelect({
-    resource: "categories",
-  });
 
   return (
     <Create saveButtonProps={saveButtonProps}>
@@ -25,22 +22,11 @@ export default function BlogPostCreate() {
               <Input />
           </Form.Item>
           <Form.Item
-              label={"Author"}
-              name={["author"]}
-              rules={[
-                  {
-                      required: true,
-                  },
-              ]}
-          >
-              <Input />
-          </Form.Item>
-          <Form.Item
               label={"Photos"}
               name={["photos"]}
               rules={[
                   {
-                      required: true,
+                      required: false,
                   },
               ]}
           >
@@ -55,7 +41,7 @@ export default function BlogPostCreate() {
                   },
               ]}
           >
-              <Input />
+             <EditorJSInput/>
           </Form.Item>
       </Form>
     </Create>

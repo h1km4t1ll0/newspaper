@@ -1,14 +1,10 @@
 "use client";
 
 import { Create, useForm, useSelect } from "@refinedev/antd";
-import { Form, Input, Select } from "antd";
+import { Form, Input, Select, InputNumber } from "antd";
 
 export default function BlogPostCreate() {
   const { formProps, saveButtonProps } = useForm({});
-
-  const { selectProps: categorySelectProps } = useSelect({
-    resource: "categories",
-  });
 
   return (
     <Create saveButtonProps={saveButtonProps}>
@@ -33,18 +29,18 @@ export default function BlogPostCreate() {
                   },
               ]}
           >
-              <Input.TextArea rows={5} />
+              <InputNumber />
           </Form.Item>
           <Form.Item
               label={"Header Height"}
-              name="headerHeight"
+              name="pageHeight"
               rules={[
                   {
                       required: true,
                   },
               ]}
           >
-              <Input.TextArea rows={5} />
+              <InputNumber />
           </Form.Item>
           <Form.Item
               label={"Available Text Styles"}
@@ -58,22 +54,55 @@ export default function BlogPostCreate() {
               <Input />
           </Form.Item>
           <Form.Item
-              label={"Block Groups"}
-              name={["block_groups"]}
+              label={"Page Width"}
+              name={["pageWidth"]}
               rules={[
                   {
-                      required: true,
+                      required: false,
                   },
               ]}
           >
               <Input />
           </Form.Item>
           <Form.Item
-              label={"Column"}
-              name={["column"]}
+              label={"Horizontal Fields Width"}
+              name={["horizontalFieldsWidth"]}
               rules={[
                   {
-                      required: true,
+                      required: false,
+                  },
+              ]}
+          >
+              <Input />
+          </Form.Item>
+          <Form.Item
+              label={"Vertical Fields Height"}
+              name={["verticalFieldsHeight"]}
+              rules={[
+                  {
+                      required: false,
+                  },
+              ]}
+          >
+              <Input />
+          </Form.Item>
+          <Form.Item
+              label={"Font Family"}
+              name={["fontFamily"]}
+              rules={[
+                  {
+                      required: false,
+                  },
+              ]}
+          >
+              <Input />
+          </Form.Item>
+          <Form.Item
+              label={"Pages Count"}
+              name={["pagesCount"]}
+              rules={[
+                  {
+                      required: false,
                   },
               ]}
           >

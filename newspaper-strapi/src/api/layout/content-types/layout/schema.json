@@ -18,22 +18,26 @@
     "columnCount": {
       "type": "integer"
     },
-    "headerHeight": {
+    "pageHeight": {
       "type": "integer"
     },
     "availableTextStyles": {
       "type": "json"
     },
-    "block_groups": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::block-group.block-group",
-      "mappedBy": "layout"
+    "pageWidth": {
+      "type": "integer"
     },
-    "column": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::column.column"
+    "horizontalFieldsWidth": {
+      "type": "integer"
+    },
+    "verticalFieldsHeight": {
+      "type": "integer"
+    },
+    "fontFamily": {
+      "type": "string"
+    },
+    "pagesCount": {
+      "type": "integer"
     }
   }
 }
