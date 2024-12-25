@@ -12,17 +12,32 @@ import {
 import { type BaseRecord } from "@refinedev/core";
 import { Space, Table } from "antd";
 
+const relationsQuery = {
+  populate: {
+    photos: {
+      populate: "*",
+    },
+  },
+};
+
+type PhotoType = {
+  name: string,
+  width: number,
+  height: number,
+  photo: URL,
+};
+
 export default function BlogPostList() {
   const { tableProps, filters } = useTable<{
     name: string,
-    author: string,
-    photos: string,
+    photos: PhotoType[],
     text: JSON,
     createdAt: Date,
     updatedAt: Date,
     id: number | string,
   }[]>({
     syncWithLocation: true,
+    meta: relationsQuery,
     sorters: {
       initial: [
         {
@@ -38,8 +53,11 @@ export default function BlogPostList() {
       <Table {...tableProps} rowKey="id">
         <Table.Column dataIndex="id" title={"ID"} />
         <Table.Column dataIndex="name" title={"Name"} />
-        <Table.Column dataIndex="author" title={"Author"} />
-        <Table.Column dataIndex="photos" title={"Photos"} />
+        <Table.Column
+            title={"Photos"}
+            dataIndex="photos"
+            render={(_, record: BaseRecord) => JSON.stringify(record.photos)}
+        />
         <Table.Column dataIndex="text" title={"Text"} />
         <Table.Column
           title={"Actions"}

@@ -16,10 +16,13 @@ export default function BlogPostList() {
   const { tableProps, filters } = useTable<{
     editorJSData: JSON,
     columnCount: number,
-    headerHeight: number,
+    pageHeight: number,
     availableTextStyles: JSON,
-    block_groups: string,
-    column: string,
+    pageWidth: number,
+    horizontalFieldsWidth: number,
+    verticalFieldsHeight: number,
+    fontFamily: string,
+    pagesCount: number,
     createdAt: Date,
     updatedAt: Date,
     id: number | string,
@@ -41,10 +44,13 @@ export default function BlogPostList() {
           <Table.Column dataIndex="id" title={"ID"} />
           <Table.Column dataIndex="editorJSData" title={"editorJSData"} />
           <Table.Column dataIndex="columnCount" title={"column Count"} />
-          <Table.Column dataIndex="headerHeight" title={"header Height"} />
+          <Table.Column dataIndex="pageHeight" title={"header Height"} />
           <Table.Column dataIndex="availableTextStyles" title={"availableTextStyles"} />
-          <Table.Column dataIndex="block_groups" title={"block groups"} />
-          <Table.Column dataIndex="column" title={"column"} />
+          <Table.Column dataIndex="pageWidth" title={"pageWidth"} />
+          <Table.Column dataIndex="horizontalFieldsWidth" title={"horizontalFieldsWidth"} />
+          <Table.Column dataIndex="verticalFieldsHeight" title={"verticalFieldsHeight"} />
+          <Table.Column dataIndex="fontFamily" title={"fontFamily"} />
+          <Table.Column dataIndex="pagesCount" title={"pagesCount"} />
           <Table.Column
               title={"Actions"}
               dataIndex="actions"

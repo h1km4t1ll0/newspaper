@@ -1,0 +1,16 @@
+services:
+  minio:
+    # Нужно использовать именно эту версию minio, в ней файлы хранятся как обычные файлы в ОС
+    image: docker.io/bitnami/minio:2022.5.26
+    restart: always
+    ports:
+      - '9900:9000'
+      - '9910:9001'
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+    volumes:
+      - 's3_newspaper:/data:rw'
+
+volumes:
+  s3_newspaper:

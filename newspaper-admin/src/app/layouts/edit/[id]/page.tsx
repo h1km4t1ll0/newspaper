@@ -1,7 +1,7 @@
 "use client";
 
 import { Edit, useForm, useSelect } from "@refinedev/antd";
-import { Form, Input, Select } from "antd";
+import { Form, Input, Select, InputNumber } from "antd";
 
 export default function BlogPostEdit() {
   const { formProps, saveButtonProps, queryResult } = useForm({
@@ -12,46 +12,41 @@ export default function BlogPostEdit() {
 
   const blogPostsData = queryResult?.data?.data;
 
-  const { selectProps: categorySelectProps } = useSelect({
-    resource: "categories",
-    defaultValue: blogPostsData?.category?.id,
-  });
-
   return (
     <Edit saveButtonProps={saveButtonProps}>
       <Form {...formProps} layout="vertical">
-        <Form.Item
-          label={"editorJSData"}
-          name={["editorJSData"]}
-          rules={[
-            {
-              required: true,
-            },
-          ]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          label={"Column Count"}
-          name="columnCount"
-          rules={[
-            {
-              required: true,
-            },
-          ]}
-        >
-          <Input.TextArea rows={5} />
-        </Form.Item>
           <Form.Item
-              label={"Header Height"}
-              name="headerHeight"
+              label={"editorJSData"}
+              name={["editorJSData"]}
               rules={[
                   {
                       required: true,
                   },
               ]}
           >
-              <Input.TextArea rows={5} />
+              <Input />
+          </Form.Item>
+          <Form.Item
+              label={"Column Count"}
+              name="columnCount"
+              rules={[
+                  {
+                      required: true,
+                  },
+              ]}
+          >
+              <InputNumber />
+          </Form.Item>
+          <Form.Item
+              label={"Header Height"}
+              name="pageHeight"
+              rules={[
+                  {
+                      required: true,
+                  },
+              ]}
+          >
+              <InputNumber />
           </Form.Item>
           <Form.Item
               label={"Available Text Styles"}
@@ -65,22 +60,55 @@ export default function BlogPostEdit() {
               <Input />
           </Form.Item>
           <Form.Item
-              label={"Block Groups"}
-              name={["block_groups"]}
+              label={"Page Width"}
+              name={["pageWidth"]}
               rules={[
                   {
-                      required: true,
+                      required: false,
                   },
               ]}
           >
               <Input />
           </Form.Item>
           <Form.Item
-              label={"Column"}
-              name={["column"]}
+              label={"Horizontal Fields Width"}
+              name={["horizontalFieldsWidth"]}
               rules={[
                   {
-                      required: true,
+                      required: false,
+                  },
+              ]}
+          >
+              <Input />
+          </Form.Item>
+          <Form.Item
+              label={"Vertical Fields Height"}
+              name={["verticalFieldsHeight"]}
+              rules={[
+                  {
+                      required: false,
+                  },
+              ]}
+          >
+              <Input />
+          </Form.Item>
+          <Form.Item
+              label={"Font Family"}
+              name={["fontFamily"]}
+              rules={[
+                  {
+                      required: false,
+                  },
+              ]}
+          >
+              <Input />
+          </Form.Item>
+          <Form.Item
+              label={"Pages Count"}
+              name={["pagesCount"]}
+              rules={[
+                  {
+                      required: false,
                   },
               ]}
           >

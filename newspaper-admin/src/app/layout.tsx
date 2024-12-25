@@ -12,6 +12,7 @@ import { ColorModeContextProvider } from "@contexts/color-mode";
 import { authProvider } from "@providers/auth-provider";
 import { dataProvider } from "@providers/data-provider";
 import "@refinedev/antd/dist/reset.css";
+import {observer} from "mobx-react-lite";
 
 export const metadata: Metadata = {
   title: "Refine",
@@ -45,13 +46,13 @@ export default function RootLayout({
                     notificationProvider={useNotificationProvider}
                     resources={[
                       {
-                        name: 'layout',
-                        list: '/layout',
-                        create: '/layout/create',
-                        edit: '/layout/edit/:id',
-                        show: '/layout/show/:id',
+                        name: 'layouts',
+                        list: '/layouts',
+                        create: '/layouts/create',
+                        edit: '/layouts/edit/:id',
+                        show: '/layouts/show/:id',
                         meta: {
-                          label: 'Layout',
+                          label: 'Layouts',
                         },
                       },
                       {
@@ -65,11 +66,11 @@ export default function RootLayout({
                         },
                       },
                       {
-                        name: 'advertisements',
-                        list: '/advertisements',
-                        create: '/advertisements/create',
-                        edit: '/advertisements/edit/:id',
-                        show: '/advertisements/show/:id',
+                        name: 'advertisments',
+                        list: '/advertisments',
+                        create: '/advertisments/create',
+                        edit: '/advertisments/edit/:id',
+                        show: '/advertisments/show/:id',
                         meta: {
                           label: 'Advertisements',
                         },
@@ -85,36 +86,6 @@ export default function RootLayout({
                         },
                       },
                       {
-                        name: 'block-groups',
-                        list: '/block-groups',
-                        create: '/block-groups/create',
-                        edit: '/block-groups/edit/:id',
-                        show: '/block-groups/show/:id',
-                        meta: {
-                          label: 'Block Groups',
-                        },
-                      },
-                      {
-                        name: 'blocks',
-                        list: '/blocks',
-                        create: '/blocks/create',
-                        edit: '/blocks/edit/:id',
-                        show: '/blocks/show/:id',
-                        meta: {
-                          label: 'Blocks',
-                        },
-                      },
-                      {
-                        name: 'columns',
-                        list: '/columns',
-                        create: '/columns/create',
-                        edit: '/columns/edit/:id',
-                        show: '/columns/show/:id',
-                        meta: {
-                          label: 'Columns',
-                        },
-                      },
-                      {
                         name: 'photos',
                         list: '/photos',
                         create: '/photos/create',
@@ -124,15 +95,24 @@ export default function RootLayout({
                           label: 'Photos',
                         },
                       },
-
                       {
-                        name: 'newspaper',
-                        list: '/newspaper',
-                        create: '/newspaper/create',
-                        edit: '/newspaper/edit/:id',
-                        show: '/newspaper/show/:id',
+                        name: 'newspapers',
+                        list: '/newspapers',
+                        create: '/newspapers/create',
+                        edit: '/newspapers/edit/:id',
+                        show: '/issues',
                         meta: {
-                          label: 'Newspaper issues',
+                          label: 'Newspapers',
+                        },
+                      },
+                      {
+                        name: 'issues',
+                        list: '/issues',
+                        create: '/issues/create',
+                        edit: '/issues/edit/:id',
+                        show: '/issues/show/:id',
+                        meta: {
+                          label: 'Issues',
                         },
                       },
                     ]}
