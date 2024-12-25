@@ -19,7 +19,6 @@ import {API_URL} from "@utility/constants";
 import qs from "qs";
 import {useCustom} from "@refinedev/core";
 import ContentEditor from "@components/editor-js/ContentEditor";
-import {Badge} from "antd";
 
 type LayoutSettings = {
   editorJSData: JSON;
@@ -47,7 +46,6 @@ type GridProps = {
   newspaperName: string;
   currentFont: string;
   issueCover: any;
-  issueStatus: string
 };
 
 export const Grid: FC<GridProps> = ({
@@ -62,8 +60,8 @@ export const Grid: FC<GridProps> = ({
                                       issueDate,
                                       newspaperName,
                                       currentFont,
-                                      issueCover,
-                                      issueStatus}) => {
+                                      issueCover
+                                    }) => {
   const issueDateBeautified = new Intl.DateTimeFormat("en-US", {
     year: "numeric",
     month: "long",
@@ -93,7 +91,19 @@ export const Grid: FC<GridProps> = ({
     }
   );
 
-  const {data, isLoading, refetch} = useCustom<{
+  const advertisementQuery = qs.stringify(
+    {
+      fields: '*',
+      populate: {
+        photo: '*',
+      },
+    },
+    {
+      encodeValuesOnly: true, // prettify URL
+    }
+  );
+
+  const { refetch } = useCustom<{
     data: {
       id: number,
       attributes: {
@@ -125,8 +135,29 @@ export const Grid: FC<GridProps> = ({
     url: `${API_URL}/api/articles?${query}`,
     method: "get",
   });
+
+  const { refetch: refetchAdvertisement } = useCustom<{
+    data: {
+      id: number,
+      attributes: {
+        id: number,
+        header: string,
+        photo: {
+          data: {
+            attributes: {
+              url: string,
+            },
+          },
+        },
+      },
+    }[],
+  }>({
+    url: `${API_URL}/api/advertisments?${advertisementQuery}`,
+    method: "get",
+  });
   const [items, setItems] = useState<{ title: string, content: any, id: number }[]>();
   const [images, setImages] = useState<{ name: string, url: string, id: number }[]>();
+  const [advertisement, setAdvertisement] = useState<{header: string, id: number, url: string}[]>();
 
   const getItems = useCallback(
     async () => {
@@ -153,6 +184,20 @@ export const Grid: FC<GridProps> = ({
     }, [items]
   );
 
+  const getAdvertisement = useCallback(
+    async () => {
+      const data = await refetchAdvertisement();
+      console.log('advertisement', data)
+      setAdvertisement(data.data?.data.data.map(
+        (rawData) => ({
+          header: rawData.attributes.header,
+          id: rawData.id,
+          url: rawData.attributes.photo.data.attributes.url,
+        }),
+      ));
+    }, [items]
+  );
+
   const rowHeight = 20;
   const rowCount = Math.floor((layoutSettings.pageHeight - layoutSettings.verticalFieldsHeight) / rowHeight);
 
@@ -164,6 +209,7 @@ export const Grid: FC<GridProps> = ({
 
   useEffect(() => {
     getItems().then(() => setVisible(true));
+    getAdvertisement().then(() => setVisible(true));
   }, []);
 
   const handleCancel = () => {
@@ -300,61 +346,55 @@ export const Grid: FC<GridProps> = ({
   const mainContentHeight = remainingHeight > 0 ? remainingHeight : 0;
   const columnWidth = (layoutSettings.pageWidth - layoutSettings.horizontalFieldsWidth * 2) / layoutSettings.columnCount;
   const isFirstOrLast = (currentPageNumber === 1 || currentPageNumber === totalPages);
-  // @ts-ignore
-  const hasRemainingItems = (issueStatus !== "published" && (items?.length > 0 || images?.length > 0));
-
   return (
     <div style={{display: 'flex', width: '100%'}}>
-      {issueStatus !== "published" && (
-          <div style={{width: '20%', overflowX: 'auto'}}>
-            <div style={{
-              height: `${layoutSettings.pageHeight / 2}px`,
-              overflowY: 'auto',
-              padding: '16px',
-              display: 'flex',
-              marginTop: '40px'
-            }}>
-              <Row gutter={[16, 16]}>
-                {items?.map(item => (
-                    <Col span={24} key={item.id}>
-                      <Card title={item.title} bordered={true} style={{wordBreak: 'break-word', maxWidth: '100%'}}>
-                        {item.content && (
-                            <ContentEditor readOnly value={item.content}/>
-                        )}
-                        <Button disabled={isFirstOrLast || issueStatus == "published"} type="primary" onClick={() => {
-                          addWidgetWithContent(item.content);
-                          setItems((prev) => prev?.filter((each) => each.id !== item.id));
-                        }}>Add to issue</Button>
-                      </Card>
-                    </Col>
-                ))}
-              </Row>
-            </div>
-            <div style={{
-              height: `${layoutSettings.pageHeight / 2}px`,
-              overflowY: 'auto',
-              padding: '16px',
-              display: 'flex',
-              marginTop: '40px'
-            }}>
-              <Row gutter={[16, 16]}>
-                {images?.map(item => (
-                    <Col span={24} key={item.id}>
-                      <Card title={item.name} bordered={true}>
-                        <img src={`${API_URL}${item.url}`} style={{maxWidth: "100%", height: "auto"}}/>
-                        <Button disabled={isFirstOrLast || issueStatus == "published"} type="primary" onClick={() => {
-                          addWidgetWithContent({type: 'image', url: item.url});
-                          setItems((prev) => prev?.filter((each) => each.id !== item.id));
-                        }}>Add to issue</Button>
-                      </Card>
-                    </Col>
-                ))}
-              </Row>
-            </div>
-          </div>
-      )}
-
-      <div style={{width: '80%', overflowX: 'auto'}}>
+      <div style={{width: '20%', overflowX: 'auto'}}>
+        <div style={{
+          height: `${layoutSettings.pageHeight / 2}px`,
+          overflowY: 'auto',
+          padding: '16px',
+          display: 'flex',
+          marginTop: '40px'
+        }}>
+          <Row gutter={[16, 16]}>
+            {items?.map(item => (
+              <Col span={24} key={item.id}>
+                <Card title={item.title} bordered={true} style={{wordBreak: 'break-word', maxWidth: '100%'}}>
+                  {item.content && (
+                    <ContentEditor readOnly value={item.content}/>
+                  )}
+                  <Button disabled={isFirstOrLast} type="primary" onClick={() => {
+                    addWidgetWithContent(item.content);
+                    setItems((prev) => prev?.filter((each) => each.id !== item.id));
+                  }}>Add to issue</Button>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        </div>
+        <div style={{
+          height: `${layoutSettings.pageHeight / 2}px`,
+          overflowY: 'auto',
+          padding: '16px',
+          display: 'flex',
+          marginTop: '40px'
+        }}>
+          <Row gutter={[16, 16]}>
+            {images?.map(item => (
+              <Col span={24} key={item.id}>
+                <Card title={item.name} bordered={true}>
+                  <img src={`${API_URL}${item.url}`} style={{maxWidth: "100%", height: "auto"}}/>
+                  <Button disabled={isFirstOrLast} type="primary" onClick={() => {
+                    addWidgetWithContent({type: 'image', url: item.url});
+                    setImages((prev) => prev?.filter((each) => each.id !== item.id));
+                  }}>Add to issue</Button>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        </div>
+      </div>
+      <div style={{width: '60%', overflowX: 'auto'}}>
         <div style={{
           display: "flex",
           flexDirection: "column",
@@ -368,13 +408,8 @@ export const Grid: FC<GridProps> = ({
             textAlign: "center",
             borderBottom: "1px solid #ddd"
           }}>
-            <Button disabled={issueStatus == "published"} onClick={saveData}>Save Layout</Button>
-            <Button disabled={issueStatus == "published"} onClick={() => console.log("Preview Page")}>Preview</Button>
-            {hasRemainingItems && (
-                <Badge count="!" size="small" style={{backgroundColor: "red"}}>
-                  <span style={{fontSize: "16px", fontWeight: "bold"}}>Items Remaining</span>
-                </Badge>
-            )}
+            <Button onClick={saveData}>Save Layout</Button>
+            <Button onClick={() => console.log("Preview Page")}>Preview</Button>
           </div>
           <div className={`newspaper-page-${currentPageNumber}`} style={{
             padding: `${layoutSettings.verticalFieldsHeight}px ${layoutSettings.horizontalFieldsWidth}px`,
@@ -384,13 +419,13 @@ export const Grid: FC<GridProps> = ({
           }}>
             {/* Header */}
             {(currentPageNumber !== 1 && currentPageNumber !== totalPages) && (<header
-                style={{
-                  height: "20px",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  borderBottom: "1px solid #ddd",
-                }}
+              style={{
+                height: "20px",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                borderBottom: "1px solid #ddd",
+              }}
             >
               <p style={{margin: 0}}>{issueDateBeautified}</p>
               <p style={{margin: 0}}>{newspaperName}</p>
@@ -433,6 +468,7 @@ export const Grid: FC<GridProps> = ({
                         <div>
                           {(currentPageNumber !== 1) && (<button
                             style={{
+                              zIndex: 9999,
                               position: "absolute",
                               top: 5,
                               right: 5,
@@ -471,6 +507,29 @@ export const Grid: FC<GridProps> = ({
               </p>
             </footer>)}
           </div>
+        </div>
+      </div>
+      <div style={{width: '20%', overflowX: 'auto'}}>
+        <div style={{
+          height: `${layoutSettings.pageHeight}px`,
+          overflowY: 'auto',
+          padding: '16px',
+          display: 'flex',
+          marginTop: '40px'
+        }}>
+          <Row gutter={[16, 16]}>
+            {advertisement?.map(item => (
+              <Col span={24} key={item.id}>
+                <Card title={item.header} bordered={true}>
+                  <img src={`${API_URL}${item.url}`} style={{maxWidth: "100%", height: "auto"}}/>
+                  <Button disabled={isFirstOrLast} type="primary" onClick={() => {
+                    addWidgetWithContent({type: 'image', url: item.url});
+                    setAdvertisement((prev) => prev?.filter((each) => each.id !== item.id));
+                  }}>Add to issue</Button>
+                </Card>
+              </Col>
+            ))}
+          </Row>
         </div>
       </div>
     </div>);

@@ -25,6 +25,13 @@
       "type": "relation",
       "relation": "oneToOne",
       "target": "api::advertisement-template.advertisement-template"
+    },
+    "photo": {
+      "allowedTypes": [
+        "images"
+      ],
+      "type": "media",
+      "multiple": false
     }
   }
 }

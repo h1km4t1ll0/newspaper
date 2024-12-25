@@ -840,6 +840,7 @@ export interface ApiAdvertismentAdvertisment extends Schema.CollectionType {
       'oneToOne',
       'api::advertisement-template.advertisement-template'
     >;
+    photo: Attribute.Media<'images'>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
