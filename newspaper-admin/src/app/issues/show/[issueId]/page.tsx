@@ -4,12 +4,19 @@ import { useTable } from "@refinedev/antd";
 import { useParams, useSearchParams } from "next/navigation";
 import GridStack from "@components/Gridstack";
 import {Button, Card, Col, Modal, Row} from "antd";
+import { Layout, Badge, Spin } from "antd";
+import {
+    CheckCircleOutlined,
+    EyeOutlined,
+    SyncOutlined,
+} from "@ant-design/icons";
 import {useMemo, useState} from "react";
 import {useCustom} from "@refinedev/core";
 import {API_URL} from "@utility/constants";
 import qs from "qs";
 import ContentEditor from "@components/editor-js/ContentEditor";
-import ReactPDF from '@react-pdf/renderer';
+
+const { Header, Sider, Content } = Layout;
 
 const relationsQuery = {
     populate: {
@@ -80,36 +87,63 @@ export default function IssueShowPage() {
     });
 
     const issue = tableProps.dataSource?.[0]; // Get the first (and only) matching issue
+    const [saved, setSaved] = useState(true);
 
     if (!issue) return <p>Loading or no issue found!</p>;
 
     return (
-        <div>
-            <h1>Issue Details</h1>
-            <p>
-                <strong>ID:</strong> {issue.id}
-            </p>
-            <p>
-                <strong>Name:</strong> {issue.name}
-            </p>
-            <p>
-                <strong>Status:</strong> {issue.status}
-            </p>
-            <p>
-                <strong>Publish Date:</strong> {issue.PublishDate}
-            </p>
-            <p>
-                <strong>Newspaper:</strong> {issue.newspaper.id}
-            </p>
+        <Layout style={{ height: "100vh" }}>
+            {/* ── Sticky Header ── */}
+            <Header
+                style={{
+                    position: "sticky",
+                    top: 0,
+                    zIndex: 1000,
+                    display: "flex",
+                    alignItems: "center",
+                    padding: "0 24px",
+                    background: "#fff",
+                    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                }}
+            >
+                <h2 style={{ margin: 0, flex: 1 }}>{issue.name}</h2>
 
-            {/* Render GridStack */}
-            <GridStack layoutSettings={issue.newspaper.layout}
-                       issueDate={issue.PublishDate}
-                       newspaperName={issue.newspaper.name}
-                       issueCover={issue.cover?.url}
-                       issueId={issue.id}
-                       issueStatus={issue.status}
-            />
-        </div>
+                <Badge
+                    status={issue.status === "published" ? "success" : "warning"}
+                    text={issue.status}
+                    style={{ marginRight: 24 }}
+                />
+
+                <span style={{ marginRight: 24 }}>
+          {new Date(issue.PublishDate).toLocaleString()}
+        </span>
+
+                <div style={{ marginLeft: 24 }}>
+                    {saved ? (
+                        <span style={{ color: "#52c41a" }}>
+              <SyncOutlined spin={false} /> All changes saved
+            </span>
+                    ) : (
+                        <span>
+              <SyncOutlined spin /> Saving…
+            </span>
+                    )}
+                </div>
+            </Header>
+
+            <Layout>
+                {/* ── Main Canvas ── */}
+                <Content style={{ position: "relative", overflow: "auto" }}>
+                    <GridStack
+                        layoutSettings={issue.newspaper.layout}
+                        issueDate={issue.PublishDate}
+                        newspaperName={issue.newspaper.name}
+                        issueCover={issue.cover?.url}
+                        issueId={issue.id}
+                        issueStatus={issue.status}
+                    />
+                </Content>
+            </Layout>
+        </Layout>
     );
 }
