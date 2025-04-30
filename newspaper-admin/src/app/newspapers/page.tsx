@@ -5,6 +5,8 @@ import { Space, Button, Card, Col, Row } from "antd";
 import { EditButton, ShowButton, DeleteButton } from "@refinedev/antd";
 import { BaseRecord } from "@refinedev/core";
 import { useRouter } from "next/navigation";
+import {useContext} from "react";
+import {RoleContext} from "@app/RefineApp";
 
 const relationsQuery = {
     populate: {
@@ -41,6 +43,7 @@ type IssueType = {
 const STRAPI_BASE_URL = "http://localhost:1338";
 
 export default function NewspaperList() {
+    const role = useContext(RoleContext);
     const { tableProps } = useTable<{
         id: number | string;
         name: string;
@@ -70,11 +73,11 @@ export default function NewspaperList() {
     return (
         <div>
             <h1>All Newspapers</h1>
-            <Space style={{ marginBottom: 16 }}>
+            {role === 'Authenticated' && <Space style={{ marginBottom: 16 }}>
                 <Button type="primary" onClick={() => router.push("/newspapers/create")}>
                     Create Newspaper
                 </Button>
-            </Space>
+            </Space>}
             <Row gutter={[16, 16]}>
                 {tableProps?.dataSource?.map((newspaper: any) => (
                     <Col span={8} key={newspaper.id}>
@@ -113,7 +116,7 @@ export default function NewspaperList() {
                                 <EditButton hideText size="small" recordItemId={newspaper.id}/>
                                 <ShowButton hideText size="small" recordItemId={newspaper.id}
                                             onClick={() => router.push(`/issues?newspaperId=${newspaper.id}`)}/>
-                                <DeleteButton hideText size="small" recordItemId={newspaper.id}/>
+                                {role === 'Authenticated' && <DeleteButton hideText size="small" recordItemId={newspaper.id}/>}
                             </Space>
                         </Card>
                     </Col>

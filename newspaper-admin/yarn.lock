@@ -1133,12 +1133,7 @@
   dependencies:
     "@codexteam/icons" "^0.0.5"
 
-"@editorjs/editorjs@^2.26.5", "@editorjs/editorjs@^2.29.1":
-  version "2.30.7"
-  resolved "https://registry.yarnpkg.com/@editorjs/editorjs/-/editorjs-2.30.7.tgz#6ba210490c1040c55ef7e5ef040c4c6e3dc722e7"
-  integrity sha512-FfdeUqrgcKWC+Cy2GW6Dxup6s2TaRKokR4FL+HKXshu6h9Y//rrx4SQkURgkZOCSbV77t9btbmAXdFXWGB+diw==
-
-"@editorjs/editorjs@~2.26.5":
+"@editorjs/editorjs@2.26.5":
   version "2.26.5"
   resolved "https://registry.yarnpkg.com/@editorjs/editorjs/-/editorjs-2.26.5.tgz#ee0f1dbd3a3c6ba97d3ed30f13ab7d2e7b29dbe4"
   integrity sha512-imwXZi9NmzxKjNosa1xQf286liJYsTe2J2DWCiV5TwKhvYZ1INg5Y+FietcM2v65QmeLqP7wgBUhoI7wiCB+yQ==
@@ -1148,6 +1143,11 @@
     codex-tooltip "^1.0.5"
     html-janitor "^2.0.4"
     nanoid "^3.1.22"
+
+"@editorjs/editorjs@^2.26.5", "@editorjs/editorjs@^2.29.1":
+  version "2.30.7"
+  resolved "https://registry.yarnpkg.com/@editorjs/editorjs/-/editorjs-2.30.7.tgz#6ba210490c1040c55ef7e5ef040c4c6e3dc722e7"
+  integrity sha512-FfdeUqrgcKWC+Cy2GW6Dxup6s2TaRKokR4FL+HKXshu6h9Y//rrx4SQkURgkZOCSbV77t9btbmAXdFXWGB+diw==
 
 "@editorjs/embed@^2.7.6":
   version "2.7.6"
@@ -4506,6 +4506,11 @@ gray-matter@^4.0.3:
     kind-of "^6.0.2"
     section-matter "^1.0.0"
     strip-bom-string "^1.0.0"
+
+gridstack@^12.0.0:
+  version "12.0.0"
+  resolved "https://registry.yarnpkg.com/gridstack/-/gridstack-12.0.0.tgz#cb824410436573f480fc9e62c2e3fdf2fa536a9e"
+  integrity sha512-Wjfu7BtTb4NZqLpSEAJx+b9lBnfnXNgG2jUTVSD2g8NrHITrWgfk9eeHBqtDLVl2vtKQTzsSyy5lSyHAMcW2tA==
 
 handlebars@^4.7.7:
   version "4.7.8"

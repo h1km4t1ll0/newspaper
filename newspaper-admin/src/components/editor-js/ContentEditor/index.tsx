@@ -163,7 +163,6 @@ const ContentEditor: FC<IEditorProps> = (
       },
       delimiter: Delimiter,
       image: {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         class: zoomImage,
         config: {
@@ -174,7 +173,6 @@ const ContentEditor: FC<IEditorProps> = (
           },
         },
       },
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       simpleImage: SimpleImage,
       columns: {
@@ -186,12 +184,14 @@ const ContentEditor: FC<IEditorProps> = (
             header: Header,
             paragraph: Paragraph,
           }
-        }
-      }
+        },
+      },
+      paragraph: Paragraph,
     };
 
     console.log('editorCore.current', editorCore.current)
     if (editorElementRef.current) {
+      console.log(tools, 'tools')
       const config: EditorConfig = {
         readOnly,
         holder: editorElementRef.current,

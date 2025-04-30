@@ -1,9 +1,9 @@
 "use client";
 
-import type { AuthProvider } from "@refinedev/core";
-import { AuthHelper } from "@refinedev/strapi-v4";
-import { axiosInstance } from "@utility/axios-instance";
-import { API_URL, TOKEN_KEY } from "@utility/constants";
+import type {AuthProvider} from "@refinedev/core";
+import {AuthHelper} from "@refinedev/strapi-v4";
+import {axiosInstance} from "@utility/axios-instance";
+import {API_URL, TOKEN_KEY} from "@utility/constants";
 import Cookies from "js-cookie";
 
 const strapiAuthHelper = AuthHelper(API_URL + "/api");
@@ -58,7 +58,30 @@ export const authProvider: AuthProvider = {
       redirectTo: "/login",
     };
   },
-  getPermissions: async () => null,
+  getPermissions: async () => {
+    const token = Cookies.get(TOKEN_KEY);
+    if (!token) {
+      return null;
+    }
+
+    try {
+      const { data } = await axiosInstance.get(API_URL + "/api/users/me", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params: {
+          populate: "role", // tells Strapi to include the related role data
+        },
+      });
+
+      console.log(data, "Fetched user with role");
+
+      return data.role?.name;
+    } catch (error) {
+      console.error("Failed to fetch permissions", error);
+      return null;
+    }
+  },
   getIdentity: async () => {
     const token = Cookies.get(TOKEN_KEY);
     if (!token) {

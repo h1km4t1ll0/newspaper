@@ -12,6 +12,14 @@ import {
 import { type BaseRecord } from "@refinedev/core";
 import { Space, Table } from "antd";
 import UploadImage from "@components/Upload";
+// import ContentEditor from "@components/editor-js/ContentEditor";
+import React from "react";
+
+import dynamic from "next/dynamic";
+const ContentEditor = dynamic(
+  () => import("@components/editor-js/ContentEditor"),
+  { ssr: false }
+);
 
 const relationsQuery = {
   populate: {
@@ -74,9 +82,9 @@ export default function BlogPostList() {
           }
         />
         <Table.Column
-            title={"Article"}
-            dataIndex="article"
-            render={(_, record: BaseRecord) => JSON.stringify(record.article)}
+          title={"Article"}
+          dataIndex="article"
+          render={(_, record: BaseRecord) => record.article.text && <ContentEditor readOnly value={record.article.text}/>}
         />
         <Table.Column
           title={"Actions"}
