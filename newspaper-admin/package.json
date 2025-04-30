@@ -67,7 +67,7 @@
     "sass": "^1.81.0",
     "sass-loader": "^13.0.2",
     "style-loader": "^3.3.1",
-    "styled-components": "5.3.3",
+    "styled-components": "^6.1.17",
     "svg-inline-loader": "^0.8.2",
     "sweetalert2": "^11.4.10",
     "uuid": "^11.0.3",

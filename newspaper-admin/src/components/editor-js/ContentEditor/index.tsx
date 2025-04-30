@@ -357,6 +357,7 @@ const ContentEditor: FC<IEditorProps> = (
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       editorCore.current = new EditorJS(config);
+      console.log(config, 'configconfigconfigconfigconfigconfig')
       await editorCore.current.isReady;
       f.current++;
     }

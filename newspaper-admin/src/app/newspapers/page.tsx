@@ -64,6 +64,7 @@ export default function NewspaperList() {
             ],
         },
     });
+    console.log(tableProps?.dataSource)
 
     const router = useRouter();
 
@@ -113,7 +114,7 @@ export default function NewspaperList() {
                         <Card.Meta title={newspaper.name}/>
                             <p>Issues: {newspaper.issues.length}</p>
                             <Space>
-                                <EditButton hideText size="small" recordItemId={newspaper.id}/>
+                                {role === 'Authenticated' && <EditButton hideText size="small" recordItemId={newspaper.id}/> }
                                 <ShowButton hideText size="small" recordItemId={newspaper.id}
                                             onClick={() => router.push(`/issues?newspaperId=${newspaper.id}`)}/>
                                 {role === 'Authenticated' && <DeleteButton hideText size="small" recordItemId={newspaper.id}/>}

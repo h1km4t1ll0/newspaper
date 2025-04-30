@@ -10,6 +10,8 @@ import {
 import {BaseKey, BaseRecord, useUpdate} from "@refinedev/core";
 import { Space, Card, Button, Col, Row, Tag } from "antd";
 import { useRouter, useSearchParams } from "next/navigation";
+import {useContext} from "react";
+import {RoleContext} from "@app/RefineApp";
 
 const relationsQuery = {
     populate: {
@@ -47,6 +49,7 @@ type NewspaperType = {
 const STRAPI_BASE_URL = "http://localhost:1338";
 
 export default function BlogPostList() {
+    const role = useContext(RoleContext);
     const searchParams = useSearchParams();
     const newspaperId = searchParams.get("newspaperId");
 
@@ -62,13 +65,13 @@ export default function BlogPostList() {
         resource: "issues",
         meta: relationsQuery,
         filters: {
-            initial: [
+            initial: newspaperId ? [
                 {
                     field: "newspaper",
                     operator: "eq",
                     value: newspaperId,
                 },
-            ],
+            ] : [],
         },
         sorters: {
             initial: [
@@ -100,7 +103,7 @@ export default function BlogPostList() {
     return (
         <List>
             {/* Add Create Button */}
-            <Space style={{ marginBottom: 16 }}>
+            {role === 'Authenticated' && <Space style={{ marginBottom: 16 }}>
                 <Button
                     type="primary"
                     onClick={() =>
@@ -109,7 +112,7 @@ export default function BlogPostList() {
                 >
                     Create Issue
                 </Button>
-            </Space>
+            </Space> }
 
             <Row gutter={16}>
                 {tableProps.dataSource?.map((record: BaseRecord) => (
@@ -143,28 +146,28 @@ export default function BlogPostList() {
                                 backgroundColor: "#f0f0f0"
                             }}>No  image</div>}
                             actions={[
-                                <EditButton
+                                role === 'Authenticated' ? <EditButton
                                   hideText
                                   size="small"
                                   recordItemId={record.id}
                                   onClick={() => router.push(`/issues/edit/${record.id}`)}
-                                />,
-                                <ShowButton
+                                /> : undefined,
+                                role === 'Authenticated' ? <ShowButton
                                   hideText
                                   size="small"
                                   recordItemId={record.id}
                                   onClick={() =>
-                                    router.push(`/issues/show/${record.id}?newspaperId=${newspaperId}`)
+                                    router.push(`/issues/show/${record.id}?newspaperId=${record.newspaper.id}`)
                                   }
-                                />,
-                                <DeleteButton hideText size="small" recordItemId={record.id}/>,
-                                <Button
+                                /> : undefined,
+                                role === 'Authenticated' ? <DeleteButton hideText size="small" recordItemId={record.id}/> : undefined,
+                                role === 'Authenticated' ? <Button
                                   size="small"
                                   onClick={() => toggleStatus(record.id, record.status)}
                                 >
                                     {record.status === "draft" ? "Publish" : "Set as Draft"}
-                                </Button>,
-                            ]}
+                                </Button> : undefined,
+                            ].filter(Boolean)}
                         >
                             <p><strong>Publish Date:</strong> {new Date(record.PublishDate).toLocaleDateString()}</p>
                             <p><strong>Newspaper:</strong> {record.newspaper?.name}</p>

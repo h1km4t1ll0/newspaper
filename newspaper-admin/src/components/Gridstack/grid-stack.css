@@ -48,3 +48,5 @@
 .cdx-block { max-width: 100% !important; }
 .codex-editor__loader { height: 38px !important; }
 .codex-editor__redactor { padding-bottom: 0 !important; }
+.codex-editor--narrow { padding-bottom: 0 !important; }
+.codex-editor__redactor, .readOnly { padding-bottom: 0 !important; }

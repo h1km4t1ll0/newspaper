@@ -10,13 +10,14 @@ import React, {
   useState,
 } from "react";
 import {GridStack} from "gridstack";
-import "gridstack/dist/gridstack.min.css";
-import "gridstack/dist/gridstack-extra.min.css";
+// import "gridstack/dist/gridstack.min.css";
+// import "gridstack/dist/gridstack-extra.min.css";
 import {GridItem} from "./GridItem";
 import {Button, Card, Col, Row, List, Tooltip, Skeleton, Divider} from "antd";
 import {CustomLayout} from "@components/Gridstack/index";
 import {API_URL} from "@utility/constants";
 import qs from "qs";
+import "./grid-stack.css"
 import {useCustom} from "@refinedev/core";
 import ContentEditor from "@components/editor-js/ContentEditor";
 import { SaveOutlined, EyeOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons';

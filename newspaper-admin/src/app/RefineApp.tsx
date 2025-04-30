@@ -2,7 +2,7 @@
 "use client";
 
 import React, {createContext, Suspense, useCallback, useEffect, useMemo, useState} from "react";
-import { Refine, usePermissions } from "@refinedev/core";
+import { Refine } from "@refinedev/core";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
 import { DevtoolsProvider } from "@providers/devtools";
 import { useNotificationProvider } from "@refinedev/antd";
@@ -13,7 +13,6 @@ import { ColorModeContextProvider } from "@contexts/color-mode";
 import { authProvider } from "@providers/auth-provider/auth-provider";
 import { dataProvider } from "@providers/data-provider";
 import "@refinedev/antd/dist/reset.css";
-import {redirect} from "next/navigation";
 
 const allResources = [
   {
@@ -107,13 +106,13 @@ export default function RefineApp({
   const resources = useMemo(() => {
     if (role === "Writer") {
       return allResources.filter((r) =>
-        ["articles", "photos", "newspapers"].includes(r.name),
+        ["articles", "photos", "issues"].includes(r.name),
       )
     }
 
     if (role === "Photographer") {
       return allResources.filter((r) =>
-        ["articles", "photos", "newspapers"].includes(r.name),
+        ["articles", "photos", "issues"].includes(r.name),
       )
     }
 
