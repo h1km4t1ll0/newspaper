@@ -876,7 +876,7 @@ export interface ApiArticleArticle extends Schema.CollectionType {
       'oneToMany',
       'api::photo.photo'
     >;
-    text: Attribute.JSON;
+    text: Attribute.Text;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<

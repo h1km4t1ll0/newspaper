@@ -22,7 +22,7 @@
       "mappedBy": "article"
     },
     "text": {
-      "type": "json"
+      "type": "text"
     }
   }
 }

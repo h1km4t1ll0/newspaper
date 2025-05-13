@@ -23,7 +23,7 @@ const relationsQuery = {
 
 type ArticleType = {
   name: string,
-  text: JSON,
+  text: string,
 }
 
 const query = qs.stringify(

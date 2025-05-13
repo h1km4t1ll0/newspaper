@@ -197,7 +197,7 @@ const GridStack: FC<GridStackProps> = ({
                 {layout_.content?.type !== 'image' &&
                     <div data-color-mode="light">
                         <MDEditor.Markdown
-                            source={typeof layout_.content === "string" ? layout_.content : JSON.stringify(layout_.content)}
+                            source={typeof layout_.content === "string" ? layout_.content : layout_.content.text || layout_.content.blocks?.[0]?.data?.text || ''}
                             style={{
                                 backgroundColor: 'transparent',
                                 padding: '10px',

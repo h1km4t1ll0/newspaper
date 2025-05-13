@@ -67,6 +67,23 @@ const NewspaperPage = styled.div<{ pageHeight: number }>`
   margin: 0 auto;
 `;
 
+// Add custom styles for markdown content
+const MarkdownContainer = styled.div<{ fontFamily: string }>`
+  font-family: ${props => props.fontFamily};
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: ${props => props.fontFamily};
+  }
+  
+  p, span, div {
+    font-family: ${props => props.fontFamily};
+  }
+  
+  strong, em, b, i {
+    font-family: ${props => props.fontFamily};
+  }
+`;
+
 type LayoutSettings = {
   editorJSData: JSON;
   columnCount: number;
@@ -88,6 +105,7 @@ type WidgetContent = {
   type: 'image' | 'text';
   url?: string;
   text?: string;
+  fontFamily?: string;
 };
 
 type GridProps = {
@@ -136,7 +154,7 @@ export const Grid: FC<GridProps> = ({
     Promise.all([getItems(), getAdvertisement()])
         .then(() => setLoading(false))
         .catch(() => setLoading(false));
-  }, []);
+  }, [layout]);
 
   const query = qs.stringify(
     {
@@ -230,38 +248,87 @@ export const Grid: FC<GridProps> = ({
       const data = await refetch();
       console.log(data, 'data');
       const imagesArray: { name: string, url: string, id: number }[] = [];
-      setItems(data.data?.data.data.map(
+      
+      // Get all items from the API
+      const allItems = data.data?.data.data.map(
         (rawData) => {
-          imagesArray.push(...rawData.attributes.photos.data.map(
-            (image) => ({
-              name: image.attributes.name,
-              url: image.attributes.photo.data.attributes.url,
-              id: image.id,
-            }),
-          ));
+          if (rawData.attributes.photos?.data) {
+            imagesArray.push(...rawData.attributes.photos.data
+              .filter(image => image?.attributes?.photo?.data?.attributes?.url)
+              .map(
+                (image) => ({
+                  name: image.attributes.name || 'Untitled Image',
+                  url: image.attributes.photo.data.attributes.url,
+                  id: image.id,
+                }),
+              ));
+          }
 
           return {
             title: rawData.attributes.name,
             content: rawData.attributes.text,
             id: rawData.id,
-        }},
-      ));
-      setImages(imagesArray);
-    }, [items]
+          };
+        },
+      );
+
+      // Filter out items that are already in any page's layout
+      const usedContent = Object.values(layout).flatMap(pageLayout => 
+        pageLayout.map(item => {
+          if (item.content?.type === 'text') {
+            return typeof item.content === "string" 
+              ? item.content 
+              : item.content.text || item.content.blocks?.[0]?.data?.text || '';
+          }
+          if (item.content?.type === 'image') {
+            return item.content.url;
+          }
+          return null;
+        }).filter(Boolean)
+      );
+
+      const filteredItems = allItems?.filter(item => {
+        const itemContent = typeof item.content === "string" 
+          ? item.content 
+          : item.content.text || item.content.blocks?.[0]?.data?.text || '';
+        return !usedContent.includes(itemContent);
+      });
+
+      const filteredImages = imagesArray.filter(image => 
+        !usedContent.includes(image.url)
+      );
+
+      setItems(filteredItems);
+      setImages(filteredImages);
+    }, [layout]
   );
 
   const getAdvertisement = useCallback(
     async () => {
       const data = await refetchAdvertisement();
-      console.log('advertisement', data)
-      setAdvertisement(data.data?.data.data.map(
-        (rawData) => ({
-          header: rawData.attributes.header,
-          id: rawData.id,
-          url: rawData.attributes.photo.data.attributes.url,
-        }),
-      ));
-    }, [items]
+      console.log('advertisement', data);
+      
+      // Get all advertisements from the API
+      const allAds = data.data?.data.data
+        .filter(ad => ad?.attributes?.photo?.data?.attributes?.url)
+        .map(
+          (rawData) => ({
+            header: rawData.attributes.header,
+            id: rawData.id,
+            url: rawData.attributes.photo.data.attributes.url,
+          }),
+        );
+
+      // Filter out advertisements that are already in any page's layout
+      const usedUrls = Object.values(layout).flatMap(pageLayout => 
+        pageLayout
+          .filter(item => item.content?.type === 'image')
+          .map(item => item.content.url)
+      );
+
+      const filteredAds = allAds?.filter(ad => !usedUrls.includes(ad.url));
+      setAdvertisement(filteredAds);
+    }, [layout]
   );
 
   const rowHeight = 20;
@@ -439,7 +506,11 @@ export const Grid: FC<GridProps> = ({
                           icon={<PlusOutlined />}
                           disabled={isFirstOrLast}
                           onClick={() => {
-                            addWidgetWithContent({ type: 'text', text: item.content });
+                            addWidgetWithContent({ 
+                              type: 'text', 
+                              text: item.content,
+                              fontFamily: currentFont 
+                            });
                             setItems(prev => prev?.filter(each => each.id !== item.id));
                           }}
                       />
@@ -447,29 +518,29 @@ export const Grid: FC<GridProps> = ({
                   ]}
               >
                 <Skeleton avatar title={false} loading={loading} active>
-                  <List.Item.Meta
-                      title={item.title}
-                      description={
-                        <div style={{
-                            maxHeight: "5%",
-                            overflow: 'hidden',
-                            wordBreak: 'break-word',
-                            whiteSpace: 'normal',
-                            paddingRight: 8,
-                            width: '100%'
-                        }}>
-                          <div data-color-mode="light">
-                            <MDEditor.Markdown 
-                                source={typeof item.content === "string" ? item.content : JSON.stringify(item.content)} 
-                                style={{ 
-                                    backgroundColor: 'transparent',
-                                    padding: '10px'
-                                }}
-                            />
-                          </div>
-                        </div>
-                      }
-                  />
+                    <List.Item.Meta
+                        title={item.title}
+                        description={
+                            <div style={{
+                                maxHeight: "5%",
+                                overflow: 'hidden',
+                                wordBreak: 'break-word',
+                                whiteSpace: 'normal',
+                                paddingRight: 8,
+                                width: '100%'
+                            }}>
+                                <MarkdownContainer fontFamily={currentFont}>
+                                    <MDEditor.Markdown 
+                                        source={typeof item.content === "string" ? item.content : JSON.stringify(item.content)} 
+                                        style={{ 
+                                            backgroundColor: 'transparent',
+                                            padding: '10px'
+                                        }}
+                                    />
+                                </MarkdownContainer>
+                            </div>
+                        }
+                    />
                 </Skeleton>
               </List.Item>
           )}
@@ -549,6 +620,38 @@ export const Grid: FC<GridProps> = ({
       />
   );
 
+  const handleRemoveWidget = (id: string) => {
+    const pageLayout = layout.filter((block) => block.id === id);
+    
+    if (pageLayout.length > 0) {
+      const widget = pageLayout[0];
+      
+      // If the removed widget is a text widget, add it back to the available texts
+      if (widget.content?.type === 'text') {
+        const textContent = typeof widget.content === "string" 
+          ? widget.content 
+          : widget.content.text || widget.content.blocks?.[0]?.data?.text || '';
+        
+        setItems(prev => [...(prev || []), {
+          id: Date.now(),
+          title: 'Removed Text',
+          content: textContent,
+          fontFamily: widget.content?.fontFamily || currentFont
+        }]);
+      }
+      
+      // If the removed widget is an image widget, add it back to the available images
+      if (widget.content?.type === 'image' && widget.content?.url) {
+        setImages(prev => [...(prev || []), {
+          id: Date.now(),
+          name: 'Removed Image',
+          url: widget.content.url
+        }]);
+      }
+    }
+    
+    removeWidget(id);
+  };
 
   return (
       <Container>
@@ -630,13 +733,12 @@ export const Grid: FC<GridProps> = ({
 
                 <div>
                   <div className="grid-stack">
-                    {Children.map(children, (child) => {
-                      const childLayout = layout.find(hui => hui.id === child?.props.id);
+                    {layout.map((child) => {
                       return (
                           <GridItem
-                              itemRef={gridItemsRefs.current[child?.props.id]}
-                              id={child?.props.id}
-                              childLayout={childLayout}
+                              itemRef={gridItemsRefs.current[child.id]}
+                              id={child.id}
+                              childLayout={child}
                           >
                             <div>
                               {(currentPageNumber !== 1) && (<button
@@ -652,12 +754,44 @@ export const Grid: FC<GridProps> = ({
                                     cursor:"pointer"
                                   }}
                                   onClick={() => {
-                                    removeWidget(child?.props.id);
+                                    handleRemoveWidget(child.id);
                                   }}
                               >
                                 X
                               </button>)}
-                              {child}
+                              {child.content?.type === 'image' ? (
+                                <div style={{
+                                  overflow: 'hidden',
+                                  display: 'flex',
+                                  justifyContent: 'center',
+                                  alignItems: 'center',
+                                  padding: '10px'
+                                }}>
+                                  <img
+                                    alt="widget"
+                                    style={{
+                                      maxHeight: '100%',
+                                      maxWidth: '100%',
+                                      objectFit: 'contain'
+                                    }}
+                                    src={`${API_URL}${child.content.url}`}
+                                  />
+                                </div>
+                              ) : (
+                                <div data-color-mode="light">
+                                    <MarkdownContainer fontFamily={child.content?.fontFamily || currentFont}>
+                                        <MDEditor.Markdown
+                                            source={typeof child.content === "string" ? child.content : child.content.text || child.content.blocks?.[0]?.data?.text || ''}
+                                            style={{
+                                                backgroundColor: 'transparent',
+                                                padding: '10px',
+                                                whiteSpace: 'pre-wrap',
+                                                wordBreak: 'break-word'
+                                            }}
+                                        />
+                                    </MarkdownContainer>
+                                </div>
+                              )}
                             </div>
                           </GridItem>
                       );

@@ -87,7 +87,7 @@ export default function BlogPostList() {
   const {tableProps} = useTable<{
     name: string,
     photos: PhotoType[],
-    text: JSON,
+    text: string,
     createdAt: Date,
     updatedAt: Date,
     id: number | string,
