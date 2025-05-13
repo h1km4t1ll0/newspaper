@@ -1,0 +1,136 @@
+{
+  "name": "Writer",
+  "description": "writer",
+  "type": "writer",
+  "permissions": [
+    {
+      "action": "api::advertisement-template.advertisement-template.create"
+    },
+    {
+      "action": "api::advertisement-template.advertisement-template.delete"
+    },
+    {
+      "action": "api::advertisement-template.advertisement-template.find"
+    },
+    {
+      "action": "api::advertisement-template.advertisement-template.findOne"
+    },
+    {
+      "action": "api::advertisement-template.advertisement-template.update"
+    },
+    {
+      "action": "api::advertisment.advertisment.create"
+    },
+    {
+      "action": "api::advertisment.advertisment.delete"
+    },
+    {
+      "action": "api::advertisment.advertisment.find"
+    },
+    {
+      "action": "api::advertisment.advertisment.findOne"
+    },
+    {
+      "action": "api::advertisment.advertisment.update"
+    },
+    {
+      "action": "api::article.article.create"
+    },
+    {
+      "action": "api::article.article.delete"
+    },
+    {
+      "action": "api::article.article.find"
+    },
+    {
+      "action": "api::article.article.findOne"
+    },
+    {
+      "action": "api::article.article.update"
+    },
+    {
+      "action": "api::editorjs.editorjs.fetchUrl"
+    },
+    {
+      "action": "api::editorjs.editorjs.uploadFile"
+    },
+    {
+      "action": "api::editorjs.editorjs.uploadImage"
+    },
+    {
+      "action": "api::editorjs.editorjs.uploadVideo"
+    },
+    {
+      "action": "api::issue.issue.create"
+    },
+    {
+      "action": "api::issue.issue.delete"
+    },
+    {
+      "action": "api::issue.issue.find"
+    },
+    {
+      "action": "api::issue.issue.findOne"
+    },
+    {
+      "action": "api::issue.issue.update"
+    },
+    {
+      "action": "api::layout.layout.create"
+    },
+    {
+      "action": "api::layout.layout.delete"
+    },
+    {
+      "action": "api::layout.layout.find"
+    },
+    {
+      "action": "api::layout.layout.findOne"
+    },
+    {
+      "action": "api::layout.layout.update"
+    },
+    {
+      "action": "api::newspaper.newspaper.create"
+    },
+    {
+      "action": "api::newspaper.newspaper.delete"
+    },
+    {
+      "action": "api::newspaper.newspaper.find"
+    },
+    {
+      "action": "api::newspaper.newspaper.findOne"
+    },
+    {
+      "action": "api::newspaper.newspaper.update"
+    },
+    {
+      "action": "api::photo.photo.create"
+    },
+    {
+      "action": "api::photo.photo.delete"
+    },
+    {
+      "action": "api::photo.photo.find"
+    },
+    {
+      "action": "api::photo.photo.findOne"
+    },
+    {
+      "action": "api::photo.photo.update"
+    },
+    {
+      "action": "plugin::users-permissions.permissions.getPermissions"
+    },
+    {
+      "action": "plugin::users-permissions.role.find"
+    },
+    {
+      "action": "plugin::users-permissions.role.findOne"
+    },
+    {
+      "action": "plugin::users-permissions.user.me"
+    }
+  ]
+}

@@ -110,7 +110,7 @@ export default function BlogPostList() {
   });
 
   return (
-    <List>
+    <List createButtonProps={{hidden: !(role === 'Authenticated' || role === 'Photographer')}}>
       <Table {...tableProps} rowKey="id">
         <Table.Column dataIndex="id" title={"ID"}/>
         <Table.Column dataIndex="width" title={"Width"}/>

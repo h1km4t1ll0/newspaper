@@ -1,6 +1,6 @@
 // src/app/RefineApp.tsx
 "use client";
-
+import '../components/Gridstack/grid-stack.css'
 import React, {createContext, Suspense, useCallback, useEffect, useMemo, useState} from "react";
 import { Refine } from "@refinedev/core";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";

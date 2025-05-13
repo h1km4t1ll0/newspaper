@@ -101,7 +101,9 @@ export default function BlogPostList() {
     };
 
     return (
-        <List>
+        <List
+          createButtonProps={{hidden: role !== 'Authenticated'}}
+        >
             {/* Add Create Button */}
             {role === 'Authenticated' && <Space style={{ marginBottom: 16 }}>
                 <Button

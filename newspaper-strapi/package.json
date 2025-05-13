@@ -29,6 +29,7 @@
     "react-dom": "^18.0.0",
     "react-router-dom": "5.3.4",
     "sqlite3": "^5.1.7",
+    "strapi-plugin-config-sync": "1.2.6",
     "styled-components": "5.3.3"
   },
   "author": {
