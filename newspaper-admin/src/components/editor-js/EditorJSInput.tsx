@@ -1,13 +1,14 @@
 "use client";
 
-import { OutputData } from '@editorjs/editorjs';
+import MDEditor from '@uiw/react-md-editor';
 import { Card } from 'antd';
 import {FC} from "react";
-import ContentEditor from "@components/editor-js/ContentEditor";
+import { ChangeEvent } from 'react';
+import { ContextStore } from '@uiw/react-md-editor';
 
 interface IProps {
-  value?: OutputData,
-  onChange?: (value: OutputData) => void,
+  value?: string,
+  onChange?: (value?: string, event?: ChangeEvent<HTMLTextAreaElement>, state?: ContextStore) => void,
 }
 
 const EditorJSInput: FC<IProps> = (
@@ -17,13 +18,14 @@ const EditorJSInput: FC<IProps> = (
   },
 ) => (
   <Card>
-    <ContentEditor
-      value={value}
-      onChange={onChange}
-      disableUndo
-    />
+    <div data-color-mode="light">
+      <MDEditor
+        value={value}
+        onChange={onChange}
+        preview="edit"
+      />
+    </div>
   </Card>
 );
-
 
 export default EditorJSInput;

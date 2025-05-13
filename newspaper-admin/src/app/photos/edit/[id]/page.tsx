@@ -5,6 +5,7 @@ import {Form, Input, Select, InputNumber, Typography, Popconfirm, Tooltip, Butto
 import UploadImage from "@components/Upload";
 import {DeleteOutlined} from "@ant-design/icons";
 import {useMemo, useState} from "react";
+import CustomSelect from "@components/custom/custom-select";
 
 export default function BlogPostEdit() {
   const { form, formProps, query, saveButtonProps } = useForm<any>({
@@ -12,7 +13,7 @@ export default function BlogPostEdit() {
       populate: {
         photo: '*',
       },
-      fields: '*',
+      fields: ['*'],
     },
   });
 
@@ -118,7 +119,12 @@ export default function BlogPostEdit() {
                   },
               ]}
           >
-              <Input />
+              <CustomSelect
+                resource="articles"
+                optionLabel="name"
+                optionValue="id"
+                placeholder="Select article"
+              />
           </Form.Item>
       </Form>
     </Edit>

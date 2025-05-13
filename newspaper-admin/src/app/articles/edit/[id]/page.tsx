@@ -1,10 +1,21 @@
 "use client";
 
 import { Edit, useForm, useSelect } from "@refinedev/antd";
-import { Form, Input, Select } from "antd";
+import { Form, Input } from "antd";
+import MDEditor from '@uiw/react-md-editor';
+import { useState, useEffect } from 'react';
+import CustomSelect from "@components/custom/custom-select";
 
 export default function BlogPostEdit() {
-  const { formProps, saveButtonProps } = useForm({});
+  const { formProps, saveButtonProps, form } = useForm({});
+  const [text, setText] = useState("");
+
+  useEffect(() => {
+    const initialText = form.getFieldValue("text");
+    if (initialText) {
+      setText(initialText);
+    }
+  }, [form]);
 
   return (
     <Edit saveButtonProps={saveButtonProps}>
@@ -29,7 +40,13 @@ export default function BlogPostEdit() {
                   },
               ]}
           >
-              <Input />
+              <CustomSelect
+                resource="photos"
+                mode="multiple"
+                optionLabel="name"
+                optionValue="id"
+                placeholder="Select photos"
+              />
           </Form.Item>
           <Form.Item
               label={"Text"}
@@ -40,7 +57,16 @@ export default function BlogPostEdit() {
                   },
               ]}
           >
-              <Input />
+              <div data-color-mode="light">
+                <MDEditor
+                  preview="edit"
+                  value={text}
+                  onChange={(value) => {
+                    setText(value || "");
+                    form.setFieldValue("text", value);
+                  }}
+                />
+              </div>
           </Form.Item>
       </Form>
     </Edit>

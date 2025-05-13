@@ -6,7 +6,7 @@ import {Space, Table} from "antd";
 import UploadImage from "@components/Upload";
 import React, {useCallback, useContext, useMemo} from "react";
 import {RoleContext} from "@app/RefineApp";
-import ContentEditor from "@components/editor-js/ContentEditor";
+import MDEditor from '@uiw/react-md-editor';
 import {API_URL} from "@utility/constants";
 import {axiosInstance} from "@utility/axios-instance";
 import qs from "qs";
@@ -114,31 +114,42 @@ export default function BlogPostList() {
           width="200px"
           title={"Photos"}
           dataIndex="photos"
-          render={(_, record: BaseRecord) => record.photos ? record.photos?.map((value) => {
-            if (!value) {
-              return
-            }
-
-            return (
-              <UploadImage value={{
-                url: value?.url,
-                id: value?.id,
-                fileName: `${value?.hash}${value?.ext}`,
-                type: value?.mime?.split('/')[0],
-                ext: value?.ext?.replace('.', ''),
-              }} index={0}/>
-            )
-          }).filter(Boolean) : '-'}
+          render={(_, record: BaseRecord) => {
+            const val = data?.data.data.find((value) => value.id == record.id)?.attributes;
+            return val?.photos?.data?.map((photo) => (
+              <UploadImage 
+                key={photo.id}
+                value={{
+                  url: photo.attributes.photo.data.attributes.url,
+                  id: photo.id,
+                  fileName: photo.attributes.name,
+                  type: 'image',
+                  ext: 'jpg',
+                }} 
+                index={0}
+              />
+            )) || '-';
+          }}
         />}
         <Table.Column dataIndex="text" title={"Text"} render={(_, record: BaseRecord) => {
-
-          console.log(record, 'record')
-          const val = data?.data.data.find((value) => value.id == record.id)?.attributes
-          return <ContentEditor
-            readOnly
-            value={typeof val.text === "string" ? null : val.text}
-          />
-
+          const val = data?.data.data.find((value) => value.id == record.id)?.attributes;
+          const text = val?.text;
+          const textContent = typeof text === "string" ? text : 
+            typeof text === "object" ? JSON.stringify(text) : 
+            "";
+          return (
+            <div data-color-mode="light">
+              <MDEditor.Markdown 
+                source={textContent}
+                style={{ 
+                  backgroundColor: 'transparent',
+                  padding: '10px',
+                  whiteSpace: 'pre-wrap',
+                  wordBreak: 'break-word'
+                }}
+              />
+            </div>
+          )
         }}/>
         <Table.Column
           title={"Actions"}

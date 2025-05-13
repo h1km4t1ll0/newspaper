@@ -4,18 +4,11 @@ import {DeleteButton, EditButton, List, ShowButton, useTable,} from "@refinedev/
 import {type BaseRecord, useCustom} from "@refinedev/core";
 import {Space, Table} from "antd";
 import UploadImage from "@components/Upload";
-// import ContentEditor from "@components/editor-js/ContentEditor";
 import React, {useContext} from "react";
-
-import dynamic from "next/dynamic";
 import {RoleContext} from "@app/RefineApp";
 import {API_URL} from "@utility/constants";
 import qs from "qs";
-
-const ContentEditor = dynamic(
-  () => import("@components/editor-js/ContentEditor"),
-  {ssr: false}
-);
+import MDEditor from '@uiw/react-md-editor';
 
 const relationsQuery = {
   populate: {
@@ -134,14 +127,18 @@ export default function BlogPostList() {
             title={"Article"}
             dataIndex="article"
             render={(_, record: BaseRecord) => {
-
-              console.log(record, 'record')
               const val = data?.data.data.find((value) => value.id == record.id)?.attributes
-              return <ContentEditor
-                readOnly
-                value={typeof val.text === "string" ? null : val.text}
-              />
-
+              return (
+                <div data-color-mode="light">
+                  <MDEditor.Markdown 
+                    source={typeof val?.text === "string" ? val.text : JSON.stringify(val?.text)} 
+                    style={{ 
+                      backgroundColor: 'transparent',
+                      padding: '10px'
+                    }}
+                  />
+                </div>
+              )
             }}
         />}
         <Table.Column

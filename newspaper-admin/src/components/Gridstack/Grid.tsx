@@ -8,6 +8,7 @@ import React, {
   useEffect,
   useRef,
   useState,
+  useMemo,
 } from "react";
 import {GridStack} from "gridstack";
 // import "gridstack/dist/gridstack.min.css";
@@ -22,6 +23,7 @@ import {useCustom} from "@refinedev/core";
 import ContentEditor from "@components/editor-js/ContentEditor";
 import { SaveOutlined, EyeOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import styled from "styled-components";
+import MDEditor from '@uiw/react-md-editor';
 
 const Container = styled.div`
   display: grid;
@@ -69,7 +71,12 @@ type LayoutSettings = {
   editorJSData: JSON;
   columnCount: number;
   pageHeight: number;
-  availableTextStyles: JSON;
+  availableTextStyles: {
+    fonts: Array<{
+      fontFamily: string;
+      name: string;
+    }>;
+  };
   pageWidth: number;
   horizontalFieldsWidth: number;
   verticalFieldsHeight: number;
@@ -77,11 +84,17 @@ type LayoutSettings = {
   pagesCount: number;
 };
 
+type WidgetContent = {
+  type: 'image' | 'text';
+  url?: string;
+  text?: string;
+};
+
 type GridProps = {
   layout: CustomLayout;
   layoutSettings: LayoutSettings;
   updateLayoutHandle: (layout: CustomLayout) => void;
-  addWidgetWithContent: MouseEventHandler<HTMLButtonElement>;
+  addWidgetWithContent: (content: WidgetContent) => void;
   removeWidget: (id: string) => void;
   children?: ReactElement | ReactElement[];
   onChangeLayout: (layout: CustomLayout) => void;
@@ -426,7 +439,7 @@ export const Grid: FC<GridProps> = ({
                           icon={<PlusOutlined />}
                           disabled={isFirstOrLast}
                           onClick={() => {
-                            addWidgetWithContent(item.content);
+                            addWidgetWithContent({ type: 'text', text: item.content });
                             setItems(prev => prev?.filter(each => each.id !== item.id));
                           }}
                       />
@@ -441,11 +454,19 @@ export const Grid: FC<GridProps> = ({
                             maxHeight: "5%",
                             overflow: 'hidden',
                             wordBreak: 'break-word',
-                            whiteSpace: 'normal', // Force wrapping
-                            paddingRight: 8, // Prevent scrollbar overlap
-                            width: '100%' // Ensure full width
+                            whiteSpace: 'normal',
+                            paddingRight: 8,
+                            width: '100%'
                         }}>
-                          <ContentEditor readOnly value={item.content} />
+                          <div data-color-mode="light">
+                            <MDEditor.Markdown 
+                                source={typeof item.content === "string" ? item.content : JSON.stringify(item.content)} 
+                                style={{ 
+                                    backgroundColor: 'transparent',
+                                    padding: '10px'
+                                }}
+                            />
+                          </div>
                         </div>
                       }
                   />

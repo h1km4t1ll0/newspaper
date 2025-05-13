@@ -5,7 +5,7 @@ import {Form, Input, InputNumber, Space, Typography, Popconfirm, Tooltip, Button
 import {useState} from "react";
 import UploadImage from "@components/Upload";
 import {DeleteOutlined} from "@ant-design/icons";
-
+import CustomSelect from "@components/custom/custom-select";
 
 export default function BlogPostCreate() {
   const { formProps, saveButtonProps, form } = useForm({});
@@ -84,17 +84,6 @@ export default function BlogPostCreate() {
           </Popconfirm>)}
         </Space>
           <Form.Item
-              label={"Photo"}
-              name={["photo"]}
-              rules={[
-                  {
-                      required: false,
-                  },
-              ]}
-          >
-              <Input />
-          </Form.Item>
-          <Form.Item
               label={"Article"}
               name={["article"]}
               rules={[
@@ -103,7 +92,12 @@ export default function BlogPostCreate() {
                   },
               ]}
           >
-              <Input />
+              <CustomSelect
+                resource="articles"
+                optionLabel="name"
+                optionValue="id"
+                placeholder="Select article"
+              />
           </Form.Item>
       </Form>
     </Create>

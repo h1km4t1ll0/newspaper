@@ -2,10 +2,13 @@
 
 import { Create, useForm } from "@refinedev/antd";
 import { Form, Input } from "antd";
-import EditorJSInput from "@components/editor-js/EditorJSInput";
+import MDEditor from '@uiw/react-md-editor';
+import { useState } from 'react';
+import CustomSelect from "@components/custom/custom-select";
 
 export default function BlogPostCreate() {
-  const { formProps, saveButtonProps } = useForm({});
+  const { formProps, saveButtonProps, form } = useForm({});
+  const [text, setText] = useState("");
 
   return (
     <Create saveButtonProps={saveButtonProps}>
@@ -30,7 +33,13 @@ export default function BlogPostCreate() {
                   },
               ]}
           >
-              <Input />
+              <CustomSelect
+                resource="photos"
+                mode="multiple"
+                optionLabel="name"
+                optionValue="id"
+                placeholder="Select photos"
+              />
           </Form.Item>
           <Form.Item
               label={"Text"}
@@ -41,7 +50,16 @@ export default function BlogPostCreate() {
                   },
               ]}
           >
-             <EditorJSInput/>
+              <div data-color-mode="light">
+                <MDEditor
+                  preview="edit"
+                  value={text}
+                  onChange={(value) => {
+                    setText(value || "");
+                    form.setFieldValue("text", value);
+                  }}
+                />
+              </div>
           </Form.Item>
       </Form>
     </Create>

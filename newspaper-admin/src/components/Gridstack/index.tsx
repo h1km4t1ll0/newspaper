@@ -1,7 +1,7 @@
 import React, {FC, useCallback, useEffect, useMemo, useState} from "react";
 import "./grid-stack.css";
 import { Grid } from "./Grid";
-import ContentEditor from "@components/editor-js/ContentEditor";
+import MDEditor from '@uiw/react-md-editor';
 import {API_URL} from "@utility/constants";
 import {useCustom} from "@refinedev/core";
 import { useUpdate } from "@refinedev/core";
@@ -27,7 +27,12 @@ type LayoutSettings = {
   editorJSData: JSON;
   columnCount: number;
   pageHeight: number;
-  availableTextStyles: JSON;
+  availableTextStyles: {
+    fonts: Array<{
+      fontFamily: string;
+      name: string;
+    }>;
+  };
   pageWidth: number;
   horizontalFieldsWidth: number;
   verticalFieldsHeight: number;
@@ -139,16 +144,15 @@ const GridStack: FC<GridStackProps> = ({
         });
     };
 
-    const handleFontChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const newFont = e.target.value;
-        setSelectedFont(newFont);
+    const handleFontChange = (value: string) => {
+        setSelectedFont(value);
 
         // Apply font change to all widgets in the current page
         const updatedLayout = pages[currentPage].map((widget) => ({
             ...widget,
             content: {
                 ...widget.content,
-                fontFamily: newFont,
+                fontFamily: value,
             },
         }));
         setPages({
@@ -173,29 +177,33 @@ const GridStack: FC<GridStackProps> = ({
             >
                 {layout_.content?.type === 'image' &&
                     <div style={{
-                        // height: `${layoutSettings.pageHeight * 0.5}px`, // Fixed height for the container
-                        overflow: 'hidden', // Hide overflow to prevent cropping
-                        display: 'flex', // Use flexbox to center the image
-                        justifyContent: 'center', // Center horizontally
-                        alignItems: 'center', // Center vertically
-                        padding: '10px' // Add padding around the image
+                        overflow: 'hidden',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        padding: '10px'
                     }}>
                         <img
                             alt="issueCover"
                             style={{
-                                maxHeight: '100%', // Ensure the image does not exceed the container height
-                                maxWidth: '100%', // Ensure the image does not exceed the container width
-                                objectFit: 'contain' // Maintain aspect ratio and fit within the container
+                                maxHeight: '100%',
+                                maxWidth: '100%',
+                                objectFit: 'contain'
                             }}
                             src={`${API_URL}${layout_.content.url}`}
                         />
                     </div>
                 }
                 {layout_.content?.type !== 'image' &&
-                    <div className="editor-js">
-                        <ContentEditor
-                            readOnly
-                            value={typeof layout_.content === "string" ? null : layout_.content}
+                    <div data-color-mode="light">
+                        <MDEditor.Markdown
+                            source={typeof layout_.content === "string" ? layout_.content : JSON.stringify(layout_.content)}
+                            style={{
+                                backgroundColor: 'transparent',
+                                padding: '10px',
+                                whiteSpace: 'pre-wrap',
+                                wordBreak: 'break-word'
+                            }}
                         />
                     </div>
                 }
@@ -246,13 +254,12 @@ const GridStack: FC<GridStackProps> = ({
                         <Col>
                             <span style={{ marginRight: 8, fontWeight: 500 }}>Font:</span>
                             <Select
-                                // @ts-ignore
                                 value={selectedFont}
                                 onChange={handleFontChange}
                                 style={{ width: 200 }}
                                 dropdownMatchSelectWidth={false}
                             >
-                                {availableTextStyles.fonts.map((font: any) => (
+                                {availableTextStyles.fonts.map((font) => (
                                     <Select.Option key={font.fontFamily} value={font.fontFamily}>
                                         <span style={{ fontFamily: font.fontFamily }}>{font.name}</span>
                                     </Select.Option>
