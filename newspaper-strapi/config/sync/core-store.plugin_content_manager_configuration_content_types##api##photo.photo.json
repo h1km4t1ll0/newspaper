@@ -90,6 +90,21 @@
           "sortable": true
         }
       },
+      "task": {
+        "edit": {
+          "label": "task",
+          "description": "",
+          "placeholder": "",
+          "visible": true,
+          "editable": true,
+          "mainField": "name"
+        },
+        "list": {
+          "label": "task",
+          "searchable": true,
+          "sortable": true
+        }
+      },
       "createdAt": {
         "edit": {
           "label": "createdAt",
@@ -180,6 +195,12 @@
           },
           {
             "name": "article",
+            "size": 6
+          }
+        ],
+        [
+          {
+            "name": "task",
             "size": 6
           }
         ]

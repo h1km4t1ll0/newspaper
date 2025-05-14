@@ -106,7 +106,8 @@
         "fields": [
           "name",
           "photos",
-          "text"
+          "text",
+          "task"
         ]
       },
       "conditions": []
@@ -126,7 +127,8 @@
         "fields": [
           "name",
           "photos",
-          "text"
+          "text",
+          "task"
         ]
       },
       "conditions": []
@@ -139,7 +141,8 @@
         "fields": [
           "name",
           "photos",
-          "text"
+          "text",
+          "task"
         ]
       },
       "conditions": []
@@ -322,7 +325,8 @@
           "width",
           "height",
           "photo",
-          "article"
+          "article",
+          "task"
         ]
       },
       "conditions": []
@@ -344,7 +348,8 @@
           "width",
           "height",
           "photo",
-          "article"
+          "article",
+          "task"
         ]
       },
       "conditions": []
@@ -359,7 +364,66 @@
           "width",
           "height",
           "photo",
-          "article"
+          "article",
+          "task"
+        ]
+      },
+      "conditions": []
+    },
+    {
+      "action": "plugin::content-manager.explorer.create",
+      "actionParameters": {},
+      "subject": "api::task.task",
+      "properties": {
+        "fields": [
+          "name",
+          "description",
+          "assignee",
+          "articles",
+          "photos",
+          "status",
+          "re"
+        ]
+      },
+      "conditions": []
+    },
+    {
+      "action": "plugin::content-manager.explorer.delete",
+      "actionParameters": {},
+      "subject": "api::task.task",
+      "properties": {},
+      "conditions": []
+    },
+    {
+      "action": "plugin::content-manager.explorer.read",
+      "actionParameters": {},
+      "subject": "api::task.task",
+      "properties": {
+        "fields": [
+          "name",
+          "description",
+          "assignee",
+          "articles",
+          "photos",
+          "status",
+          "re"
+        ]
+      },
+      "conditions": []
+    },
+    {
+      "action": "plugin::content-manager.explorer.update",
+      "actionParameters": {},
+      "subject": "api::task.task",
+      "properties": {
+        "fields": [
+          "name",
+          "description",
+          "assignee",
+          "articles",
+          "photos",
+          "status",
+          "re"
         ]
       },
       "conditions": []
@@ -595,7 +659,8 @@
           "confirmationToken",
           "confirmed",
           "blocked",
-          "role"
+          "role",
+          "task"
         ]
       },
       "conditions": []
@@ -621,7 +686,8 @@
           "confirmationToken",
           "confirmed",
           "blocked",
-          "role"
+          "role",
+          "task"
         ]
       },
       "conditions": []
@@ -640,7 +706,8 @@
           "confirmationToken",
           "confirmed",
           "blocked",
-          "role"
+          "role",
+          "task"
         ]
       },
       "conditions": []

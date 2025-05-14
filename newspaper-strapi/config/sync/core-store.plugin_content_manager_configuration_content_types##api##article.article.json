@@ -62,6 +62,21 @@
           "sortable": false
         }
       },
+      "task": {
+        "edit": {
+          "label": "task",
+          "description": "",
+          "placeholder": "",
+          "visible": true,
+          "editable": true,
+          "mainField": "name"
+        },
+        "list": {
+          "label": "task",
+          "searchable": true,
+          "sortable": true
+        }
+      },
       "createdAt": {
         "edit": {
           "label": "createdAt",
@@ -124,7 +139,8 @@
     "layouts": {
       "list": [
         "id",
-        "name"
+        "name",
+        "task"
       ],
       "edit": [
         [
@@ -143,6 +159,12 @@
           {
             "name": "text",
             "size": 12
+          }
+        ],
+        [
+          {
+            "name": "task",
+            "size": 6
           }
         ]
       ]

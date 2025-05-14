@@ -771,6 +771,11 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
       'manyToOne',
       'plugin::users-permissions.role'
     >;
+    task: Attribute.Relation<
+      'plugin::users-permissions.user',
+      'oneToOne',
+      'api::task.task'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -877,6 +882,11 @@ export interface ApiArticleArticle extends Schema.CollectionType {
       'api::photo.photo'
     >;
     text: Attribute.Text;
+    task: Attribute.Relation<
+      'api::article.article',
+      'manyToOne',
+      'api::task.task'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -1033,6 +1043,7 @@ export interface ApiPhotoPhoto extends Schema.CollectionType {
       'manyToOne',
       'api::article.article'
     >;
+    task: Attribute.Relation<'api::photo.photo', 'manyToOne', 'api::task.task'>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -1046,6 +1057,46 @@ export interface ApiPhotoPhoto extends Schema.CollectionType {
       'oneToOne',
       'admin::user'
     > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiTaskTask extends Schema.CollectionType {
+  collectionName: 'tasks';
+  info: {
+    singularName: 'task';
+    pluralName: 'tasks';
+    displayName: 'Task';
+    description: '';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    name: Attribute.String;
+    description: Attribute.Text;
+    assignee: Attribute.Relation<
+      'api::task.task',
+      'oneToOne',
+      'plugin::users-permissions.user'
+    >;
+    articles: Attribute.Relation<
+      'api::task.task',
+      'oneToMany',
+      'api::article.article'
+    >;
+    photos: Attribute.Relation<
+      'api::task.task',
+      'oneToMany',
+      'api::photo.photo'
+    >;
+    status: Attribute.Enumeration<['TO_DO', 'IN_PROGRESS', 'DONE']>;
+    re: Attribute.String;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<'api::task.task', 'oneToOne', 'admin::user'> &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<'api::task.task', 'oneToOne', 'admin::user'> &
       Attribute.Private;
   };
 }
@@ -1075,6 +1126,7 @@ declare module '@strapi/types' {
       'api::layout.layout': ApiLayoutLayout;
       'api::newspaper.newspaper': ApiNewspaperNewspaper;
       'api::photo.photo': ApiPhotoPhoto;
+      'api::task.task': ApiTaskTask;
     }
   }
 }

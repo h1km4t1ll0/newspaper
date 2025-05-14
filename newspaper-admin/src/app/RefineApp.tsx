@@ -85,6 +85,17 @@ const allResources = [
       label: 'Issues',
     },
   },
+  {
+    name: 'tasks',
+    list: '/tasks',
+    create: '/tasks/create',
+    edit: '/tasks/edit/:id',
+    show: '/tasks/show/:id',
+    meta: {
+      label: 'Задачи',
+      canDelete: true,
+    },
+  },
 ]
 
 export const RoleContext = createContext<string | null | undefined>(null);
@@ -106,13 +117,13 @@ export default function RefineApp({
   const resources = useMemo(() => {
     if (role === "Writer") {
       return allResources.filter((r) =>
-        ["articles", "photos", "issues"].includes(r.name),
+        ["articles", "photos", "issues", "tasks"].includes(r.name),
       )
     }
 
     if (role === "Photographer") {
       return allResources.filter((r) =>
-        ["articles", "photos", "issues"].includes(r.name),
+        ["articles", "photos", "issues", "tasks"].includes(r.name),
       )
     }
 

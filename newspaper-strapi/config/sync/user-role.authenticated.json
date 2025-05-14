@@ -121,6 +121,33 @@
       "action": "api::photo.photo.update"
     },
     {
+      "action": "api::task.task.create"
+    },
+    {
+      "action": "api::task.task.delete"
+    },
+    {
+      "action": "api::task.task.find"
+    },
+    {
+      "action": "api::task.task.findOne"
+    },
+    {
+      "action": "api::task.task.update"
+    },
+    {
+      "action": "plugin::upload.content-api.destroy"
+    },
+    {
+      "action": "plugin::upload.content-api.find"
+    },
+    {
+      "action": "plugin::upload.content-api.findOne"
+    },
+    {
+      "action": "plugin::upload.content-api.upload"
+    },
+    {
       "action": "plugin::users-permissions.auth.changePassword"
     },
     {
@@ -142,7 +169,25 @@
       "action": "plugin::users-permissions.role.updateRole"
     },
     {
+      "action": "plugin::users-permissions.user.count"
+    },
+    {
+      "action": "plugin::users-permissions.user.create"
+    },
+    {
+      "action": "plugin::users-permissions.user.destroy"
+    },
+    {
+      "action": "plugin::users-permissions.user.find"
+    },
+    {
+      "action": "plugin::users-permissions.user.findOne"
+    },
+    {
       "action": "plugin::users-permissions.user.me"
+    },
+    {
+      "action": "plugin::users-permissions.user.update"
     }
   ]
 }
