@@ -197,7 +197,6 @@ const UploadImage: FC<IProps> = memo(({ value, onChange, setIndex, index, accept
       );
     }
 
-    console.log(imageName, 'imageName')
     return (
       <Image
         src={'http://127.0.0.1:1338' + imageName}

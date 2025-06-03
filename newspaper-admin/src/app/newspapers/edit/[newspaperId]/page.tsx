@@ -18,7 +18,6 @@ export default function BlogPostEdit() {
 
   const initialValues = useMemo(() => {
     const photo = query?.data?.data?.photo;
-    console.log('photoerferferf', photo)
     return {
       ...query?.data?.data,
       photo: {

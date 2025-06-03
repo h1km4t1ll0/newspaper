@@ -59,6 +59,7 @@ const GridStack: FC<GridStackProps> = ({
                                        }: GridStackProps) => {
     const {pagesCount, availableTextStyles} = layoutSettings;
 
+
     const {mutate} = useUpdate();
     const {data, isLoading, refetch} = useCustom<{
         data: {
@@ -169,10 +170,10 @@ const GridStack: FC<GridStackProps> = ({
                 key={layout_.id}
                 id={layout_.id}
                 data-lock={layout_.lock}
-                data-w={layout_.w}
-                data-h={layout_.h}
-                data-x={layout_.x}
-                data-y={layout_.y}
+                data-gs-w={layout_.w}
+                data-gs-h={layout_.h}
+                data-gs-x={layout_.x}
+                data-gs-y={layout_.y}
                 style={{fontFamily: layout_.content?.fontFamily ?? 'Arial'}}
             >
                 {layout_.content?.type === 'image' &&
@@ -273,6 +274,7 @@ const GridStack: FC<GridStackProps> = ({
                 <div style={{ padding: 16 }}>
                     <Grid
                         layout={pages[currentPage]}
+                        allLayouts={pages}
                         layoutSettings={layoutSettings}
                         updateLayoutHandle={updateLayoutHandle}
                         addWidgetWithContent={addWidgetWithContent}

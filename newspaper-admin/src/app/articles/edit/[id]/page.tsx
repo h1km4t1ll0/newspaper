@@ -62,7 +62,6 @@ export default function BlogPostEdit() {
                   preview="edit"
                   value={text}
                   onChange={(value) => {
-                    console.log(value, 'value');
                     setText(value || "");
                     form.setFieldValue("text", value);
                   }}

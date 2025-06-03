@@ -77,18 +77,15 @@ export default function IssueShowPage() {
     },
   });
 
-  console.log(tableProps, 'tableProps')
   const [issue, setIssue] = useState<IssueType>()
 
   useEffect(() => {
-    console.log(tableProps, 'tableProps useEffect')
     setIssue(tableProps.dataSource?.[0]);
   }, [tableProps, tableProps.dataSource?.length]);
 
   const [saved, setSaved] = useState(true);
 
   if (tableProps.loading || !issue) return <p>Loading...</p>;
-  console.log(issue, 'issue')
 
   return (
     <Layout style={{height: "100vh"}}>

@@ -110,6 +110,7 @@ type WidgetContent = {
 
 type GridProps = {
   layout: CustomLayout;
+  allLayouts: {[pageId: string]: CustomLayout};
   layoutSettings: LayoutSettings;
   updateLayoutHandle: (layout: CustomLayout) => void;
   addWidgetWithContent: (content: WidgetContent) => void;
@@ -126,6 +127,7 @@ type GridProps = {
 
 export const Grid: FC<GridProps> = ({
                                       layout,
+                                      allLayouts,
                                       layoutSettings,
                                       removeWidget,
                                       children,
@@ -246,9 +248,9 @@ export const Grid: FC<GridProps> = ({
   const getItems = useCallback(
     async () => {
       const data = await refetch();
-      console.log(data, 'data');
       const imagesArray: { name: string, url: string, id: number }[] = [];
-      
+
+
       // Get all items from the API
       const allItems = data.data?.data.data.map(
         (rawData) => {
@@ -273,11 +275,11 @@ export const Grid: FC<GridProps> = ({
       );
 
       // Filter out items that are already in any page's layout
-      const usedContent = Object.values(layout).flatMap(pageLayout => 
+      const usedContent = Object.values(allLayouts).flatMap(pageLayout =>
         pageLayout.map(item => {
           if (item.content?.type === 'text') {
-            return typeof item.content === "string" 
-              ? item.content 
+            return typeof item.content === "string"
+              ? item.content
               : item.content.text || item.content.blocks?.[0]?.data?.text || '';
           }
           if (item.content?.type === 'image') {
@@ -288,26 +290,25 @@ export const Grid: FC<GridProps> = ({
       );
 
       const filteredItems = allItems?.filter(item => {
-        const itemContent = typeof item.content === "string" 
-          ? item.content 
+        const itemContent = typeof item.content === "string"
+          ? item.content
           : item.content.text || item.content.blocks?.[0]?.data?.text || '';
         return !usedContent.includes(itemContent);
       });
 
-      const filteredImages = imagesArray.filter(image => 
+      const filteredImages = imagesArray.filter(image =>
         !usedContent.includes(image.url)
       );
 
       setItems(filteredItems);
       setImages(filteredImages);
-    }, [layout]
+    }, [allLayouts]
   );
 
   const getAdvertisement = useCallback(
     async () => {
       const data = await refetchAdvertisement();
-      console.log('advertisement', data);
-      
+
       // Get all advertisements from the API
       const allAds = data.data?.data.data
         .filter(ad => ad?.attributes?.photo?.data?.attributes?.url)
@@ -320,7 +321,7 @@ export const Grid: FC<GridProps> = ({
         );
 
       // Filter out advertisements that are already in any page's layout
-      const usedUrls = Object.values(layout).flatMap(pageLayout => 
+      const usedUrls = Object.values(allLayouts).flatMap(pageLayout =>
         pageLayout
           .filter(item => item.content?.type === 'image')
           .map(item => item.content.url)
@@ -328,14 +329,14 @@ export const Grid: FC<GridProps> = ({
 
       const filteredAds = allAds?.filter(ad => !usedUrls.includes(ad.url));
       setAdvertisement(filteredAds);
-    }, [layout]
+    }, [allLayouts]
   );
 
   const rowHeight = 20;
   const rowCount = Math.floor((layoutSettings.pageHeight - layoutSettings.verticalFieldsHeight) / rowHeight);
 
   const saveData = () => {
-    console.log("Saved data:", gridRef.current?.save());
+    //console.log("Saved data:", gridRef.current?.save());
   };
 
   const [visible, setVisible] = useState(false);
@@ -367,7 +368,6 @@ export const Grid: FC<GridProps> = ({
         },
         column: layoutSettings.columnCount,
         cellHeight: rowHeight,
-        sizeToContent: true,
         margin: 5,
         float: true,
         maxRow: rowCount,
@@ -436,7 +436,6 @@ export const Grid: FC<GridProps> = ({
     gridRef.current.on("change", (event, items) => {
       const itemId = items[0]?.el?.id;
 
-      console.log(items, 'items CHANGED')
 
       if (!itemId) {
         console.error("Ошибка при изменении лейаута! Нет ид элемента!");
@@ -478,14 +477,6 @@ export const Grid: FC<GridProps> = ({
     - 40;                                   // Footer height (adjust if needed)
   const mainContentHeight = remainingHeight > 0 ? remainingHeight : 0;
   const columnWidth = (layoutSettings.pageWidth - layoutSettings.horizontalFieldsWidth * 2) / layoutSettings.columnCount;
-  console.log("COLUMN WIDTH");
-  console.log(columnWidth);
-    console.log("layoutSettings.pageWidth");
-    console.log(layoutSettings.pageWidth);
-    console.log("layoutSettings.horizontalFieldsWidth");
-    console.log(layoutSettings.horizontalFieldsWidth);
-    console.log("layoutSettings.columnCount");
-    console.log(layoutSettings.columnCount);
   const isFirstOrLast = (currentPageNumber === 1 || currentPageNumber === totalPages);
 
 
@@ -740,7 +731,9 @@ export const Grid: FC<GridProps> = ({
                               id={child.id}
                               childLayout={child}
                           >
-                            <div>
+                            <div style={{
+                                position:"relative",
+                            }}>
                               {(currentPageNumber !== 1) && (<button
                                   style={{
                                     zIndex: 9999,

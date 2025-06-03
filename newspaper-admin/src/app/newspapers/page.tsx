@@ -64,7 +64,6 @@ export default function NewspaperList() {
             ],
         },
     });
-    console.log(tableProps?.dataSource)
 
     const router = useRouter();
 
