@@ -14,7 +14,7 @@ import {GridStack} from "gridstack";
 // import "gridstack/dist/gridstack.min.css";
 // import "gridstack/dist/gridstack-extra.min.css";
 import {GridItem} from "./GridItem";
-import {Button, Card, Col, Row, List, Tooltip, Skeleton, Divider} from "antd";
+import {Button, Card, Col, Row, List, Tooltip, Skeleton, Divider, Modal,} from "antd";
 import {CustomLayout} from "@components/Gridstack/index";
 import {API_URL} from "@utility/constants";
 import qs from "qs";
@@ -151,6 +151,12 @@ export const Grid: FC<GridProps> = ({
   const gridRef: React.MutableRefObject<undefined | GridStack> = useRef();
 
   const [loading, setLoading] = useState(true);
+
+  const [previewVisible, setPreviewVisible] = useState(false);
+  // Handler for opening preview
+    const showPreview = () => setPreviewVisible(true);
+    // Handler for closing preview
+    const hidePreview = () => setPreviewVisible(false);
 
   useEffect(() => {
     Promise.all([getItems(), getAdvertisement()])
@@ -666,7 +672,7 @@ export const Grid: FC<GridProps> = ({
                   </Button>
                   <Button
                       icon={<EyeOutlined />}
-                      onClick={() => console.log("Preview Page")}
+                      onClick={showPreview}
                   >
                       Preview
                   </Button>
@@ -813,6 +819,161 @@ export const Grid: FC<GridProps> = ({
               <h3 style={{ marginBottom: 16 }}>Advertisements</h3>
               {renderAdvertisementList()}
           </Sidebar>
+
+          <Modal
+              visible={previewVisible}
+              onCancel={hidePreview}
+              footer={null}
+              width={layoutSettings.pageWidth + 100}
+              // you can adjust the width to comfortably show the page
+              bodyStyle={{ backgroundColor: "#f0f2f5", padding: 20 }}
+              destroyOnClose
+          >
+              {/* Inside this Modal, re-render the exact same “newspaper page” markup,
+            but with ALL editing controls hidden:
+            • No GridStack wrappers (or you can leave the gridstack div,
+              but just don’t initialize it in preview mode).
+            • No “X” delete buttons.
+            • No plus-icons in the sidebar (we’re only showing the page itself here).
+            For simplicity, we’ll copy your entire page’s JSX but wrap it in
+            a “.preview-mode” class (so we can hide any unwanted bits via CSS). */}
+
+              <div
+                  className="newspaper-preview-container"
+                  style={{
+                      backgroundColor: "#ffffff",
+                      width: layoutSettings.pageWidth,
+                      height: layoutSettings.pageHeight,
+                      fontFamily: currentFont,
+                      margin: "0 auto",
+                      boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                      position: "relative",
+                  }}
+              >
+                  {/* Preview Header (also hidden on page 1 or last page) */}
+                  {currentPageNumber !== 1 && currentPageNumber !== totalPages && (
+                      <header
+                          style={{
+                              height: "20px",
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                              borderBottom: "1px solid #ddd",
+                              padding: "0 10px",
+                          }}
+                      >
+                          <p style={{ margin: 0 }}>{issueDateBeautified}</p>
+                          <p style={{ margin: 0 }}>{newspaperName}</p>
+                      </header>
+                  )}
+
+                  {/* Preview Main Content (no editing handles!) */}
+                  <div
+                      style={{
+                          flex: 1,
+                          backgroundColor: "#ffffff",
+                          overflow: "hidden",
+                          height: mainContentHeight,
+                          position: "relative",
+                      }}
+                  >
+                      {/* Vertical dividers (same as before) */}
+                      {[...Array(layoutSettings.columnCount - 1)].map((_, index) => (
+                          <div
+                              key={index}
+                              style={{
+                                  position: "absolute",
+                                  top: 0,
+                                  left: (index + 1) * columnWidth,
+                                  width: "1px",
+                                  height: "100%",
+                                  backgroundColor: "rgba(0,0,0,0.1)",
+                              }}
+                          />
+                      ))}
+
+                      {/* Here’s the important part: render each “child” exactly as in the
+                live grid, but WITHOUT the GridStack “.grid-stack” container,
+                because we only need to show content blocks placed in their final
+                positions. We can absolutely reuse your <GridItem> wrappers so
+                that the CSS/positioning stays identical. */}
+                      <div style={{ position: "relative", width: "100%", height: "100%" }}>
+                          {layout.map((child) => (
+                              <GridItem
+                                  // We still pass the same ref, id, and childLayout so that the
+                                  // <GridItem> sets the correct absolute x/y + w/h. But because
+                                  // gridstack isn’t “init”ed inside this modal, no drag handles appear.
+                                  itemRef={gridItemsRefs.current[child.id]}
+                                  id={child.id}
+                                  childLayout={child}
+                              >
+                                  <div style={{ position: "relative" }}>
+                                      {/* NB: No “X” button for deletion in preview */}
+                                      {child.content?.type === "image" ? (
+                                          <div
+                                              style={{
+                                                  overflow: "hidden",
+                                                  display: "flex",
+                                                  justifyContent: "center",
+                                                  alignItems: "center",
+                                                  padding: "10px",
+                                                  width: "100%",
+                                                  height: "100%",
+                                              }}
+                                          >
+                                              <img
+                                                  alt="widget"
+                                                  style={{
+                                                      maxHeight: "100%",
+                                                      maxWidth: "100%",
+                                                      objectFit: "contain",
+                                                  }}
+                                                  src={`${API_URL}${child.content.url}`}
+                                              />
+                                          </div>
+                                      ) : (
+                                          <div data-color-mode="light">
+                                              <MarkdownContainer fontFamily={child.content?.fontFamily || currentFont}>
+                                                  <MDEditor.Markdown
+                                                      source={
+                                                          typeof child.content === "string"
+                                                              ? child.content
+                                                              : child.content.text ||
+                                                              child.content.blocks?.[0]?.data?.text ||
+                                                              ""
+                                                      }
+                                                      style={{
+                                                          backgroundColor: "transparent",
+                                                          padding: "10px",
+                                                          whiteSpace: "pre-wrap",
+                                                          wordBreak: "break-word",
+                                                      }}
+                                                  />
+                                              </MarkdownContainer>
+                                          </div>
+                                      )}
+                                  </div>
+                              </GridItem>
+                          ))}
+                      </div>
+                  </div>
+                  {/* Preview Footer */}
+                  {currentPageNumber !== 1 && currentPageNumber !== totalPages && (
+                      <footer
+                          style={{
+                              height: "20px",
+                              padding: "10px 0px",
+                              textAlign: "center",
+                              borderTop: "1px solid #ddd",
+                          }}
+                      >
+                          <p>
+                              Page {currentPageNumber} of {totalPages}
+                          </p>
+                      </footer>
+                  )}
+              </div>
+          </Modal>
       </Container>
   );
 };
