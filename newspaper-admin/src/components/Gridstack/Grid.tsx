@@ -11,8 +11,8 @@ import React, {
   useMemo,
 } from "react";
 import {GridStack} from "gridstack";
-// import "gridstack/dist/gridstack.min.css";
-// import "gridstack/dist/gridstack-extra.min.css";
+import "gridstack/dist/gridstack-extra.min.css";
+import "gridstack/dist/gridstack.min.css";
 import {GridItem} from "./GridItem";
 import {Button, Card, Col, Row, List, Tooltip, Skeleton, Divider, Modal,} from "antd";
 import {CustomLayout} from "@components/Gridstack/index";
@@ -384,7 +384,6 @@ export const Grid: FC<GridProps> = ({
     grid.off("added change");
 
     const nextId = (layout.length + 1).toString();
-    console.log(grid.save())
     const initialWidthWidth = layoutSettings.columnCount;
 
     if (currentPageNumber === 1 && layout.length === 0) {
