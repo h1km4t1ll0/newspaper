@@ -56,7 +56,9 @@
     "framer-motion": "^12.11.0",
     "gridstack": "^12.0.0",
     "handsontable": "^14.6.1",
+    "html2canvas": "^1.4.1",
     "js-cookie": "^3.0.5",
+    "jspdf": "^3.0.1",
     "mathlive": "^0.101.2",
     "mobx": "^6.13.5",
     "mobx-react-lite": "^4.0.7",
@@ -91,5 +93,6 @@
   },
   "refine": {
     "projectId": "5dXQNc-LgkBeL-IkhHJz"
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
