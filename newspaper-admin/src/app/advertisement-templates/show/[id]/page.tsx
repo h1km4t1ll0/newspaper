@@ -1,7 +1,7 @@
 "use client";
 
-import { DateField, MarkdownField, Show, TextField } from "@refinedev/antd";
-import { useOne, useShow } from "@refinedev/core";
+import { Show, TextField } from "@refinedev/antd";
+import { useShow } from "@refinedev/core";
 import { Typography } from "antd";
 
 const { Title } = Typography;
@@ -19,9 +19,11 @@ export default function BlogPostShow() {
     <Show isLoading={isLoading}>
       <Title level={5}>{"ID"}</Title>
       <TextField value={record?.id} />
-      <Title level={5}>{"Width"}</Title>
+      <Title level={5}>{"Название шаблона"}</Title>
+      <TextField value={record?.name} />
+      <Title level={5}>{"Ширина (в колонках)"}</Title>
       <TextField value={record?.widthInColumns} />
-      <Title level={5}>{"Height"}</Title>
+      <Title level={5}>{"Высота (в строках)"}</Title>
       <TextField value={record?.heightInRows} />
     </Show>
   );
