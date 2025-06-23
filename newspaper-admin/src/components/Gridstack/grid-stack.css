@@ -6,7 +6,7 @@
   border-radius: 8px;
   box-sizing: border-box;
   background-color: white;
-  font-family: 'Lexend', sans-serif;
+  font-family: "Lexend", sans-serif;
   /*display: flex;*/
   overflow: hidden;
 }
@@ -32,12 +32,208 @@
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
 }
 
+/* Preview mode styles */
+.grid-stack-item.preview-mode {
+  border: none !important;
+  box-shadow: none !important;
+}
 
-.ce-block__content, .ce-toolbar__content { max-width: calc(100% - 100px) !important; }
-.cdx-block { max-width: 100% !important; }
-.codex-editor__loader { height: 38px !important; }
-.codex-editor__redactor { padding-bottom: 0 !important; }
-.codex-editor--narrow { padding-bottom: 0 !important; }
+.grid-stack-item.preview-mode:hover {
+  box-shadow: none !important;
+}
+
+/* Hide delete buttons in preview mode */
+.grid-stack-item.preview-mode button {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+/* Hide all buttons in preview container */
+.newspaper-preview-container button {
+  display: none !important;
+  visibility: hidden !important;
+  z-index: -9999 !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Hide any elements with high z-index in preview */
+.newspaper-preview-container * {
+  z-index: auto !important;
+}
+
+.newspaper-preview-container .preview-item * {
+  z-index: 1 !important;
+}
+
+/* Completely hide any buttons inside preview items */
+.preview-item button,
+.preview-item [role="button"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+/* Override any high z-index elements in preview */
+.newspaper-preview-container [style*="z-index"] {
+  z-index: 1 !important;
+}
+
+/* Hide delete buttons when modal is open */
+.ant-modal-open .grid-stack-item button {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+/* Ensure preview modal content has higher z-index than delete buttons */
+.ant-modal-wrap[style*="z-index: 1000"] {
+  z-index: 1000 !important;
+}
+
+.ant-modal-wrap[style*="z-index: 1000"] .ant-modal {
+  z-index: 1001 !important;
+}
+
+/* Ensure preview mode items don't have interactive styles */
+.preview-mode .grid-stack-item-content {
+  pointer-events: none;
+}
+
+/* But allow content to be visible */
+.preview-mode .grid-stack-item-content * {
+  pointer-events: auto;
+}
+
+/* Preview grid specific styles */
+.preview-grid {
+  pointer-events: none !important;
+}
+
+.preview-grid .grid-stack-item {
+  pointer-events: none !important;
+}
+
+.preview-grid .grid-stack-item-content {
+  pointer-events: none !important;
+}
+
+/* Disable GridStack drag handles in preview */
+.preview-grid .ui-resizable-handle {
+  display: none !important;
+}
+
+.preview-grid .ui-draggable-handle {
+  cursor: default !important;
+}
+
+.ce-block__content,
+.ce-toolbar__content {
+  max-width: calc(100% - 100px) !important;
+}
+.cdx-block {
+  max-width: 100% !important;
+}
+.codex-editor__loader {
+  height: 38px !important;
+}
 .codex-editor__redactor {
   padding-bottom: 0 !important;
+}
+.codex-editor--narrow {
+  padding-bottom: 0 !important;
+}
+.codex-editor__redactor {
+  padding-bottom: 0 !important;
+}
+
+/* Fix GridStack positioning to account for padding in the container */
+.grid-stack {
+  /* Ensure GridStack calculates positions correctly within the padded container */
+  box-sizing: border-box;
+}
+
+.grid-stack .grid-stack-item {
+  /* The GridStack items should be positioned within the available space */
+  box-sizing: border-box;
+}
+
+/* Стили для печати */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  @page {
+    margin: 0;
+    size: A4;
+  }
+
+  /* Разрыв страниц для каждой страницы газеты */
+  .newspaper-page-1,
+  .newspaper-page-2,
+  .newspaper-page-3,
+  .newspaper-page-4,
+  .newspaper-page-5,
+  .newspaper-page-6 {
+    page-break-after: always;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  /* Убираем разрыв страницы для последней страницы */
+  .newspaper-page-1:last-of-type,
+  .newspaper-page-2:last-of-type,
+  .newspaper-page-3:last-of-type,
+  .newspaper-page-4:last-of-type,
+  .newspaper-page-5:last-of-type,
+  .newspaper-page-6:last-of-type {
+    page-break-after: avoid;
+  }
+
+  /* Скрываем все кнопки при печати */
+  button {
+    display: none !important;
+  }
+
+  /* Скрываем вертикальные разделители колонок при печати */
+  div[style*="rgba(0,0,0,0.1)"] {
+    display: none !important;
+  }
+
+  /* Убираем границы у элементов сетки при печати */
+  .grid-stack-item {
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Убираем hover эффекты при печати */
+  .grid-stack-item:hover {
+    box-shadow: none !important;
+  }
+
+  /* Стили для предварительного просмотра в режиме печати */
+  .newspaper-preview-container .preview-item {
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  .newspaper-preview-container .preview-item img {
+    border: none !important;
+  }
+
+  /* Убираем все интерактивные элементы в режиме печати */
+  .print-only * {
+    pointer-events: none !important;
+  }
 }

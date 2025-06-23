@@ -1,29 +1,40 @@
+import {
+  DeleteOutlined,
+  EyeOutlined,
+  PlusOutlined,
+  SaveOutlined,
+} from "@ant-design/icons";
+import { CustomLayout } from "@components/Gridstack/index";
+import { useCustom } from "@refinedev/core";
+import MDEditor from "@uiw/react-md-editor";
+import { API_URL } from "@utility/constants";
+import {
+  Button,
+  Card,
+  Divider,
+  InputNumber,
+  List,
+  message,
+  Modal,
+  Skeleton,
+  Tooltip,
+} from "antd";
+import { GridStack } from "gridstack";
+import "gridstack/dist/gridstack.min.css";
+import qs from "qs";
 import React, {
   Children,
   createRef,
   FC,
-  MouseEventHandler,
   ReactElement,
   useCallback,
   useEffect,
   useRef,
   useState,
-  useMemo,
 } from "react";
-import {GridStack} from "gridstack";
-import "gridstack/dist/gridstack-extra.min.css";
-import "gridstack/dist/gridstack.min.css";
-import {GridItem} from "./GridItem";
-import {Button, Card, Col, Row, List, Tooltip, Skeleton, Divider, Modal,} from "antd";
-import {CustomLayout} from "@components/Gridstack/index";
-import {API_URL} from "@utility/constants";
-import qs from "qs";
-import "./grid-stack.css"
-import {useCustom} from "@refinedev/core";
-import ContentEditor from "@components/editor-js/ContentEditor";
-import { SaveOutlined, EyeOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import styled from "styled-components";
-import MDEditor from '@uiw/react-md-editor';
+import "./grid-stack.css";
+import { GridItem } from "./GridItem";
 
 const Container = styled.div`
   display: grid;
@@ -36,18 +47,18 @@ const Container = styled.div`
 const Sidebar = styled.div`
   background: white;
   padding: 16px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   overflow-y: auto;
 `;
 
-const calculateMainWidth = (settings: LayoutSettings) =>
-    settings.pageWidth - (settings.horizontalFieldsWidth * 2);
+const calculateMainWidth = (settings: LayoutSettings | null) =>
+  settings ? settings.pageWidth - settings.horizontalFieldsWidth * 2 : 600;
 
 const MainContent = styled.div<{ layoutSettings: LayoutSettings }>`
   background: white;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   flex-direction: column;
-    width: ${props => calculateMainWidth(props.layoutSettings)}px;
+  width: ${(props) => calculateMainWidth(props.layoutSettings)}px;
 `;
 
 const Toolbar = styled.div`
@@ -62,25 +73,35 @@ const Toolbar = styled.div`
 const NewspaperPage = styled.div<{ pageHeight: number }>`
   position: relative;
   background: white;
-  height: ${props => props.pageHeight}px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  height: ${(props) => props.pageHeight}px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   margin: 0 auto;
 `;
 
 // Add custom styles for markdown content
 const MarkdownContainer = styled.div<{ fontFamily: string }>`
-  font-family: ${props => props.fontFamily};
-  
-  h1, h2, h3, h4, h5, h6 {
-    font-family: ${props => props.fontFamily};
+  font-family: ${(props) => props.fontFamily};
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: ${(props) => props.fontFamily};
   }
-  
-  p, span, div {
-    font-family: ${props => props.fontFamily};
+
+  p,
+  span,
+  div {
+    font-family: ${(props) => props.fontFamily};
   }
-  
-  strong, em, b, i {
-    font-family: ${props => props.fontFamily};
+
+  strong,
+  em,
+  b,
+  i {
+    font-family: ${(props) => props.fontFamily};
   }
 `;
 
@@ -102,44 +123,66 @@ type LayoutSettings = {
 };
 
 type WidgetContent = {
-  type: 'image' | 'text';
+  type: "image" | "text";
   url?: string;
   text?: string;
   fontFamily?: string;
+  template?: {
+    widthInColumns: number;
+    heightInRows: number;
+    name: string;
+  };
 };
 
 type GridProps = {
   layout: CustomLayout;
-  allLayouts: {[pageId: string]: CustomLayout};
-  layoutSettings: LayoutSettings;
+  allLayouts: { [pageId: string]: CustomLayout };
+  layoutSettings: LayoutSettings | null;
   updateLayoutHandle: (layout: CustomLayout) => void;
   addWidgetWithContent: (content: WidgetContent) => void;
   removeWidget: (id: string) => void;
   children?: ReactElement | ReactElement[];
   onChangeLayout: (layout: CustomLayout) => void;
+  onSaveLayout: () => Promise<boolean>;
   currentPageNumber: number; // Pass the current page number
   totalPages: number; // Pass the total number of pages
   issueDate: string;
   newspaperName: string;
   currentFont: string;
   issueCover: any;
+  issueStatus: string;
+  issueId: number | string; // Add issueId prop
 };
 
 export const Grid: FC<GridProps> = ({
-                                      layout,
-                                      allLayouts,
-                                      layoutSettings,
-                                      removeWidget,
-                                      children,
-                                      onChangeLayout,
-                                      addWidgetWithContent,
-                                      currentPageNumber,
-                                      totalPages,
-                                      issueDate,
-                                      newspaperName,
-                                      currentFont,
-                                      issueCover
-                                    }) => {
+  layout,
+  allLayouts,
+  layoutSettings,
+  removeWidget,
+  children,
+  onChangeLayout,
+  addWidgetWithContent,
+  currentPageNumber,
+  totalPages,
+  issueDate,
+  newspaperName,
+  currentFont,
+  issueCover,
+  issueId,
+  onSaveLayout,
+}) => {
+  // Provide default values if layoutSettings is null
+  const safeLayoutSettings = layoutSettings || {
+    editorJSData: {} as JSON,
+    columnCount: 12,
+    pageHeight: 800,
+    availableTextStyles: { fonts: [{ fontFamily: "Arial", name: "Arial" }] },
+    pageWidth: 600,
+    horizontalFieldsWidth: 50,
+    verticalFieldsHeight: 50,
+    fontFamily: "Arial",
+    pagesCount: 1,
+  };
   const issueDateBeautified = new Intl.DateTimeFormat("en-US", {
     year: "numeric",
     month: "long",
@@ -153,41 +196,198 @@ export const Grid: FC<GridProps> = ({
   const [loading, setLoading] = useState(true);
 
   const [previewVisible, setPreviewVisible] = useState(false);
-  // Handler for opening preview
-    const showPreview = () => setPreviewVisible(true);
-    // Handler for closing preview
-    const hidePreview = () => setPreviewVisible(false);
+  const [splitTextModal, setSplitTextModal] = useState<{
+    visible: boolean;
+    textContent: string;
+    widgetId: string;
+  }>({
+    visible: false,
+    textContent: "",
+    widgetId: "",
+  });
+  const [splitCount, setSplitCount] = useState(2);
 
-  useEffect(() => {
-    Promise.all([getItems(), getAdvertisement()])
-        .then(() => setLoading(false))
-        .catch(() => setLoading(false));
-  }, [layout]);
+  // Define rowHeight early so it can be used in useEffect
+  const rowHeight = 40;
+  const rowCount = Math.floor(
+    (safeLayoutSettings.pageHeight - safeLayoutSettings.verticalFieldsHeight) /
+      rowHeight
+  );
+  // Handler for opening preview
+  const showPreview = () => setPreviewVisible(true);
+  // Handler for closing preview
+  const hidePreview = () => setPreviewVisible(false);
+
+  // Функция для открытия модального окна разбиения текста
+  const openSplitTextModal = (widgetId: string) => {
+    const widget = layout.find((item) => item.id === widgetId);
+    if (!widget || widget.content?.type === "image") return;
+
+    const textContent =
+      typeof widget.content === "string"
+        ? widget.content
+        : widget.content?.text || widget.content?.blocks?.[0]?.data?.text || "";
+
+    setSplitTextModal({
+      visible: true,
+      textContent,
+      widgetId,
+    });
+    setSplitCount(2);
+  };
+
+  // Функция для закрытия модального окна
+  const closeSplitTextModal = () => {
+    setSplitTextModal({
+      visible: false,
+      textContent: "",
+      widgetId: "",
+    });
+  };
+
+  // Функция для разбиения текста на части
+  const splitTextIntoParts = (text: string, parts: number): string[] => {
+    if (parts <= 1) return [text];
+
+    const words = text.split(/\s+/);
+    const totalWords = words.length;
+
+    if (totalWords < parts) {
+      // Если слов меньше чем частей, каждое слово - отдельная часть
+      return words.map((word) => word.trim()).filter((word) => word.length > 0);
+    }
+
+    const wordsPerPart = Math.floor(totalWords / parts);
+    const remainder = totalWords % parts;
+
+    const result: string[] = [];
+    let currentIndex = 0;
+
+    for (let i = 0; i < parts; i++) {
+      const currentPartSize = wordsPerPart + (i < remainder ? 1 : 0);
+      const partWords = words.slice(
+        currentIndex,
+        currentIndex + currentPartSize
+      );
+      result.push(partWords.join(" ").trim());
+      currentIndex += currentPartSize;
+    }
+
+    return result.filter((part) => part.length > 0);
+  };
+
+  // Функция для обработки разбиения текста
+  const handleSplitText = () => {
+    const { textContent, widgetId } = splitTextModal;
+
+    if (!textContent.trim()) {
+      message.error("Текст пуст");
+      return;
+    }
+
+    if (splitCount < 2 || splitCount > 5) {
+      message.error("Количество частей должно быть от 2 до 5");
+      return;
+    }
+
+    const textParts = splitTextIntoParts(textContent, splitCount);
+
+    if (textParts.length === 0) {
+      message.error("Не удалось разбить текст");
+      return;
+    }
+
+    // Удаляем оригинальный виджет
+    const updatedLayout = layout.filter((item) => item.id !== widgetId);
+    onChangeLayout(updatedLayout);
+
+    // Добавляем части текста в Temporary content
+    const newItems = textParts.map((part, index) => ({
+      id: Date.now() + index + Math.random(), // Уникальный ID
+      title: `Часть ${index + 1} из ${textParts.length}`,
+      content: part,
+    }));
+
+    console.log("Adding new text parts:", newItems); // Отладка
+
+    // Обновляем состояние items, гарантируя что оно не undefined
+    setItems((prevItems) => {
+      const currentItems = prevItems || [];
+      const updatedItems = [...currentItems, ...newItems];
+      console.log("Updated items state:", updatedItems); // Отладка
+      return updatedItems;
+    });
+
+    message.success(`Текст разбит на ${textParts.length} частей`);
+    closeSplitTextModal();
+  };
+
+  // No need for preview grid initialization since we use static positioning
 
   const query = qs.stringify(
     {
-      fields: '*',
+      fields: "*",
       populate: {
         photos: {
-          fields: '*',
+          fields: "*",
           populate: {
             photo: {
-              fields: '*',
+              fields: "*",
             },
           },
         },
+        issue: {
+          fields: ["id"],
+        },
       },
     },
     {
       encodeValuesOnly: true, // prettify URL
     }
   );
+
+  // Добавляем фильтр вручную к URL
+  const articlesUrl = `${API_URL}/api/articles?${query}`;
+  // Варианты фильтрации для тестирования:
+  // Вариант 1: &filters[issue][id][$eq]=${issueId}
+  // Вариант 2: &filters[issue]=${issueId}
+  // Вариант 3: &filters[$and][0][issue][id][$eq]=${issueId}
 
   const advertisementQuery = qs.stringify(
     {
-      fields: '*',
+      fields: "*",
       populate: {
-        photo: '*',
+        photo: {
+          fields: "*",
+        },
+        ad_template: {
+          fields: "*",
+        },
+      },
+      filters: {
+        DateFrom: {
+          $lte: issueDate, // Дата начала рекламы <= дата публикации выпуска
+        },
+        DateTo: {
+          $gte: issueDate, // Дата окончания рекламы >= дата публикации выпуска
+        },
+      },
+    },
+    {
+      encodeValuesOnly: true,
+    }
+  );
+
+  const queryPhotos = qs.stringify(
+    {
+      fields: "*",
+      populate: {
+        photo: {
+          fields: "*",
+        },
+        issue: {
+          fields: ["id"],
+        },
       },
     },
     {
@@ -195,154 +395,333 @@ export const Grid: FC<GridProps> = ({
     }
   );
 
+  // Добавляем фильтр вручную к URL для фото
+  const photosUrl = `${API_URL}/api/photos?${queryPhotos}`;
+  // Варианты фильтрации для тестирования:
+  // Вариант 1: &filters[issue][id][$eq]=${issueId}
+  // Вариант 2: &filters[issue]=${issueId}
+  // Вариант 3: &filters[$and][0][issue][id][$eq]=${issueId}
+
+  console.log("Articles URL:", articlesUrl);
+  console.log("Photos URL:", photosUrl);
+  console.log("Issue ID:", issueId);
+
   const { refetch } = useCustom<{
     data: {
-      id: number,
+      id: number;
       attributes: {
-        id: number,
-        text: any,
-        name: string,
+        id: number;
+        text: any;
+        name: string;
         photos: {
-          data: [{
-            id: number,
-            attributes: {
-              name: string,
-              width: number,
-              height: number,
-              createdAt: string,
-              updatedAt: string,
-              photo: {
-                data: {
-                  attributes: {
-                    url: string,
-                  },
-                },
-              },
-            },
-          }],
-        },
-      },
-    }[],
+          data: [
+            {
+              id: number;
+              attributes: {
+                name: string;
+                width: number;
+                height: number;
+                createdAt: string;
+                updatedAt: string;
+                photo: {
+                  data: {
+                    attributes: {
+                      url: string;
+                    };
+                  };
+                };
+              };
+            }
+          ];
+        };
+      };
+    }[];
   }>({
-    url: `${API_URL}/api/articles?${query}`,
+    url: articlesUrl,
     method: "get",
   });
 
   const { refetch: refetchAdvertisement } = useCustom<{
     data: {
-      id: number,
+      id: number;
       attributes: {
-        id: number,
-        header: string,
+        id: number;
+        Header: string;
+        DateFrom: string;
+        DateTo: string;
         photo: {
           data: {
             attributes: {
-              url: string,
-            },
-          },
-        },
-      },
-    }[],
+              url: string;
+            };
+          };
+        };
+        ad_template?: {
+          data: {
+            id: number;
+            attributes: {
+              name: string;
+              widthInColumns: number;
+              heightInRows: number;
+            };
+          };
+        };
+      };
+    }[];
   }>({
     url: `${API_URL}/api/advertisments?${advertisementQuery}`,
     method: "get",
   });
-  const [items, setItems] = useState<{ title: string, content: any, id: number }[]>();
-  const [images, setImages] = useState<{ name: string, url: string, id: number }[]>();
-  const [advertisement, setAdvertisement] = useState<{header: string, id: number, url: string}[]>();
 
-  const getItems = useCallback(
-    async () => {
-      const data = await refetch();
-      const imagesArray: { name: string, url: string, id: number }[] = [];
-
-
-      // Get all items from the API
-      const allItems = data.data?.data.data.map(
-        (rawData) => {
-          if (rawData.attributes.photos?.data) {
-            imagesArray.push(...rawData.attributes.photos.data
-              .filter(image => image?.attributes?.photo?.data?.attributes?.url)
-              .map(
-                (image) => ({
-                  name: image.attributes.name || 'Untitled Image',
-                  url: image.attributes.photo.data.attributes.url,
-                  id: image.id,
-                }),
-              ));
-          }
-
-          return {
-            title: rawData.attributes.name,
-            content: rawData.attributes.text,
-            id: rawData.id,
+  const {
+    data: photosData,
+    isLoading: photosLoading,
+    error: photosError,
+    refetch: refetchPhotos,
+  } = useCustom<{
+    data: {
+      id: number;
+      attributes: {
+        name: string;
+        photo: {
+          data: {
+            attributes: {
+              url: string;
+            };
           };
-        },
-      );
+        };
+        issue?: {
+          data: {
+            id: number;
+          };
+        };
+      };
+    }[];
+  }>({
+    url: photosUrl,
+    method: "get",
+  });
+  const [items, setItems] = useState<
+    { title: string; content: any; id: number }[]
+  >([]);
+  const [images, setImages] =
+    useState<{ name: string; url: string; id: number }[]>();
+  const [advertisement, setAdvertisement] = useState<
+    {
+      header: string;
+      id: number;
+      url: string;
+      template?: {
+        widthInColumns: number;
+        heightInRows: number;
+        name: string;
+      };
+    }[]
+  >();
+
+  const getItems = useCallback(async () => {
+    try {
+      console.log("Loading articles and photos for issue:", issueId);
+
+      const [articlesData, photosData] = await Promise.all([
+        refetch(),
+        refetchPhotos(),
+      ]);
+
+      console.log("Articles response:", articlesData);
+      console.log("Photos response:", photosData);
+      console.log("Current issue ID:", issueId);
+
+      // Отладочная информация для статей
+      const allArticles = articlesData.data?.data.data || [];
+      console.log("Total articles loaded:", allArticles.length);
+      allArticles.forEach((article: any, index: number) => {
+        const articleIssueId = article.attributes?.issue?.data?.id;
+        console.log(`Article ${index + 1}:`, {
+          name: article.attributes.name,
+          issueId: articleIssueId,
+          matchesCurrentIssue:
+            articleIssueId && articleIssueId.toString() === issueId.toString(),
+        });
+      });
+
+      // Отладочная информация для фотографий
+      const allPhotos = photosData.data?.data.data || [];
+      console.log("Total photos loaded:", allPhotos.length);
+      allPhotos.forEach((photo: any, index: number) => {
+        const photoIssueId = photo.attributes?.issue?.data?.id;
+        console.log(`Photo ${index + 1}:`, {
+          name: photo.attributes.name,
+          issueId: photoIssueId,
+          matchesCurrentIssue:
+            photoIssueId && photoIssueId.toString() === issueId.toString(),
+        });
+      });
+
+      // Get articles from the API и фильтруем по issue
+      const allItems = articlesData.data?.data.data
+        ?.filter((rawData: any) => {
+          // Фильтруем только статьи, принадлежащие текущему issue
+          const articleIssueId = rawData.attributes?.issue?.data?.id;
+          return (
+            articleIssueId && articleIssueId.toString() === issueId.toString()
+          );
+        })
+        ?.map((rawData: any) => ({
+          title: rawData.attributes.name,
+          content: rawData.attributes.text,
+          id: rawData.id,
+        }));
+
+      // Get photos from the API и фильтруем по issue
+      const imagesArray: { name: string; url: string; id: number }[] =
+        photosData.data?.data.data
+          ?.filter((photo: any) => {
+            // Проверяем что у фото есть файл и оно принадлежит текущему issue
+            const hasPhoto = photo?.attributes?.photo?.data?.attributes?.url;
+            const photoIssueId = photo.attributes?.issue?.data?.id;
+            return (
+              hasPhoto &&
+              photoIssueId &&
+              photoIssueId.toString() === issueId.toString()
+            );
+          })
+          .map((photo: any) => ({
+            name: photo.attributes.name || "Untitled Image",
+            url: photo.attributes.photo.data.attributes.url,
+            id: photo.id,
+          })) || [];
+
+      console.log("Loaded articles:", allItems?.length || 0);
+      console.log("Loaded photos:", imagesArray.length);
 
       // Filter out items that are already in any page's layout
-      const usedContent = Object.values(allLayouts).flatMap(pageLayout =>
-        pageLayout.map(item => {
-          if (item.content?.type === 'text') {
-            return typeof item.content === "string"
-              ? item.content
-              : item.content.text || item.content.blocks?.[0]?.data?.text || '';
-          }
-          if (item.content?.type === 'image') {
-            return item.content.url;
-          }
-          return null;
-        }).filter(Boolean)
+      const usedContent = Object.values(allLayouts).flatMap((pageLayout) =>
+        pageLayout
+          .map((item) => {
+            if (item.content?.type === "text") {
+              return typeof item.content === "string"
+                ? item.content
+                : item.content.text ||
+                    item.content.blocks?.[0]?.data?.text ||
+                    "";
+            }
+            if (item.content?.type === "image") {
+              return item.content.url;
+            }
+            return null;
+          })
+          .filter(Boolean)
       );
 
-      const filteredItems = allItems?.filter(item => {
-        const itemContent = typeof item.content === "string"
-          ? item.content
-          : item.content.text || item.content.blocks?.[0]?.data?.text || '';
+      const filteredItems = allItems?.filter((item) => {
+        const itemContent =
+          typeof item.content === "string"
+            ? item.content
+            : item.content.text || item.content.blocks?.[0]?.data?.text || "";
         return !usedContent.includes(itemContent);
       });
 
-      const filteredImages = imagesArray.filter(image =>
-        !usedContent.includes(image.url)
+      const filteredImages = imagesArray.filter(
+        (image) => !usedContent.includes(image.url)
       );
 
-      setItems(filteredItems);
-      setImages(filteredImages);
-    }, [allLayouts]
-  );
-
-  const getAdvertisement = useCallback(
-    async () => {
-      const data = await refetchAdvertisement();
-
-      // Get all advertisements from the API
-      const allAds = data.data?.data.data
-        .filter(ad => ad?.attributes?.photo?.data?.attributes?.url)
-        .map(
-          (rawData) => ({
-            header: rawData.attributes.header,
-            id: rawData.id,
-            url: rawData.attributes.photo.data.attributes.url,
-          }),
+      // Сохраняем существующие части текста (добавленные через разбиение)
+      setItems((prevItems) => {
+        const currentItems = prevItems || [];
+        // Находим части текста, добавленные через разбиение (у них title начинается с "Часть")
+        const splitTextParts = currentItems.filter(
+          (item) => item.title && item.title.startsWith("Часть")
         );
 
-      // Filter out advertisements that are already in any page's layout
-      const usedUrls = Object.values(allLayouts).flatMap(pageLayout =>
-        pageLayout
-          .filter(item => item.content?.type === 'image')
-          .map(item => item.content.url)
-      );
+        // Объединяем новые статьи с сохраненными частями текста
+        const combinedItems = [...(filteredItems || []), ...splitTextParts];
+        console.log("Combined items with split parts:", combinedItems);
+        return combinedItems;
+      });
 
-      const filteredAds = allAds?.filter(ad => !usedUrls.includes(ad.url));
-      setAdvertisement(filteredAds);
-    }, [allLayouts]
-  );
+      setImages(filteredImages);
+    } catch (error) {
+      console.error("Error loading articles and photos:", error);
+      // При ошибке сохраняем существующие части текста
+      setItems((prevItems) => {
+        const currentItems = prevItems || [];
+        const splitTextParts = currentItems.filter(
+          (item) => item.title && item.title.startsWith("Часть")
+        );
+        return splitTextParts;
+      });
+      setImages([]);
+    }
+  }, [allLayouts, refetch, refetchPhotos, issueId]);
 
-  const rowHeight = 20;
-  const rowCount = Math.floor((layoutSettings.pageHeight - layoutSettings.verticalFieldsHeight) / rowHeight);
+  const getAdvertisement = useCallback(async () => {
+    const data = await refetchAdvertisement();
 
-  const saveData = () => {
-    //console.log("Saved data:", gridRef.current?.save());
+    // Get all advertisements from the API with template data
+    const allAds = data.data?.data.data
+      .filter((ad) => ad?.attributes?.photo?.data?.attributes?.url)
+      .map((rawData) => ({
+        header: rawData.attributes.Header,
+        id: rawData.id,
+        url: rawData.attributes.photo.data.attributes.url,
+        template: rawData.attributes.ad_template?.data
+          ? {
+              widthInColumns:
+                rawData.attributes.ad_template.data.attributes.widthInColumns,
+              heightInRows:
+                rawData.attributes.ad_template.data.attributes.heightInRows,
+              name: rawData.attributes.ad_template.data.attributes.name,
+            }
+          : undefined,
+      }));
+
+    // Filter out advertisements that are already in any page's layout
+    const usedUrls = Object.values(allLayouts).flatMap((pageLayout) =>
+      pageLayout
+        .filter((item) => item.content?.type === "image")
+        .map((item) => item.content.url)
+    );
+
+    const filteredAds = allAds?.filter((ad) => !usedUrls.includes(ad.url));
+    setAdvertisement(filteredAds);
+  }, [allLayouts, refetchAdvertisement]);
+
+  useEffect(() => {
+    Promise.all([getItems(), getAdvertisement()])
+      .then(() => setLoading(false))
+      .catch(() => setLoading(false));
+  }, [layout, getItems, getAdvertisement]);
+
+  const saveData = async () => {
+    console.log("Manual save triggered");
+    console.log("Current layout:", layout);
+
+    // Сначала обновляем локальное состояние
+    onChangeLayout(layout);
+
+    // Затем сохраняем в базу данных
+    try {
+      const success = await onSaveLayout();
+
+      if (success) {
+        message.success({
+          content: "Макет сохранен",
+          duration: 2,
+        });
+      } else {
+        message.error({
+          content: "Ошибка сохранения макета",
+          duration: 3,
+        });
+      }
+    } catch (error) {
+      console.error("Save error:", error);
+      message.error({
+        content: "Ошибка сохранения макета",
+        duration: 3,
+      });
+    }
   };
 
   const [visible, setVisible] = useState(false);
@@ -368,45 +747,90 @@ export const Grid: FC<GridProps> = ({
 
     if (!gridRef.current) {
       gridRef.current = GridStack.init({
-        removable: '.trash',
+        removable: ".trash",
         acceptWidgets: function (el) {
-          return true
+          return true;
         },
-        column: layoutSettings.columnCount,
+        column: safeLayoutSettings.columnCount,
         cellHeight: rowHeight,
         margin: 5,
-        float: true,
+        float: false, // Отключаем автоматическое перемещение
+        animate: false, // Отключаем анимации
         maxRow: rowCount,
+        staticGrid: false, // Разрешаем перемещение, но контролируем его
+        // Отключаем автоматическое перемещение других элементов
+        disableResize: false, // Разрешаем изменение размера
+        disableDrag: false, // Разрешаем перетаскивание
+        // Ключевая настройка - отключаем автоматическое перемещение
+        resizable: {
+          handles: "e, se, s, sw, w",
+        },
       });
     }
 
     const grid = gridRef.current;
     grid.off("added change");
 
+    // Принудительно отключаем автоматическое перемещение
+    grid.float(false);
+
+    // Отключаем компактирование сетки
+    if (grid.opts) {
+      grid.opts.float = false;
+    }
+
     const nextId = (layout.length + 1).toString();
-    const initialWidthWidth = layoutSettings.columnCount;
+    const initialWidthWidth = safeLayoutSettings.columnCount;
 
     if (currentPageNumber === 1 && layout.length === 0) {
       const initialWidgets = [
-        {id: "widget-1", x: 0, y: 0, w: initialWidthWidth, h: 2, lock: true, content: {
-          blocks: [{
-            id: "widget-1",
-            data:{
-              text:`${newspaperName}`
-            },
-            type:"paragraph"
-          }]
-          }},
-        {id: "widget-2", x: 0, y: 2, w: initialWidthWidth, h: 2, lock: true, content: {type: "image", url: `${issueCover}`}},
-        {id: "widget-3", x: 0, y: 0, w: initialWidthWidth, h: 2, lock: true, content: {
-            blocks: [{
-              id: "widget-3",
-              data:{
-                text:`${issueDateBeautified}`
+        {
+          id: "widget-1",
+          x: 0,
+          y: 0,
+          w: initialWidthWidth,
+          h: 2,
+          lock: true,
+          content: {
+            blocks: [
+              {
+                id: "widget-1",
+                data: {
+                  text: `${newspaperName}`,
+                },
+                type: "paragraph",
               },
-              type:"paragraph"
-            }]
-          }},
+            ],
+          },
+        },
+        {
+          id: "widget-2",
+          x: 0,
+          y: 2,
+          w: initialWidthWidth,
+          h: 2,
+          lock: true,
+          content: { type: "image", url: `${issueCover}` },
+        },
+        {
+          id: "widget-3",
+          x: 0,
+          y: 4,
+          w: initialWidthWidth,
+          h: 2,
+          lock: true,
+          content: {
+            blocks: [
+              {
+                id: "widget-3",
+                data: {
+                  text: `${issueDateBeautified}`,
+                },
+                type: "paragraph",
+              },
+            ],
+          },
+        },
       ];
       onChangeLayout(initialWidgets);
     }
@@ -438,541 +862,1010 @@ export const Grid: FC<GridProps> = ({
       ]);
     });
 
-    gridRef.current.on("change", (event, items) => {
-      const itemId = items[0]?.el?.id;
+    // Отключаем стандартный обработчик change и добавляем свой
+    gridRef.current.off("change");
 
+    gridRef.current.on("resizestop", (event, el) => {
+      const itemId = el.id;
+      if (!itemId) return;
 
-      if (!itemId) {
-        console.error("Ошибка при изменении лейаута! Нет ид элемента!");
-        return;
-      }
+      // Получаем данные элемента из GridStack
+      const gridData = gridRef.current
+        ?.getGridItems()
+        .find((item) => item.id === itemId);
+      if (!gridData) return;
 
       const curItem = layout.find((each) => each.id === itemId);
+      if (!curItem) return;
 
-      if (!curItem) {
-        console.error("Ошибка при изменении лейаута! Элемента нет в layout");
-        return;
-      }
+      // Обновляем только размеры измененного элемента
+      const updatedLayout = layout.map((item) => {
+        if (item.id === itemId) {
+          return {
+            ...item,
+            h: parseInt(el.getAttribute("gs-h") || "1"),
+            w: parseInt(el.getAttribute("gs-w") || "1"),
+            // НЕ изменяем позицию при изменении размера
+            x: item.x,
+            y: item.y,
+          };
+        }
+        return item;
+      });
 
-      onChangeLayout([
-        ...layout.filter((each) => each.id !== itemId),
-        {
-          ...curItem,
-          h: items[0].h,
-          w: items[0].w,
-          x: items[0].x,
-          y: items[0].y,
-        },
-      ]);
+      onChangeLayout(updatedLayout);
+    });
+
+    gridRef.current.on("dragstop", (event, el) => {
+      const itemId = el.id;
+      if (!itemId) return;
+
+      const curItem = layout.find((each) => each.id === itemId);
+      if (!curItem) return;
+
+      // Обновляем только позицию перемещенного элемента
+      const updatedLayout = layout.map((item) => {
+        if (item.id === itemId) {
+          return {
+            ...item,
+            x: parseInt(el.getAttribute("gs-x") || "0"),
+            y: parseInt(el.getAttribute("gs-y") || "0"),
+            // НЕ изменяем размеры при перемещении
+            h: item.h,
+            w: item.w,
+          };
+        }
+        return item;
+      });
+
+      onChangeLayout(updatedLayout);
     });
 
     grid.batchUpdate();
     grid.removeAll(false);
     Children.forEach(children, (child) => {
-      grid.makeWidget(gridItemsRefs.current[child.props.id].current);
+      const widget = gridItemsRefs.current[child.props.id].current;
+      if (widget) {
+        grid.makeWidget(widget);
+        // Принудительно устанавливаем позицию из layout
+        const layoutItem = layout.find((item) => item.id === child.props.id);
+        if (layoutItem) {
+          grid.update(widget, {
+            x: layoutItem.x,
+            y: layoutItem.y,
+            w: layoutItem.w,
+            h: layoutItem.h,
+          });
+        }
+      }
     });
 
     grid.batchUpdate(false);
+
+    // После обновления принудительно отключаем float снова
+    grid.float(false);
   }, [children, rowHeight, rowCount]);
 
-  const remainingHeight = layoutSettings.pageHeight
-    - layoutSettings.verticalFieldsHeight   // Padding for vertical fields
-    - layoutSettings.horizontalFieldsWidth  // Padding for horizontal fields
-    - 20                                    // Header height (adjust if needed)
-    - 40;                                   // Footer height (adjust if needed)
+  const remainingHeight =
+    safeLayoutSettings.pageHeight -
+    (currentPageNumber !== 1 ? 30 : 0) - // Header height (only for pages other than first)
+    (currentPageNumber !== 1 ? 30 : 0); // Footer height (only for pages other than first)
   const mainContentHeight = remainingHeight > 0 ? remainingHeight : 0;
-  const columnWidth = (layoutSettings.pageWidth - layoutSettings.horizontalFieldsWidth * 2) / layoutSettings.columnCount;
-  const isFirstOrLast = (currentPageNumber === 1 || currentPageNumber === totalPages);
+  const columnWidth =
+    (safeLayoutSettings.pageWidth -
+      safeLayoutSettings.horizontalFieldsWidth * 2) /
+    safeLayoutSettings.columnCount;
 
+  const isFirstOrLast = false;
 
-  const renderContentList = () => (
+  const renderContentList = () => {
+    console.log("Rendering content list, items:", items); // Отладка
+    console.log("Items length:", items?.length || 0); // Отладка
+
+    return (
       <List
-          itemLayout="vertical"
-          dataSource={items}
-          loading={loading}
-          style={{ width: '100%' }}
-          renderItem={item => (
-              <List.Item
-                  style={{ padding: '8px 0' }}
-                  actions={[
-                    <Tooltip title="Add to layout">
-                      <Button
-                          type="primary"
-                          shape="circle"
-                          icon={<PlusOutlined />}
-                          disabled={isFirstOrLast}
-                          onClick={() => {
-                            addWidgetWithContent({ 
-                              type: 'text', 
-                              text: item.content,
-                              fontFamily: currentFont 
-                            });
-                            setItems(prev => prev?.filter(each => each.id !== item.id));
+        itemLayout="vertical"
+        dataSource={items}
+        loading={loading}
+        style={{ width: "100%" }}
+        renderItem={(item) => {
+          // Определяем, является ли это временной частью текста
+          const isTemporaryPart =
+            item.title &&
+            (item.title.startsWith("Часть") || item.title === "Removed Text");
+
+          const actions = [
+            <Tooltip key="add-text" title="Add to layout">
+              <Button
+                type="primary"
+                shape="circle"
+                icon={<PlusOutlined />}
+                disabled={currentPageNumber === 1}
+                onClick={() => {
+                  addWidgetWithContent({
+                    type: "text",
+                    text: item.content,
+                    fontFamily: currentFont,
+                  });
+                  setItems((prev) =>
+                    prev.filter((each) => each.id !== item.id)
+                  );
+                }}
+              />
+            </Tooltip>,
+          ];
+
+          // Добавляем кнопку удаления для временных частей
+          if (isTemporaryPart) {
+            actions.push(
+              <Tooltip key="delete-text" title="Delete permanently">
+                <Button
+                  danger
+                  shape="circle"
+                  icon={<DeleteOutlined />}
+                  onClick={() => handleDeleteTemporaryItem(item.id)}
+                />
+              </Tooltip>
+            );
+          }
+
+          return (
+            <List.Item style={{ padding: "8px 0" }} actions={actions}>
+              <Skeleton avatar title={false} loading={loading} active>
+                <List.Item.Meta
+                  title={
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                      }}
+                    >
+                      <span>{item.title}</span>
+                      {isTemporaryPart && (
+                        <span
+                          style={{
+                            fontSize: "10px",
+                            backgroundColor: "#f0f0f0",
+                            color: "#666",
+                            padding: "2px 6px",
+                            borderRadius: "10px",
+                            fontWeight: "normal",
                           }}
-                      />
-                    </Tooltip>
-                  ]}
-              >
-                <Skeleton avatar title={false} loading={loading} active>
-                    <List.Item.Meta
-                        title={item.title}
-                        description={
-                            <div style={{
-                                maxHeight: "5%",
-                                overflow: 'hidden',
-                                wordBreak: 'break-word',
-                                whiteSpace: 'normal',
-                                paddingRight: 8,
-                                width: '100%'
-                            }}>
-                                <MarkdownContainer fontFamily={currentFont}>
-                                    <MDEditor.Markdown 
-                                        source={typeof item.content === "string" ? item.content : JSON.stringify(item.content)} 
-                                        style={{ 
-                                            backgroundColor: 'transparent',
-                                            padding: '10px'
-                                        }}
-                                    />
-                                </MarkdownContainer>
-                            </div>
-                        }
-                    />
-                </Skeleton>
-              </List.Item>
-          )}
+                        >
+                          временный
+                        </span>
+                      )}
+                    </div>
+                  }
+                  description={
+                    <div
+                      style={{
+                        maxHeight: "5%",
+                        overflow: "hidden",
+                        wordBreak: "break-word",
+                        whiteSpace: "normal",
+                        paddingRight: 8,
+                        width: "100%",
+                      }}
+                    >
+                      <MarkdownContainer fontFamily={currentFont}>
+                        <MDEditor.Markdown
+                          source={
+                            typeof item.content === "string"
+                              ? item.content
+                              : item.content.text ||
+                                item.content.blocks?.[0]?.data?.text ||
+                                ""
+                          }
+                          style={{
+                            backgroundColor: "transparent",
+                            padding: "6px",
+                            whiteSpace: "pre-wrap",
+                            wordBreak: "break-word",
+                            lineHeight: "1.4", // Добавляем фиксированную высоту строки
+                          }}
+                        />
+                      </MarkdownContainer>
+                    </div>
+                  }
+                />
+              </Skeleton>
+            </List.Item>
+          );
+        }}
       />
-  );
+    );
+  };
 
   const renderImageList = () => (
-      <List
-          grid={{ gutter: 16, column: 2 }}
-          dataSource={images}
-          loading={loading}
-          renderItem={item => (
-              <List.Item>
-                <Card
-                    cover={
-                      <img
-                          alt={item.name}
-                          src={`${API_URL}${item.url}`}
-                          style={{ height: 120, objectFit: 'cover' }}
-                      />
-                    }
-                    actions={[
-                      <Tooltip title="Add to layout">
-                        <Button
-                            type="primary"
-                            shape="circle"
-                            icon={<PlusOutlined />}
-                            disabled={isFirstOrLast}
-                            onClick={() => {
-                              addWidgetWithContent({ type: 'image', url: item.url });
-                              setImages(prev => prev?.filter(each => each.id !== item.id));
-                            }}
-                        />
-                      </Tooltip>
-                    ]}
-                >
-                  <Card.Meta title={item.name} />
-                </Card>
-              </List.Item>
-          )}
-      />
+    <List
+      grid={{ gutter: 16, column: 2 }}
+      dataSource={images}
+      loading={loading}
+      renderItem={(item) => (
+        <List.Item>
+          <Card
+            cover={
+              <img
+                alt={item.name}
+                src={`${API_URL}${item.url}`}
+                style={{ height: 120, objectFit: "cover" }}
+              />
+            }
+            actions={[
+              <Tooltip key="add-image" title="Add to layout">
+                <Button
+                  type="primary"
+                  shape="circle"
+                  icon={<PlusOutlined />}
+                  disabled={currentPageNumber === 1}
+                  onClick={() => {
+                    addWidgetWithContent({ type: "image", url: item.url });
+                    setImages((prev) =>
+                      prev?.filter((each) => each.id !== item.id)
+                    );
+                  }}
+                />
+              </Tooltip>,
+            ]}
+          >
+            <Card.Meta title={item.name} />
+          </Card>
+        </List.Item>
+      )}
+    />
   );
 
   const renderAdvertisementList = () => (
-      <List
-          itemLayout="vertical"
-          dataSource={advertisement}
-          loading={loading}
-          renderItem={item => (
-              <List.Item
-                  actions={[
-                    <Tooltip title="Add to layout">
-                      <Button
-                          type="primary"
-                          shape="circle"
-                          icon={<PlusOutlined />}
-                          disabled={isFirstOrLast}
-                          onClick={() => {
-                            addWidgetWithContent({ type: 'image', url: item.url });
-                            setAdvertisement(prev => prev?.filter(each => each.id !== item.id));
-                          }}
-                      />
-                    </Tooltip>
-                  ]}
-              >
-                <Skeleton avatar title={false} loading={loading} active>
-                  <img
-                      alt={item.header}
-                      src={`${API_URL}${item.url}`}
-                      style={{ width: '100%', height: 120, objectFit: 'cover' }}
-                  />
-                  <Divider style={{ margin: '8px 0' }} />
-                  <h4 style={{ margin: 0 }}>{item.header}</h4>
-                </Skeleton>
-              </List.Item>
-          )}
-      />
+    <List
+      itemLayout="vertical"
+      dataSource={advertisement}
+      loading={loading}
+      renderItem={(item) => (
+        <List.Item
+          actions={[
+            <Tooltip key="add-ad" title="Add to layout">
+              <Button
+                type="primary"
+                shape="circle"
+                icon={<PlusOutlined />}
+                disabled={currentPageNumber === 1}
+                onClick={() => {
+                  addWidgetWithContent({
+                    type: "image",
+                    url: item.url,
+                    template: item.template,
+                  });
+                  setAdvertisement((prev) =>
+                    prev?.filter((each) => each.id !== item.id)
+                  );
+                }}
+              />
+            </Tooltip>,
+          ]}
+        >
+          <Skeleton avatar title={false} loading={loading} active>
+            <img
+              alt={item.header}
+              src={`${API_URL}${item.url}`}
+              style={{ width: "100%", height: 120, objectFit: "cover" }}
+            />
+            <Divider style={{ margin: "8px 0" }} />
+            <h4 style={{ margin: 0 }}>{item.header}</h4>
+            {item.template && (
+              <p style={{ margin: "4px 0", fontSize: "12px", color: "#666" }}>
+                Шаблон: {item.template.name} ({item.template.widthInColumns} ×{" "}
+                {item.template.heightInRows})
+              </p>
+            )}
+          </Skeleton>
+        </List.Item>
+      )}
+    />
   );
 
   const handleRemoveWidget = (id: string) => {
-    const pageLayout = layout.filter((block) => block.id === id);
-    
-    if (pageLayout.length > 0) {
-      const widget = pageLayout[0];
-      
+    console.log("Removing widget with id:", id); // Отладка
+
+    // Находим виджет в текущем макете
+    const widget = layout.find((block) => block.id === id);
+    console.log("Found widget:", widget); // Отладка
+
+    if (widget) {
+      // Определяем, является ли это текстовым виджетом
+      const isImageWidget = widget.content?.type === "image";
+      const isTextWidget = !isImageWidget; // Если не изображение, то текст
+
+      console.log("Is image widget:", isImageWidget); // Отладка
+      console.log("Is text widget:", isTextWidget); // Отладка
+
       // If the removed widget is a text widget, add it back to the available texts
-      if (widget.content?.type === 'text') {
-        const textContent = typeof widget.content === "string" 
-          ? widget.content 
-          : widget.content.text || widget.content.blocks?.[0]?.data?.text || '';
-        
-        setItems(prev => [...(prev || []), {
-          id: Date.now(),
-          title: 'Removed Text',
-          content: textContent,
-          fontFamily: widget.content?.fontFamily || currentFont
-        }]);
+      if (isTextWidget) {
+        const textContent =
+          typeof widget.content === "string"
+            ? widget.content
+            : widget.content?.text ||
+              widget.content?.blocks?.[0]?.data?.text ||
+              "";
+
+        console.log("Text content to return:", textContent); // Отладка
+
+        if (textContent && textContent.trim()) {
+          // Определяем заголовок для возвращаемого элемента
+          let title = "Removed Text";
+
+          // Если это часть разбитого текста, сохраняем информацию о части
+          const isTextPart = textContent.length < 200; // Предполагаем что части короче оригинальных статей
+          if (isTextPart) {
+            // Ищем существующие части в items, чтобы определить номер новой части
+            const existingParts = items.filter(
+              (item) => item.title && item.title.startsWith("Часть")
+            );
+            const nextPartNumber = existingParts.length + 1;
+            title = `Часть ${nextPartNumber} (возвращена)`;
+          }
+
+          console.log("Adding item back to temporary content:", {
+            title,
+            content: textContent,
+          }); // Отладка
+
+          setItems((prev) => {
+            const newItems = [
+              ...prev,
+              {
+                id: Date.now() + Math.random(), // Уникальный ID
+                title: title,
+                content: textContent,
+              },
+            ];
+            console.log("Updated items after adding back:", newItems); // Отладка
+            return newItems;
+          });
+        }
       }
-      
+
       // If the removed widget is an image widget, add it back to the available images
-      if (widget.content?.type === 'image' && widget.content?.url) {
-        setImages(prev => [...(prev || []), {
-          id: Date.now(),
-          name: 'Removed Image',
-          url: widget.content.url
-        }]);
+      if (isImageWidget && widget.content?.url) {
+        setImages((prev) => [
+          ...(prev || []),
+          {
+            id: Date.now(),
+            name: "Removed Image",
+            url: widget.content.url,
+          },
+        ]);
       }
+    } else {
+      console.log("Widget not found in layout"); // Отладка
     }
-    
+
+    // Удаляем виджет из макета
     removeWidget(id);
   };
 
+  // Функция для удаления временной части текста из меню
+  const handleDeleteTemporaryItem = (itemId: number) => {
+    setItems((prev) => prev.filter((item) => item.id !== itemId));
+    message.success("Часть текста удалена");
+  };
+
   return (
-      <Container>
-          <Sidebar>
-              <h3 style={{ marginBottom: 16 }}>Available Content</h3>
-              {renderContentList()}
-              <Divider orientation="left">Images</Divider>
-              {renderImageList()}
-          </Sidebar>
+    <Container>
+      <Sidebar>
+        <h3 style={{ marginBottom: 16 }}>Available Content</h3>
+        {currentPageNumber === 1 && (
+          <div
+            style={{
+              backgroundColor: "#fff3cd",
+              border: "1px solid #ffeaa7",
+              borderRadius: "4px",
+              padding: "12px",
+              marginBottom: "16px",
+              fontSize: "14px",
+            }}
+          >
+            <strong>📝 Первая страница</strong>
+            <br />
+            Эта страница не редактируется. Она содержит обложку выпуска.
+          </div>
+        )}
+        {currentPageNumber !== 1 && (
+          <>
+            <Divider orientation="left">Temporary Content</Divider>
+            {renderContentList()}
+            <Divider orientation="left">Images</Divider>
+            {renderImageList()}
+            <Divider orientation="left">Advertisements</Divider>
+            {renderAdvertisementList()}
+          </>
+        )}
+      </Sidebar>
 
-          <MainContent layoutSettings={layoutSettings}>
-
-            {/* Buttons above the header */}
-              <Toolbar>
-                  <Button
-                      type="primary"
-                      icon={<SaveOutlined />}
-                      onClick={saveData}
-                  >
-                      Save Layout
-                  </Button>
-                  <Button
-                      icon={<EyeOutlined />}
-                      onClick={showPreview}
-                  >
-                      Preview
-                  </Button>
-                  <div style={{ flex: 1 }} />
-                  <span>
+      <MainContent layoutSettings={safeLayoutSettings}>
+        {/* Buttons above the header */}
+        <Toolbar>
+          <Button type="primary" icon={<SaveOutlined />} onClick={saveData}>
+            Save Layout
+          </Button>
+          <Button icon={<EyeOutlined />} onClick={showPreview}>
+            Preview
+          </Button>
+          <Button
+            type="default"
+            onClick={async () => {
+              const { generatePDF } = await import("../../utils/pdfGenerator");
+              await generatePDF(
+                allLayouts,
+                layoutSettings,
+                issueDate,
+                newspaperName,
+                currentFont,
+                issueCover
+              );
+            }}
+          >
+            📄 Скачать PDF
+          </Button>
+          <div style={{ flex: 1 }} />
+          <span>
             Page {currentPageNumber} of {totalPages}
           </span>
-              </Toolbar>
+        </Toolbar>
 
+        {/* Main Content Area */}
+        <div
+          className={`newspaper-page-${currentPageNumber}`}
+          style={{
+            backgroundColor: "#ffffff",
+            height: safeLayoutSettings.pageHeight,
+            fontFamily: currentFont,
+            fontSize: "14px", // Добавляем базовый размер шрифта
+          }}
+        >
+          {/* Header - показываем на всех страницах кроме первой */}
+          {currentPageNumber !== 1 && (
+            <header
+              style={{
+                height: "30px",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                borderBottom: "1px solid #ddd",
+                padding: "5px 10px",
+                fontSize: "12px",
+                fontWeight: "bold",
+                backgroundColor: "#f8f9fa",
+              }}
+            >
+              <span style={{ margin: 0 }}>{issueDateBeautified}</span>
+              <span style={{ margin: 0 }}>{newspaperName}</span>
+            </header>
+          )}
 
-              {/* Main Content Area */}
-            <div className={`newspaper-page-${currentPageNumber}`} style={{
+          {/* Main Content Area */}
+          <div
+            style={{
+              flex: 1,
               backgroundColor: "#ffffff",
-              height: layoutSettings.pageHeight,
-              fontFamily: currentFont,
-            }}>
-
-              {/* Header */}
-              {(currentPageNumber !== 1 && currentPageNumber !== totalPages) && (<header
-                  style={{
-                    height: "20px",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    borderBottom: "1px solid #ddd",
-                  }}
-              >
-                <p style={{ margin: 0 }}>{issueDateBeautified}</p>
-                <p style={{ margin: 0 }}>{newspaperName}</p>
-              </header>)}
-
-              {/* Main Content Area */}
-              <div style={{
-                flex: 1,
-                backgroundColor: "#ffffff",
-                overflowY: 'clip',
-                height: mainContentHeight,
-                position: 'relative',
-              }}>
-
-                {/* Add vertical dividers for each column */}
-                {[...Array(layoutSettings.columnCount - 1)].map((_, index) => (
-                    <div
-                        key={index}
-                        style={{
-                          position: 'absolute',
-                          top: 0,
-                          left: (index + 1) * columnWidth,
-                          width: '1px',
-                          height: '100%',
-                          backgroundColor: 'rgba(0,0,0,0.1)',
-                        }}
-                    />
-                ))}
-
-                <div>
-                  <div className="grid-stack">
-                    {layout.map((child) => {
-                      return (
-                          <GridItem
-                              itemRef={gridItemsRefs.current[child.id]}
-                              id={child.id}
-                              childLayout={child}
-                          >
-                            <div style={{
-                                position:"relative",
-                            }}>
-                              {(currentPageNumber !== 1) && (<button
-                                  style={{
-                                    zIndex: 9999,
-                                    position:"absolute",
-                                    top:"5px",
-                                    right:"5px",
-                                    backgroundColor:"transparent",
-                                    border:"none",
-                                    color:"#454545",
-                                    fontSize:"16px",
-                                    cursor:"pointer"
-                                  }}
-                                  onClick={() => {
-                                    handleRemoveWidget(child.id);
-                                  }}
-                              >
-                                X
-                              </button>)}
-                              {child.content?.type === 'image' ? (
-                                <div style={{
-                                  overflow: 'hidden',
-                                  display: 'flex',
-                                  justifyContent: 'center',
-                                  alignItems: 'center',
-                                  padding: '10px'
-                                }}>
-                                  <img
-                                    alt="widget"
-                                    style={{
-                                      maxHeight: '100%',
-                                      maxWidth: '100%',
-                                      objectFit: 'contain'
-                                    }}
-                                    src={`${API_URL}${child.content.url}`}
-                                  />
-                                </div>
-                              ) : (
-                                <div data-color-mode="light">
-                                    <MarkdownContainer fontFamily={child.content?.fontFamily || currentFont}>
-                                        <MDEditor.Markdown
-                                            source={typeof child.content === "string" ? child.content : child.content.text || child.content.blocks?.[0]?.data?.text || ''}
-                                            style={{
-                                                backgroundColor: 'transparent',
-                                                padding: '10px',
-                                                whiteSpace: 'pre-wrap',
-                                                wordBreak: 'break-word'
-                                            }}
-                                        />
-                                    </MarkdownContainer>
-                                </div>
-                              )}
-                            </div>
-                          </GridItem>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-
-              {/* Footer */}
-              {(currentPageNumber !== 1 && currentPageNumber !== totalPages) && (<footer
-                  style={{
-                    height:"20px",
-                    padding:"10px 0px",
-                    textAlign:"center",
-                    borderTop:"1px solid #ddd"
-                  }}
-              >
-                <p>Page {currentPageNumber} of {totalPages}</p>
-              </footer>)}
-
-            </div>
-
-              </MainContent>
-          {/* Right Sidebar */}
-          <Sidebar>
-              <h3 style={{ marginBottom: 16 }}>Advertisements</h3>
-              {renderAdvertisementList()}
-          </Sidebar>
-
-          <Modal
-              visible={previewVisible}
-              onCancel={hidePreview}
-              footer={null}
-              width={layoutSettings.pageWidth + 100}
-              // you can adjust the width to comfortably show the page
-              bodyStyle={{ backgroundColor: "#f0f2f5", padding: 20 }}
-              destroyOnClose
+              overflowY: "clip",
+              height: mainContentHeight,
+              position: "relative",
+            }}
           >
-              {/* Inside this Modal, re-render the exact same “newspaper page” markup,
+            {/* Add vertical dividers for each column */}
+            {[...Array(safeLayoutSettings.columnCount - 1)].map((_, index) => {
+              // Сначала получаем ширину основного макета
+              const mainWidth = calculateMainWidth(safeLayoutSettings);
+              // Затем вычитаем горизонтальные поля, которые используются как padding
+              const gridStackWidth =
+                mainWidth - safeLayoutSettings.horizontalFieldsWidth * 2;
+              // GridStack рассчитывает ширину колонки на основе этого пространства
+              const gridStackColumnWidth =
+                gridStackWidth / safeLayoutSettings.columnCount;
+
+              return (
+                <div
+                  key={index}
+                  style={{
+                    position: "absolute",
+                    top: safeLayoutSettings.verticalFieldsHeight,
+                    left:
+                      (index + 1) * gridStackColumnWidth +
+                      safeLayoutSettings.horizontalFieldsWidth,
+                    width: "1px",
+                    height: `calc(100% - ${
+                      safeLayoutSettings.verticalFieldsHeight * 2
+                    }px)`,
+                    backgroundColor: "rgba(0,0,0,0.1)",
+                  }}
+                />
+              );
+            })}
+
+            <div
+              style={{
+                paddingLeft: safeLayoutSettings.horizontalFieldsWidth,
+                paddingRight: safeLayoutSettings.horizontalFieldsWidth,
+                paddingTop: safeLayoutSettings.verticalFieldsHeight,
+                paddingBottom: safeLayoutSettings.verticalFieldsHeight,
+                height: "100%", // Растягиваем на всю доступную высоту
+                boxSizing: "border-box", // Учитываем padding в размерах
+              }}
+            >
+              <div className="grid-stack">
+                {layout.map((child) => {
+                  return (
+                    <GridItem
+                      key={child.id}
+                      itemRef={gridItemsRefs.current[child.id]}
+                      id={child.id}
+                      childLayout={child}
+                      isPreview={false}
+                      columnWidth={columnWidth}
+                      rowHeight={rowHeight}
+                    >
+                      <div
+                        style={{
+                          position: "relative",
+                          border: child.lock ? "2px solid #d4edda" : undefined,
+                          backgroundColor: child.lock ? "#f8f9fa" : undefined,
+                          opacity: child.lock ? 0.8 : 1,
+                        }}
+                      >
+                        {/* Показываем кнопку удаления только для не заблокированных элементов */}
+                        {!child.lock && (
+                          <>
+                            <button
+                              style={{
+                                zIndex: 999, // Lower z-index so modal can cover it
+                                position: "absolute",
+                                top: "5px",
+                                right: "5px",
+                                backgroundColor: "rgba(255, 255, 255, 0.9)",
+                                border: "1px solid #ddd",
+                                borderRadius: "50%",
+                                color: "#ff4d4f",
+                                fontSize: "14px",
+                                width: "24px",
+                                height: "24px",
+                                cursor: "pointer",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                opacity: 0.7,
+                                transition: "all 0.2s ease",
+                              }}
+                              onMouseEnter={(e) => {
+                                const target = e.target as HTMLButtonElement;
+                                target.style.opacity = "1";
+                                target.style.backgroundColor = "#ff4d4f";
+                                target.style.color = "white";
+                                target.style.transform = "scale(1.1)";
+                              }}
+                              onMouseLeave={(e) => {
+                                const target = e.target as HTMLButtonElement;
+                                target.style.opacity = "0.7";
+                                target.style.backgroundColor =
+                                  "rgba(255, 255, 255, 0.9)";
+                                target.style.color = "#ff4d4f";
+                                target.style.transform = "scale(1)";
+                              }}
+                              onClick={() => {
+                                handleRemoveWidget(child.id);
+                              }}
+                            >
+                              ×
+                            </button>
+
+                            {/* Кнопка разделения текста - показываем только для текстовых блоков */}
+                            {child.content?.type !== "image" && (
+                              <button
+                                style={{
+                                  zIndex: 999,
+                                  position: "absolute",
+                                  top: "5px",
+                                  right: "35px", // Размещаем слева от кнопки удаления
+                                  backgroundColor: "rgba(255, 255, 255, 0.9)",
+                                  border: "1px solid #ddd",
+                                  borderRadius: "50%",
+                                  color: "#1890ff",
+                                  fontSize: "12px",
+                                  width: "24px",
+                                  height: "24px",
+                                  cursor: "pointer",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  opacity: 0.7,
+                                  transition: "all 0.2s ease",
+                                }}
+                                onMouseEnter={(e) => {
+                                  const target = e.target as HTMLButtonElement;
+                                  target.style.opacity = "1";
+                                  target.style.backgroundColor = "#1890ff";
+                                  target.style.color = "white";
+                                  target.style.transform = "scale(1.1)";
+                                }}
+                                onMouseLeave={(e) => {
+                                  const target = e.target as HTMLButtonElement;
+                                  target.style.opacity = "0.7";
+                                  target.style.backgroundColor =
+                                    "rgba(255, 255, 255, 0.9)";
+                                  target.style.color = "#1890ff";
+                                  target.style.transform = "scale(1)";
+                                }}
+                                onClick={() => {
+                                  openSplitTextModal(child.id);
+                                }}
+                                title="Разбить текст на части"
+                              >
+                                ✂
+                              </button>
+                            )}
+                          </>
+                        )}
+                        {child.content?.type === "image" ? (
+                          <div
+                            style={{
+                              overflow: "hidden",
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              padding:
+                                child.id === "first-page-issue-cover"
+                                  ? "5px"
+                                  : "6px",
+                              height: "100%",
+                              width: "100%",
+                            }}
+                          >
+                            <img
+                              alt="widget"
+                              style={{
+                                maxHeight: "100%",
+                                maxWidth: "100%",
+                                objectFit:
+                                  child.id === "first-page-issue-cover"
+                                    ? "cover"
+                                    : "contain",
+                                borderRadius:
+                                  child.id === "first-page-issue-cover"
+                                    ? "8px"
+                                    : "0px",
+                              }}
+                              src={`${API_URL}${child.content.url}`}
+                            />
+                          </div>
+                        ) : (
+                          <div data-color-mode="light">
+                            <MarkdownContainer
+                              fontFamily={
+                                child.content?.fontFamily || currentFont
+                              }
+                            >
+                              <MDEditor.Markdown
+                                source={
+                                  typeof child.content === "string"
+                                    ? child.content
+                                    : child.content.text ||
+                                      child.content.blocks?.[0]?.data?.text ||
+                                      ""
+                                }
+                                style={{
+                                  backgroundColor: "transparent",
+                                  padding: "6px",
+                                  whiteSpace: "pre-wrap",
+                                  wordBreak: "break-word",
+                                  lineHeight: "1.4", // Добавляем фиксированную высоту строки
+                                }}
+                              />
+                            </MarkdownContainer>
+                          </div>
+                        )}
+                      </div>
+                    </GridItem>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Footer - показываем на всех страницах кроме первой */}
+          {currentPageNumber !== 1 && (
+            <footer
+              style={{
+                height: "30px",
+                padding: "5px 10px",
+                textAlign: "center",
+                borderTop: "1px solid #ddd",
+                fontSize: "12px",
+                fontWeight: "bold",
+                backgroundColor: "#f8f9fa",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <span>
+                Страница {currentPageNumber} из {totalPages}
+              </span>
+            </footer>
+          )}
+        </div>
+      </MainContent>
+
+      <Modal
+        visible={previewVisible}
+        onCancel={hidePreview}
+        footer={null}
+        width={safeLayoutSettings.pageWidth + 100}
+        // you can adjust the width to comfortably show the page
+        bodyStyle={{ backgroundColor: "#f0f2f5", padding: 0 }}
+        destroyOnClose
+        zIndex={1000} // Lower z-index to not interfere with other modals
+      >
+        {/* Inside this Modal, re-render the exact same "newspaper page" markup,
             but with ALL editing controls hidden:
             • No GridStack wrappers (or you can leave the gridstack div,
-              but just don’t initialize it in preview mode).
-            • No “X” delete buttons.
-            • No plus-icons in the sidebar (we’re only showing the page itself here).
-            For simplicity, we’ll copy your entire page’s JSX but wrap it in
-            a “.preview-mode” class (so we can hide any unwanted bits via CSS). */}
+              but just don't initialize it in preview mode).
+            • No "X" delete buttons.
+            • No plus-icons in the sidebar (we're only showing the page itself here).
+            For simplicity, we'll copy your entire page's JSX but wrap it in
+            a "preview-mode" class (so we can hide any unwanted bits via CSS). */}
 
-              <div
-                  className="newspaper-preview-container"
-                  style={{
-                      backgroundColor: "#ffffff",
-                      width: layoutSettings.pageWidth,
-                      height: layoutSettings.pageHeight,
-                      fontFamily: currentFont,
-                      margin: "0 auto",
-                      boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-                      position: "relative",
-                  }}
-              >
-                  {/* Preview Header (also hidden on page 1 or last page) */}
-                  {currentPageNumber !== 1 && currentPageNumber !== totalPages && (
-                      <header
-                          style={{
-                              height: "20px",
-                              display: "flex",
-                              justifyContent: "space-between",
-                              alignItems: "center",
-                              borderBottom: "1px solid #ddd",
-                              padding: "0 10px",
-                          }}
-                      >
-                          <p style={{ margin: 0 }}>{issueDateBeautified}</p>
-                          <p style={{ margin: 0 }}>{newspaperName}</p>
-                      </header>
-                  )}
+        <div
+          className="newspaper-preview-container"
+          style={{
+            backgroundColor: "#ffffff",
+            width: safeLayoutSettings.pageWidth,
+            height: safeLayoutSettings.pageHeight,
+            fontFamily: currentFont,
+            fontSize: "14px", // Добавляем базовый размер шрифта
+            margin: "20px auto 0", // Отступ только сверху и по бокам
+            boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+            position: "relative",
+          }}
+        >
+          {/* Preview Header - показываем на всех страницах кроме первой */}
+          {currentPageNumber !== 1 && (
+            <header
+              style={{
+                height: "30px",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                borderBottom: "1px solid #ddd",
+                padding: "5px 10px",
+                fontSize: "12px",
+                fontWeight: "bold",
+                backgroundColor: "#f8f9fa",
+              }}
+            >
+              <span style={{ margin: 0 }}>{issueDateBeautified}</span>
+              <span style={{ margin: 0 }}>{newspaperName}</span>
+            </header>
+          )}
 
-                  {/* Preview Main Content (no editing handles!) */}
+          {/* Preview Main Content (no editing handles!) */}
+          <div
+            style={{
+              flex: 1,
+              backgroundColor: "#ffffff",
+              overflow: "hidden",
+              height: mainContentHeight,
+              position: "relative",
+            }}
+          >
+            {/* Vertical dividers hidden in preview for cleaner look */}
+
+            {/* Static preview using exact GridStack positioning logic */}
+            <div
+              className="preview-grid-static"
+              style={{ position: "relative", width: "100%", height: "100%" }}
+            >
+              {layout.map((child) => {
+                // Use exact same calculations as main grid
+                const actualColumnWidth = columnWidth;
+                const actualRowHeight = rowHeight;
+                const margin = 5;
+
+                // Позиционирование с учетом боковых полей из layout
+                const x =
+                  (child.x || 0) * actualColumnWidth +
+                  safeLayoutSettings.horizontalFieldsWidth;
+                const y =
+                  (child.y || 0) * actualRowHeight +
+                  (currentPageNumber !== 1 ? 30 : 0) +
+                  safeLayoutSettings.verticalFieldsHeight; // Учитываем header и вертикальные поля
+                const w = (child.w || 1) * actualColumnWidth - margin;
+                const h = (child.h || 1) * actualRowHeight - margin;
+
+                return (
                   <div
-                      style={{
-                          flex: 1,
-                          backgroundColor: "#ffffff",
-                          overflow: "hidden",
-                          height: mainContentHeight,
-                          position: "relative",
-                      }}
+                    key={`preview-${child.id}`}
+                    className="preview-item"
+                    style={{
+                      position: "absolute",
+                      left: `${x}px`,
+                      top: `${y}px`,
+                      width: `${w}px`,
+                      height: `${h}px`,
+                      border: "none", // Убираем обводку в превью
+                      borderRadius: "0px", // Убираем скругления в превью
+                      backgroundColor: "transparent", // Убираем фон в превью
+                      overflow: "hidden",
+                    }}
                   >
-                      {/* Vertical dividers (same as before) */}
-                      {[...Array(layoutSettings.columnCount - 1)].map((_, index) => (
-                          <div
-                              key={index}
-                              style={{
-                                  position: "absolute",
-                                  top: 0,
-                                  left: (index + 1) * columnWidth,
-                                  width: "1px",
-                                  height: "100%",
-                                  backgroundColor: "rgba(0,0,0,0.1)",
-                              }}
-                          />
-                      ))}
-
-                      {/* Here’s the important part: render each “child” exactly as in the
-                live grid, but WITHOUT the GridStack “.grid-stack” container,
-                because we only need to show content blocks placed in their final
-                positions. We can absolutely reuse your <GridItem> wrappers so
-                that the CSS/positioning stays identical. */}
-                      <div style={{ position: "relative", width: "100%", height: "100%" }}>
-                          {layout.map((child) => (
-                              <GridItem
-                                  // We still pass the same ref, id, and childLayout so that the
-                                  // <GridItem> sets the correct absolute x/y + w/h. But because
-                                  // gridstack isn’t “init”ed inside this modal, no drag handles appear.
-                                  itemRef={gridItemsRefs.current[child.id]}
-                                  id={child.id}
-                                  childLayout={child}
-                              >
-                                  <div style={{ position: "relative" }}>
-                                      {/* NB: No “X” button for deletion in preview */}
-                                      {child.content?.type === "image" ? (
-                                          <div
-                                              style={{
-                                                  overflow: "hidden",
-                                                  display: "flex",
-                                                  justifyContent: "center",
-                                                  alignItems: "center",
-                                                  padding: "10px",
-                                                  width: "100%",
-                                                  height: "100%",
-                                              }}
-                                          >
-                                              <img
-                                                  alt="widget"
-                                                  style={{
-                                                      maxHeight: "100%",
-                                                      maxWidth: "100%",
-                                                      objectFit: "contain",
-                                                  }}
-                                                  src={`${API_URL}${child.content.url}`}
-                                              />
-                                          </div>
-                                      ) : (
-                                          <div data-color-mode="light">
-                                              <MarkdownContainer fontFamily={child.content?.fontFamily || currentFont}>
-                                                  <MDEditor.Markdown
-                                                      source={
-                                                          typeof child.content === "string"
-                                                              ? child.content
-                                                              : child.content.text ||
-                                                              child.content.blocks?.[0]?.data?.text ||
-                                                              ""
-                                                      }
-                                                      style={{
-                                                          backgroundColor: "transparent",
-                                                          padding: "10px",
-                                                          whiteSpace: "pre-wrap",
-                                                          wordBreak: "break-word",
-                                                      }}
-                                                  />
-                                              </MarkdownContainer>
-                                          </div>
-                                      )}
-                                  </div>
-                              </GridItem>
-                          ))}
-                      </div>
-                  </div>
-                  {/* Preview Footer */}
-                  {currentPageNumber !== 1 && currentPageNumber !== totalPages && (
-                      <footer
+                    <div style={{ width: "100%", height: "100%" }}>
+                      {child.content?.type === "image" ? (
+                        <div
                           style={{
-                              height: "20px",
-                              padding: "10px 0px",
-                              textAlign: "center",
-                              borderTop: "1px solid #ddd",
+                            overflow: "hidden",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            width: "100%",
+                            height: "100%",
+                            padding:
+                              child.id === "first-page-issue-cover"
+                                ? "5px"
+                                : "6px",
                           }}
-                      >
-                          <p>
-                              Page {currentPageNumber} of {totalPages}
-                          </p>
-                      </footer>
-                  )}
-              </div>
-          </Modal>
-      </Container>
+                        >
+                          <img
+                            alt="widget"
+                            style={{
+                              maxHeight: "100%",
+                              maxWidth: "100%",
+                              objectFit:
+                                child.id === "first-page-issue-cover"
+                                  ? "cover"
+                                  : "contain",
+                              borderRadius:
+                                child.id === "first-page-issue-cover"
+                                  ? "8px"
+                                  : "0px",
+                            }}
+                            src={`${API_URL}${child.content.url}`}
+                          />
+                        </div>
+                      ) : (
+                        <div
+                          data-color-mode="light"
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            overflow: "hidden",
+                          }}
+                        >
+                          <MarkdownContainer
+                            fontFamily={
+                              child.content?.fontFamily || currentFont
+                            }
+                          >
+                            <MDEditor.Markdown
+                              source={
+                                typeof child.content === "string"
+                                  ? child.content
+                                  : child.content.text ||
+                                    child.content.blocks?.[0]?.data?.text ||
+                                    ""
+                              }
+                              style={{
+                                backgroundColor: "transparent",
+                                padding: "6px",
+                                whiteSpace: "pre-wrap",
+                                wordBreak: "break-word",
+                                lineHeight: "1.4", // Добавляем фиксированную высоту строки
+                              }}
+                            />
+                          </MarkdownContainer>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          {/* Preview Footer - показываем на всех страницах кроме первой */}
+          {currentPageNumber !== 1 && (
+            <footer
+              style={{
+                height: "30px",
+                padding: "5px 10px",
+                textAlign: "center",
+                borderTop: "1px solid #ddd",
+                fontSize: "12px",
+                fontWeight: "bold",
+                backgroundColor: "#f8f9fa",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <span>
+                Страница {currentPageNumber} из {totalPages}
+              </span>
+            </footer>
+          )}
+        </div>
+      </Modal>
+
+      {/* Модальное окно для разбиения текста */}
+      <Modal
+        title="Разбить текст на части"
+        open={splitTextModal.visible}
+        onOk={handleSplitText}
+        onCancel={closeSplitTextModal}
+        okText="Разбить"
+        cancelText="Отмена"
+        zIndex={1100}
+      >
+        <div style={{ marginBottom: 16 }}>
+          <p>
+            <strong>Текст для разбиения:</strong>
+          </p>
+          <div
+            style={{
+              maxHeight: 200,
+              overflow: "auto",
+              padding: 12,
+              border: "1px solid #d9d9d9",
+              borderRadius: 6,
+              backgroundColor: "#fafafa",
+              fontSize: "14px",
+              lineHeight: "1.5",
+            }}
+          >
+            {splitTextModal.textContent}
+          </div>
+        </div>
+
+        <div style={{ marginBottom: 16 }}>
+          <p>
+            <strong>Количество частей:</strong>
+          </p>
+          <InputNumber
+            min={2}
+            max={5}
+            value={splitCount}
+            onChange={(value) => setSplitCount(value || 2)}
+            style={{ width: "100%" }}
+          />
+          <p style={{ fontSize: "12px", color: "#666", marginTop: 8 }}>
+            Текст будет разделен по пробелам, чтобы слова не обрывались
+          </p>
+        </div>
+
+        {splitCount >= 2 && splitCount <= 5 && splitTextModal.textContent && (
+          <div>
+            <p>
+              <strong>Предварительный просмотр частей:</strong>
+            </p>
+            {splitTextIntoParts(splitTextModal.textContent, splitCount).map(
+              (part, index) => (
+                <div
+                  key={index}
+                  style={{
+                    marginBottom: 8,
+                    padding: 8,
+                    border: "1px solid #e8e8e8",
+                    borderRadius: 4,
+                    backgroundColor: "#f9f9f9",
+                    fontSize: "12px",
+                  }}
+                >
+                  <strong>Часть {index + 1}:</strong> {part.substring(0, 100)}
+                  {part.length > 100 ? "..." : ""}
+                </div>
+              )
+            )}
+          </div>
+        )}
+      </Modal>
+    </Container>
   );
 };
