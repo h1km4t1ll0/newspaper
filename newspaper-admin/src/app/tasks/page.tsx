@@ -1,19 +1,22 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { Kanban } from '@/components/kanban';
-import { useGetIdentity } from '@refinedev/core';
-import { ThemedLayoutV2 } from '@refinedev/antd';
+import { Kanban } from "@/components/kanban";
+import { ThemedLayoutV2 } from "@refinedev/antd";
+import { usePermissions } from "@refinedev/core";
+import React from "react";
 
 const TasksPage: React.FC = () => {
-    const { data: user } = useGetIdentity<{ role: string }>();
-    const canCreateTask = user?.role === 'Authenticated' || user?.role === 'Photographer';
+  const { data: permissions } = usePermissions<string>();
+  const canCreateTask =
+    permissions === "Authenticated" ||
+    permissions === "Photographer" ||
+    permissions === "Layout";
 
-    return (
-        <ThemedLayoutV2>
-            <Kanban createButtonProps={{ hidden: !canCreateTask }} />
-        </ThemedLayoutV2>
-    );
+  return (
+    <ThemedLayoutV2>
+      <Kanban createButtonProps={{ hidden: false }} />
+    </ThemedLayoutV2>
+  );
 };
 
-export default TasksPage; 
+export default TasksPage;
