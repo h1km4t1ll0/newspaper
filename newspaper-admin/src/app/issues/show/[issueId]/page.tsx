@@ -1,13 +1,12 @@
 "use client";
 
-import {useTable} from "@refinedev/antd";
-import {useParams, useSearchParams} from "next/navigation";
 import GridStack from "@components/Gridstack";
-import {Badge, Layout} from "antd";
-import {SyncOutlined,} from "@ant-design/icons";
-import {useEffect, useMemo, useState} from "react";
+import { useTable } from "@refinedev/antd";
+import { Layout } from "antd";
+import { useParams, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
-const {Header, Sider, Content} = Layout;
+const { Header, Sider, Content } = Layout;
 
 const relationsQuery = {
   populate: {
@@ -19,22 +18,22 @@ const relationsQuery = {
       },
     },
     cover: {
-      populate: "*"
-    }
-  }
+      populate: "*",
+    },
+  },
 };
 
 type LayoutType = {
-  editorJSData: JSON,
-  columnCount: number,
-  pageHeight: number,
-  availableTextStyles: JSON,
-  pageWidth: number,
-  horizontalFieldsWidth: number,
-  verticalFieldsHeight: number,
-  fontFamily: string,
-  pagesCount: number,
-}
+  editorJSData: JSON;
+  columnCount: number;
+  pageHeight: number;
+  availableTextStyles: JSON;
+  pageWidth: number;
+  horizontalFieldsWidth: number;
+  verticalFieldsHeight: number;
+  fontFamily: string;
+  pagesCount: number;
+};
 
 type NewspaperType = {
   id: string | number;
@@ -53,11 +52,11 @@ type IssueType = {
 };
 
 export default function IssueShowPage() {
-  const {issueId} = useParams(); // Extract issueId from the route
+  const { issueId } = useParams(); // Extract issueId from the route
   const searchParams = useSearchParams();
   const newspaperId = searchParams.get("newspaperId"); // Extract newspaperId from query parameters
 
-  const {tableProps} = useTable<IssueType>({
+  const { tableProps } = useTable<IssueType>({
     resource: "issues",
     meta: relationsQuery,
     syncWithLocation: false,
@@ -77,7 +76,7 @@ export default function IssueShowPage() {
     },
   });
 
-  const [issue, setIssue] = useState<IssueType>()
+  const [issue, setIssue] = useState<IssueType>();
 
   useEffect(() => {
     setIssue(tableProps.dataSource?.[0]);
@@ -87,51 +86,14 @@ export default function IssueShowPage() {
 
   if (tableProps.loading || !issue) return <p>Loading...</p>;
 
+  // Normal mode - with full layout
   return (
-    <Layout style={{height: "100vh"}}>
-      {/* ── Sticky Header ── */}
-      <Header
-        style={{
-          position: "sticky",
-          top: 0,
-          zIndex: 1000,
-          display: "flex",
-          alignItems: "center",
-          padding: "0 24px",
-          background: "#fff",
-          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-        }}
-      >
-        <h2 style={{margin: 0, flex: 1}}>{issue.name}</h2>
-
-        <Badge
-          status={issue.status === "published" ? "success" : "warning"}
-          text={issue.status}
-          style={{marginRight: 24}}
-        />
-
-        <span style={{marginRight: 24}}>
-          {new Date(issue.PublishDate).toLocaleString()}
-        </span>
-
-        <div style={{marginLeft: 24}}>
-          {saved ? (
-            <span style={{color: "#52c41a"}}>
-              <SyncOutlined spin={false}/> All changes saved
-            </span>
-          ) : (
-            <span>
-              <SyncOutlined spin/> Saving…
-            </span>
-          )}
-        </div>
-      </Header>
-
+    <Layout style={{ height: "100vh" }}>
       <Layout>
         {/* ── Main Canvas ── */}
-        <Content style={{position: "relative", overflow: "auto"}}>
+        <Content style={{ position: "relative", overflow: "auto" }}>
           <GridStack
-            layoutSettings={issue.newspaper.layout}
+            layoutSettings={issue.newspaper.layout as any}
             issueDate={issue.PublishDate}
             newspaperName={issue.newspaper.name}
             issueCover={issue.cover?.url}
