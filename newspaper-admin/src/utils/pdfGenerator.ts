@@ -84,7 +84,8 @@ export const generatePDF = async (
   issueDate: string,
   newspaperName: string,
   currentFont: string,
-  issueCover: any
+  issueCover: any,
+  progress?: (stage: number | string) => void
 ) => {
   if (!allLayouts || !layoutSettings) {
     console.error("Missing required data for PDF generation");
@@ -126,6 +127,8 @@ export const generatePDF = async (
       const pageId = pageIds[i];
       const pageLayout = allLayouts[pageId] || [];
       const pageNumber = i + 1;
+
+      if (progress) progress(pageNumber); // Notify progress for this page
 
       // Create page container
       const pageContainer = document.createElement("div");
@@ -378,6 +381,8 @@ export const generatePDF = async (
     )
       .toString()
       .padStart(2, "0")}-${today.getDate().toString().padStart(2, "0")}.pdf`;
+
+    if (progress) progress(filename); // Notify progress for saving
 
     // Save PDF
     pdf.save(filename);

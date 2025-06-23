@@ -132,6 +132,7 @@ type WidgetContent = {
     heightInRows: number;
     name: string;
   };
+  title?: string;
 };
 
 type GridProps = {
@@ -1269,14 +1270,31 @@ export const Grid: FC<GridProps> = ({
             type="default"
             onClick={async () => {
               const { generatePDF } = await import("../../utils/pdfGenerator");
-              await generatePDF(
-                allLayouts,
-                layoutSettings,
-                issueDate,
-                newspaperName,
-                currentFont,
-                issueCover
-              );
+              let hideLoading = message.loading("Generating PDF...", 0);
+              try {
+                await generatePDF(
+                  allLayouts,
+                  layoutSettings,
+                  issueDate,
+                  newspaperName,
+                  currentFont,
+                  issueCover,
+                  (progress) => {
+                    if (typeof progress === "string") {
+                      message.open({ type: "loading", content: progress, duration: 0, key: "pdf-progress" });
+                    } else if (typeof progress === "number") {
+                      message.open({ type: "loading", content: `Generating page ${progress}...`, duration: 0, key: "pdf-progress" });
+                    }
+                  }
+                );
+                hideLoading();
+                message.success("PDF has been successfully generated and downloaded", 5);
+              } catch (e) {
+                hideLoading();
+                message.error("Error while generating PDF", 5);
+              } finally {
+                message.destroy("pdf-progress");
+              }
             }}
           >
             📄 Скачать PDF
