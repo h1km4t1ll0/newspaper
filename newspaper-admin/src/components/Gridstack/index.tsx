@@ -1,7 +1,7 @@
 import { useCustom, useUpdate } from "@refinedev/core";
 import MDEditor from "@uiw/react-md-editor";
 import { API_URL } from "@utility/constants";
-import { Button, Col, Layout, Row, Select } from "antd";
+import { Button, Col, Layout, Row, Select, message } from "antd";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { Grid } from "./Grid";
 import "./grid-stack.css";
@@ -224,6 +224,44 @@ const GridStack: FC<GridStackProps> = ({
     if (!pages || !pages[currentPage]) {
       console.warn("Cannot add widget: pages or currentPage not available");
       return;
+    }
+
+    if (content.type === "text" && content.title && content.title.startsWith("Часть")) {
+      const partBase = content.title.replace(/\(возвращена\)/, '').trim();
+      let foundOnPages: string[] = [];
+      Object.entries(pages).forEach(([pageId, layout]) => {
+        if (layout.some(
+          (w) =>
+            w.content?.type === "text" &&
+            w.content?.title &&
+            w.content.title.replace(/\(возвращена\)/, '').trim() === partBase
+        )) {
+          foundOnPages.push(pageId);
+        }
+      });
+      if (foundOnPages.length > 0 && !foundOnPages.includes(currentPage)) {
+        message.warning(
+          `Внимание: части одной статьи размещены на разных страницах! (${partBase})`,
+          5
+        );
+      }
+      const allOtherParts = Object.entries(pages).flatMap(([pageId, layout]) =>
+        layout
+          .filter(
+            (w) =>
+              w.content?.type === "text" &&
+              w.content?.title &&
+              w.content.title.startsWith("Часть") &&
+              pageId !== currentPage
+          )
+          .map((w) => ({ title: w.content.title, pageId }))
+      );
+      if (allOtherParts.length > 0) {
+        message.warning(
+          `Warning: parts of one article are placed on different pages!`,
+          5
+        );
+      }
     }
 
     const pageLayout = pages[currentPage];

@@ -953,6 +953,7 @@ export const Grid: FC<GridProps> = ({
                     type: "text",
                     text: item.content,
                     fontFamily: currentFont,
+                    title: item.title,
                   });
                   setItems((prev) =>
                     prev.filter((each) => each.id !== item.id)
@@ -1068,7 +1069,11 @@ export const Grid: FC<GridProps> = ({
                   icon={<PlusOutlined />}
                   disabled={currentPageNumber === 1}
                   onClick={() => {
-                    addWidgetWithContent({ type: "image", url: item.url });
+                    addWidgetWithContent({
+                      type: "image",
+                      url: item.url,
+                      title: item.name,
+                    });
                     setImages((prev) =>
                       prev?.filter((each) => each.id !== item.id)
                     );
@@ -1103,6 +1108,7 @@ export const Grid: FC<GridProps> = ({
                     type: "image",
                     url: item.url,
                     template: item.template,
+                    title: item.header,
                   });
                   setAdvertisement((prev) =>
                     prev?.filter((each) => each.id !== item.id)
