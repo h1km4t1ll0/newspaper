@@ -90,9 +90,9 @@
           "sortable": true
         }
       },
-      "task": {
+      "tasks": {
         "edit": {
-          "label": "task",
+          "label": "tasks",
           "description": "",
           "placeholder": "",
           "visible": true,
@@ -100,7 +100,22 @@
           "mainField": "name"
         },
         "list": {
-          "label": "task",
+          "label": "tasks",
+          "searchable": false,
+          "sortable": false
+        }
+      },
+      "issue": {
+        "edit": {
+          "label": "issue",
+          "description": "",
+          "placeholder": "",
+          "visible": true,
+          "editable": true,
+          "mainField": "name"
+        },
+        "list": {
+          "label": "issue",
           "searchable": true,
           "sortable": true
         }
@@ -200,7 +215,11 @@
         ],
         [
           {
-            "name": "task",
+            "name": "issue",
+            "size": 6
+          },
+          {
+            "name": "tasks",
             "size": 6
           }
         ]

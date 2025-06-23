@@ -104,6 +104,51 @@
           "sortable": false
         }
       },
+      "tasks": {
+        "edit": {
+          "label": "tasks",
+          "description": "",
+          "placeholder": "",
+          "visible": true,
+          "editable": true,
+          "mainField": "name"
+        },
+        "list": {
+          "label": "tasks",
+          "searchable": false,
+          "sortable": false
+        }
+      },
+      "articles": {
+        "edit": {
+          "label": "articles",
+          "description": "",
+          "placeholder": "",
+          "visible": true,
+          "editable": true,
+          "mainField": "name"
+        },
+        "list": {
+          "label": "articles",
+          "searchable": false,
+          "sortable": false
+        }
+      },
+      "photos": {
+        "edit": {
+          "label": "photos",
+          "description": "",
+          "placeholder": "",
+          "visible": true,
+          "editable": true,
+          "mainField": "name"
+        },
+        "list": {
+          "label": "photos",
+          "searchable": false,
+          "sortable": false
+        }
+      },
       "createdAt": {
         "edit": {
           "label": "createdAt",
@@ -201,6 +246,22 @@
           {
             "name": "issueData",
             "size": 12
+          }
+        ],
+        [
+          {
+            "name": "tasks",
+            "size": 6
+          },
+          {
+            "name": "articles",
+            "size": 6
+          }
+        ],
+        [
+          {
+            "name": "photos",
+            "size": 6
           }
         ]
       ]

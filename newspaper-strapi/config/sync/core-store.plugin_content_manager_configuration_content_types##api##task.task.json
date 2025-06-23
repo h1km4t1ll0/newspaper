@@ -106,6 +106,35 @@
           "sortable": true
         }
       },
+      "issue": {
+        "edit": {
+          "label": "issue",
+          "description": "",
+          "placeholder": "",
+          "visible": true,
+          "editable": true,
+          "mainField": "name"
+        },
+        "list": {
+          "label": "issue",
+          "searchable": true,
+          "sortable": true
+        }
+      },
+      "taskType": {
+        "edit": {
+          "label": "taskType",
+          "description": "",
+          "placeholder": "",
+          "visible": true,
+          "editable": true
+        },
+        "list": {
+          "label": "taskType",
+          "searchable": true,
+          "sortable": true
+        }
+      },
       "re": {
         "edit": {
           "label": "re",
@@ -180,12 +209,6 @@
       }
     },
     "layouts": {
-      "list": [
-        "id",
-        "name",
-        "description",
-        "assignee"
-      ],
       "edit": [
         [
           {
@@ -221,8 +244,26 @@
           {
             "name": "re",
             "size": 6
+          },
+          {
+            "name": "issue",
+            "size": 6
+          }
+        ],
+        [
+          {
+            "name": "taskType",
+            "size": 6
           }
         ]
+      ],
+      "list": [
+        "id",
+        "name",
+        "description",
+        "assignee",
+        "issue",
+        "status"
       ]
     },
     "uid": "api::task.task"

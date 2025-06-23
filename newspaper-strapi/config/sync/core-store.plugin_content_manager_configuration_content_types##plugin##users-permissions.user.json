@@ -146,9 +146,9 @@
           "sortable": true
         }
       },
-      "task": {
+      "tasks": {
         "edit": {
-          "label": "task",
+          "label": "tasks",
           "description": "",
           "placeholder": "",
           "visible": true,
@@ -156,9 +156,9 @@
           "mainField": "name"
         },
         "list": {
-          "label": "task",
-          "searchable": true,
-          "sortable": true
+          "label": "tasks",
+          "searchable": false,
+          "sortable": false
         }
       },
       "createdAt": {
@@ -260,7 +260,7 @@
         ],
         [
           {
-            "name": "task",
+            "name": "tasks",
             "size": 6
           }
         ]

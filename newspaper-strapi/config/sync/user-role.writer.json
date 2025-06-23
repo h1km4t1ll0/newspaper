@@ -121,6 +121,15 @@
       "action": "api::photo.photo.update"
     },
     {
+      "action": "api::task.task.find"
+    },
+    {
+      "action": "api::task.task.findOne"
+    },
+    {
+      "action": "api::task.task.update"
+    },
+    {
       "action": "plugin::users-permissions.permissions.getPermissions"
     },
     {
