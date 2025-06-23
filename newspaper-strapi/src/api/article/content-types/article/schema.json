@@ -24,10 +24,16 @@
     "text": {
       "type": "text"
     },
-    "task": {
+    "tasks": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::task.task",
+      "mappedBy": "articles"
+    },
+    "issue": {
       "type": "relation",
       "relation": "manyToOne",
-      "target": "api::task.task",
+      "target": "api::issue.issue",
       "inversedBy": "articles"
     }
   }

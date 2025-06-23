@@ -25,9 +25,7 @@
       "type": "media",
       "multiple": false,
       "required": false,
-      "allowedTypes": [
-        "images"
-      ]
+      "allowedTypes": ["images"]
     },
     "article": {
       "type": "relation",
@@ -35,10 +33,16 @@
       "target": "api::article.article",
       "inversedBy": "photos"
     },
-    "task": {
+    "tasks": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::task.task",
+      "mappedBy": "photos"
+    },
+    "issue": {
       "type": "relation",
       "relation": "manyToOne",
-      "target": "api::task.task",
+      "target": "api::issue.issue",
       "inversedBy": "photos"
     }
   }

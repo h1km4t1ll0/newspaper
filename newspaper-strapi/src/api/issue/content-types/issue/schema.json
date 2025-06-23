@@ -26,21 +26,35 @@
     },
     "status": {
       "type": "enumeration",
-      "enum": [
-        "published",
-        "draft"
-      ]
+      "enum": ["draft", "in_progress", "review", "ready", "published"],
+      "default": "draft"
     },
     "cover": {
       "type": "media",
       "multiple": false,
       "required": false,
-      "allowedTypes": [
-        "images"
-      ]
+      "allowedTypes": ["images"]
     },
     "issueData": {
       "type": "json"
+    },
+    "tasks": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::task.task",
+      "mappedBy": "issue"
+    },
+    "articles": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::article.article",
+      "mappedBy": "issue"
+    },
+    "photos": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::photo.photo",
+      "mappedBy": "issue"
     }
   }
 }

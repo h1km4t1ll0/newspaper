@@ -66,9 +66,9 @@
       "inversedBy": "users",
       "configurable": false
     },
-    "task": {
+    "tasks": {
       "type": "relation",
-      "relation": "oneToOne",
+      "relation": "oneToMany",
       "target": "api::task.task",
       "mappedBy": "assignee"
     }

@@ -23,13 +23,12 @@
     },
     "ad_template": {
       "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::advertisement-template.advertisement-template"
+      "relation": "manyToOne",
+      "target": "api::advertisement-template.advertisement-template",
+      "inversedBy": "advertisments"
     },
     "photo": {
-      "allowedTypes": [
-        "images"
-      ],
+      "allowedTypes": ["images"],
       "type": "media",
       "multiple": false
     }

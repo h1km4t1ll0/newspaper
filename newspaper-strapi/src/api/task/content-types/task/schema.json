@@ -20,29 +20,35 @@
     },
     "assignee": {
       "type": "relation",
-      "relation": "oneToOne",
+      "relation": "manyToOne",
       "target": "plugin::users-permissions.user",
-      "inversedBy": "task"
+      "inversedBy": "tasks"
     },
     "articles": {
       "type": "relation",
-      "relation": "oneToMany",
+      "relation": "manyToMany",
       "target": "api::article.article",
-      "mappedBy": "task"
+      "inversedBy": "tasks"
     },
     "photos": {
       "type": "relation",
-      "relation": "oneToMany",
+      "relation": "manyToMany",
       "target": "api::photo.photo",
-      "mappedBy": "task"
+      "inversedBy": "tasks"
     },
     "status": {
       "type": "enumeration",
-      "enum": [
-        "TO_DO",
-        "IN_PROGRESS",
-        "DONE"
-      ]
+      "enum": ["TO_DO", "IN_PROGRESS", "DONE"]
+    },
+    "issue": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::issue.issue",
+      "inversedBy": "tasks"
+    },
+    "taskType": {
+      "type": "enumeration",
+      "enum": ["WRITING", "PHOTOGRAPHY", "LAYOUT", "EDITING", "REVIEW"]
     },
     "re": {
       "type": "string"

@@ -12,6 +12,10 @@
   },
   "pluginOptions": {},
   "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
     "editorJSData": {
       "type": "json"
     },

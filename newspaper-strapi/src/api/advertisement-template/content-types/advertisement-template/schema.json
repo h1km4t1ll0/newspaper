@@ -12,11 +12,23 @@
   },
   "pluginOptions": {},
   "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
     "widthInColumns": {
-      "type": "integer"
+      "type": "integer",
+      "required": true
     },
     "heightInRows": {
-      "type": "integer"
+      "type": "integer",
+      "required": true
+    },
+    "advertisments": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::advertisment.advertisment",
+      "mappedBy": "ad_template"
     }
   }
 }
