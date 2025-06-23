@@ -359,7 +359,7 @@ export const Kanban: React.FC<KanbanProps> = ({ createButtonProps }) => {
   return (
     <DndProvider backend={HTML5Backend}>
       <Card
-        title="Задачи"
+        title="Tasks"
         style={{ margin: "20px" }}
         extra={
           !createButtonProps?.hidden && (

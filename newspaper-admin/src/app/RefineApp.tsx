@@ -99,7 +99,7 @@ const allResources = [
     edit: "/tasks/edit/:id",
     show: "/tasks/show/:id",
     meta: {
-      label: "Задачи",
+      label: "Tasks",
       canDelete: true,
     },
   },
