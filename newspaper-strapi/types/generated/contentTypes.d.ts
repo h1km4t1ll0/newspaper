@@ -771,9 +771,9 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
       'manyToOne',
       'plugin::users-permissions.role'
     >;
-    task: Attribute.Relation<
+    tasks: Attribute.Relation<
       'plugin::users-permissions.user',
-      'oneToOne',
+      'oneToMany',
       'api::task.task'
     >;
     createdAt: Attribute.DateTime;
@@ -806,8 +806,14 @@ export interface ApiAdvertisementTemplateAdvertisementTemplate
     draftAndPublish: false;
   };
   attributes: {
-    widthInColumns: Attribute.Integer;
-    heightInRows: Attribute.Integer;
+    name: Attribute.String & Attribute.Required;
+    widthInColumns: Attribute.Integer & Attribute.Required;
+    heightInRows: Attribute.Integer & Attribute.Required;
+    advertisments: Attribute.Relation<
+      'api::advertisement-template.advertisement-template',
+      'oneToMany',
+      'api::advertisment.advertisment'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -842,7 +848,7 @@ export interface ApiAdvertismentAdvertisment extends Schema.CollectionType {
     Header: Attribute.String;
     ad_template: Attribute.Relation<
       'api::advertisment.advertisment',
-      'oneToOne',
+      'manyToOne',
       'api::advertisement-template.advertisement-template'
     >;
     photo: Attribute.Media<'images'>;
@@ -882,10 +888,15 @@ export interface ApiArticleArticle extends Schema.CollectionType {
       'api::photo.photo'
     >;
     text: Attribute.Text;
-    task: Attribute.Relation<
+    tasks: Attribute.Relation<
+      'api::article.article',
+      'manyToMany',
+      'api::task.task'
+    >;
+    issue: Attribute.Relation<
       'api::article.article',
       'manyToOne',
-      'api::task.task'
+      'api::issue.issue'
     >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
@@ -923,9 +934,27 @@ export interface ApiIssueIssue extends Schema.CollectionType {
       'manyToOne',
       'api::newspaper.newspaper'
     >;
-    status: Attribute.Enumeration<['published', 'draft']>;
+    status: Attribute.Enumeration<
+      ['draft', 'in_progress', 'review', 'ready', 'published']
+    > &
+      Attribute.DefaultTo<'draft'>;
     cover: Attribute.Media<'images'>;
     issueData: Attribute.JSON;
+    tasks: Attribute.Relation<
+      'api::issue.issue',
+      'oneToMany',
+      'api::task.task'
+    >;
+    articles: Attribute.Relation<
+      'api::issue.issue',
+      'oneToMany',
+      'api::article.article'
+    >;
+    photos: Attribute.Relation<
+      'api::issue.issue',
+      'oneToMany',
+      'api::photo.photo'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -955,6 +984,7 @@ export interface ApiLayoutLayout extends Schema.CollectionType {
     draftAndPublish: false;
   };
   attributes: {
+    name: Attribute.String & Attribute.Required;
     editorJSData: Attribute.JSON;
     columnCount: Attribute.Integer;
     pageHeight: Attribute.Integer;
@@ -1043,7 +1073,16 @@ export interface ApiPhotoPhoto extends Schema.CollectionType {
       'manyToOne',
       'api::article.article'
     >;
-    task: Attribute.Relation<'api::photo.photo', 'manyToOne', 'api::task.task'>;
+    tasks: Attribute.Relation<
+      'api::photo.photo',
+      'manyToMany',
+      'api::task.task'
+    >;
+    issue: Attribute.Relation<
+      'api::photo.photo',
+      'manyToOne',
+      'api::issue.issue'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -1077,20 +1116,28 @@ export interface ApiTaskTask extends Schema.CollectionType {
     description: Attribute.Text;
     assignee: Attribute.Relation<
       'api::task.task',
-      'oneToOne',
+      'manyToOne',
       'plugin::users-permissions.user'
     >;
     articles: Attribute.Relation<
       'api::task.task',
-      'oneToMany',
+      'manyToMany',
       'api::article.article'
     >;
     photos: Attribute.Relation<
       'api::task.task',
-      'oneToMany',
+      'manyToMany',
       'api::photo.photo'
     >;
     status: Attribute.Enumeration<['TO_DO', 'IN_PROGRESS', 'DONE']>;
+    issue: Attribute.Relation<
+      'api::task.task',
+      'manyToOne',
+      'api::issue.issue'
+    >;
+    taskType: Attribute.Enumeration<
+      ['WRITING', 'PHOTOGRAPHY', 'LAYOUT', 'EDITING', 'REVIEW']
+    >;
     re: Attribute.String;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
