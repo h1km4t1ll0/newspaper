@@ -1,41 +1,48 @@
 "use client";
 
-import {DeleteButton, EditButton, List, ShowButton, useTable,} from "@refinedev/antd";
-import {type BaseRecord, useCustom} from "@refinedev/core";
-import {Space, Table} from "antd";
-import UploadImage from "@components/Upload";
-import React, {useCallback, useContext, useMemo} from "react";
-import {RoleContext} from "@app/RefineApp";
-import MDEditor from '@uiw/react-md-editor';
-import {API_URL} from "@utility/constants";
-import {axiosInstance} from "@utility/axios-instance";
+import { RoleContext } from "@app/RefineApp";
+import {
+  DeleteButton,
+  EditButton,
+  List,
+  ShowButton,
+  useTable,
+} from "@refinedev/antd";
+import { type BaseRecord, useCustom } from "@refinedev/core";
+import MDEditor from "@uiw/react-md-editor";
+import { API_URL } from "@utility/constants";
+import { Space, Table } from "antd";
 import qs from "qs";
+import { useContext } from "react";
 
 const relationsQuery = {
   populate: {
     photos: {
       populate: "*",
     },
-    text: '*'
+    text: "*",
+    issue: {
+      populate: "*",
+    },
   },
 };
 
 type PhotoType = {
-  name: string,
-  width: number,
-  height: number,
-  photo: URL,
+  name: string;
+  width: number;
+  height: number;
+  photo: URL;
 };
 
 const query = qs.stringify(
   {
-    fields: '*',
+    fields: "*",
     populate: {
       photos: {
-        fields: '*',
+        fields: "*",
         populate: {
           photo: {
-            fields: '*',
+            fields: "*",
           },
         },
       },
@@ -51,32 +58,34 @@ export default function BlogPostList() {
 
   const { refetch, data } = useCustom<{
     data: {
-      id: number,
+      id: number;
       attributes: {
-        id: number,
-        text: any,
-        name: string,
+        id: number;
+        text: any;
+        name: string;
         photos: {
-          data: [{
-            id: number,
-            attributes: {
-              name: string,
-              width: number,
-              height: number,
-              createdAt: string,
-              updatedAt: string,
-              photo: {
-                data: {
-                  attributes: {
-                    url: string,
-                  },
-                },
-              },
-            },
-          }],
-        },
-      },
-    }[],
+          data: [
+            {
+              id: number;
+              attributes: {
+                name: string;
+                width: number;
+                height: number;
+                createdAt: string;
+                updatedAt: string;
+                photo: {
+                  data: {
+                    attributes: {
+                      url: string;
+                    };
+                  };
+                };
+              };
+            }
+          ];
+        };
+      };
+    }[];
   }>({
     url: `${API_URL}/api/articles?${query}`,
     method: "get",
@@ -84,21 +93,23 @@ export default function BlogPostList() {
 
   // const data = useMemo(async () => {return await refetch()}, [refetch])
 
-  const {tableProps} = useTable<{
-    name: string,
-    photos: PhotoType[],
-    text: string,
-    createdAt: Date,
-    updatedAt: Date,
-    id: number | string,
-  }[]>({
+  const { tableProps } = useTable<
+    {
+      name: string;
+      photos: PhotoType[];
+      text: string;
+      createdAt: Date;
+      updatedAt: Date;
+      id: number | string;
+    }[]
+  >({
     syncWithLocation: true,
     meta: relationsQuery,
     sorters: {
       initial: [
         {
-          field: 'id',
-          order: 'desc',
+          field: "id",
+          order: "desc",
         },
       ],
     },
@@ -107,58 +118,90 @@ export default function BlogPostList() {
   return (
     <List>
       <Table {...tableProps} rowKey="id">
-        <Table.Column dataIndex="id" title={"ID"}/>
-        <Table.Column dataIndex="name" title={"Name"}/>
-
-        {(role === 'Authenticated' || role === 'Photographer') && <Table.Column
-          width="200px"
-          title={"Photos"}
-          dataIndex="photos"
+        <Table.Column dataIndex="id" title={"ID"} />
+        <Table.Column dataIndex="name" title={"Name"} />
+        <Table.Column
+          title={"Issue"}
+          dataIndex="issue"
           render={(_, record: BaseRecord) => {
-            const val = data?.data.data.find((value) => value.id == record.id)?.attributes;
-            return val?.photos?.data?.map((photo) => (
-              <UploadImage 
-                key={photo.id}
-                value={{
-                  url: photo.attributes.photo.data.attributes.url,
-                  id: photo.id,
-                  fileName: photo.attributes.name,
-                  type: 'image',
-                  ext: 'jpg',
-                }} 
-                index={0}
-              />
-            )) || '-';
+            return record.issue?.name || "-";
           }}
-        />}
-        <Table.Column dataIndex="text" title={"Text"} render={(_, record: BaseRecord) => {
-          const val = data?.data.data.find((value) => value.id == record.id)?.attributes;
-          const text = val?.text;
-          const textContent = typeof text === "string" ? text : 
-            typeof text === "object" ? JSON.stringify(text) : 
-            "";
-          return (
-            <div data-color-mode="light">
-              <MDEditor.Markdown 
-                source={textContent}
-                style={{ 
-                  backgroundColor: 'transparent',
-                  padding: '10px',
-                  whiteSpace: 'pre-wrap',
-                  wordBreak: 'break-word'
-                }}
-              />
-            </div>
-          )
-        }}/>
+        />
+
+        {(role === "Authenticated" || role === "Photographer") && (
+          <Table.Column
+            width="200px"
+            title={"Photos"}
+            dataIndex="photos"
+            render={(_, record: BaseRecord) => {
+              const val = data?.data.data.find(
+                (value) => String(value.id) === String(record.id)
+              )?.attributes;
+
+              if (!val?.photos?.data || val.photos.data.length === 0) {
+                return "-";
+              }
+
+              return val.photos.data.map((photo) => (
+                <img
+                  key={photo.id}
+                  src={`http://127.0.0.1:1338${
+                    photo.attributes.photo?.data?.attributes?.url || ""
+                  }`}
+                  alt={photo.attributes.name}
+                  style={{
+                    width: 120,
+                    height: 120,
+                    objectFit: "cover",
+                    borderRadius: 10,
+                    margin: "4px",
+                  }}
+                />
+              ));
+            }}
+          />
+        )}
+        <Table.Column
+          dataIndex="text"
+          title={"Text"}
+          render={(_, record: BaseRecord) => {
+            const val = data?.data.data.find(
+              (value) => String(value.id) === String(record.id)
+            )?.attributes;
+            const text = val?.text;
+            const textContent =
+              typeof text === "string"
+                ? text
+                : typeof text === "object"
+                ? JSON.stringify(text)
+                : "";
+            return (
+              <div data-color-mode="light">
+                <MDEditor.Markdown
+                  source={textContent}
+                  style={{
+                    backgroundColor: "transparent",
+                    padding: "10px",
+                    whiteSpace: "pre-wrap",
+                    wordBreak: "break-word",
+                  }}
+                />
+              </div>
+            );
+          }}
+        />
         <Table.Column
           title={"Actions"}
           dataIndex="actions"
           render={(_, record: BaseRecord) => (
             <Space>
-              {(role === 'Authenticated' || role === 'Writer') && <EditButton hideText size="small" recordItemId={record.id}/>}
-              <ShowButton hideText size="small" recordItemId={record.id}/>
-              {(role === 'Authenticated' || role === 'Writer') && <DeleteButton hideText size="small" recordItemId={record.id}/>}
+              {(role === "Authenticated" || role === "Writer") && (
+                <EditButton hideText size="small" recordItemId={record.id} />
+              )}
+              <ShowButton hideText size="small" recordItemId={record.id} />
+              {(role === "Authenticated" || role === "Writer") && (
+                <DeleteButton hideText size="small" recordItemId={record.id} />
+              )}
             </Space>
           )}
         />
