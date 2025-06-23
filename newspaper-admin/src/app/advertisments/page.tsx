@@ -1,48 +1,62 @@
 "use client";
 
 import {
-  DateField,
   DeleteButton,
   EditButton,
+  ImageField,
   List,
-  MarkdownField,
   ShowButton,
   useTable,
 } from "@refinedev/antd";
 import { type BaseRecord } from "@refinedev/core";
-import { Space, Table } from "antd";
-import dayjs from 'dayjs';
+import { Space, Table, Tag } from "antd";
+import dayjs from "dayjs";
+import { MEDIA_URL } from "../../utility/constants";
 
 const relationsQuery = {
   populate: {
     ad_template: {
-      populate: "*"
+      populate: "*",
+    },
+    photo: {
+      populate: "*",
     },
   },
 };
 
 type AdTemplateType = {
-  widthInColumns: number,
-  heightInRows: number,
-}
+  id: number;
+  name: string;
+  widthInColumns: number;
+  heightInRows: number;
+};
+
+type PhotoType = {
+  id: number;
+  url: string;
+  name: string;
+};
 
 export default function BlogPostList() {
-  const { tableProps, filters } = useTable<{
-    DateFrom: Date,
-    DateTo: Date,
-    Header: string,
-    ad_template: AdTemplateType,
-    createdAt: Date,
-    updatedAt: Date,
-    id: number | string,
-  }[]>({
+  const { tableProps, filters } = useTable<
+    {
+      DateFrom: Date;
+      DateTo: Date;
+      Header: string;
+      ad_template: AdTemplateType;
+      photo: PhotoType;
+      createdAt: Date;
+      updatedAt: Date;
+      id: number | string;
+    }[]
+  >({
     syncWithLocation: true,
     meta: relationsQuery,
     sorters: {
       initial: [
         {
-          field: 'id',
-          order: 'desc',
+          field: "id",
+          order: "desc",
         },
       ],
     },
@@ -51,24 +65,63 @@ export default function BlogPostList() {
   return (
     <List>
       <Table {...tableProps} rowKey="id">
-        <Table.Column dataIndex="id" title={"ID"} />
-        <Table.Column dataIndex="DateFrom"
-                      title={"Date From"}
-                      render={(_, record: BaseRecord) => dayjs(record.DateFrom).format('YYYY-MM-DD')}
-        />
-        <Table.Column dataIndex="DateTo"
-                      title={"Date To"}
-                      render={(_, record: BaseRecord) => dayjs(record.DateTo).format('YYYY-MM-DD')}
-        />
-        <Table.Column dataIndex="Header" title={"Header"} />
+        <Table.Column dataIndex="id" title={"ID"} width={60} />
+        <Table.Column dataIndex="Header" title={"Название"} />
         <Table.Column
-            title={"AD Template"}
-            dataIndex="ad_template"
-            render={(_, record: BaseRecord) => JSON.stringify(record.ad_template)}
+          title={"Фото"}
+          dataIndex="photo"
+          width={100}
+          render={(_, record: BaseRecord) =>
+            record.photo ? (
+              <ImageField
+                value={`${MEDIA_URL}${record.photo.url}`}
+                title={record.photo.name}
+                width={50}
+                height={50}
+                style={{ objectFit: "cover" }}
+              />
+            ) : (
+              <span>Нет фото</span>
+            )
+          }
         />
         <Table.Column
-          title={"Actions"}
+          title={"Шаблон"}
+          dataIndex="ad_template"
+          render={(_, record: BaseRecord) =>
+            record.ad_template ? (
+              <div>
+                <div>{record.ad_template.name}</div>
+                <Tag color="blue">
+                  {record.ad_template.widthInColumns} ×{" "}
+                  {record.ad_template.heightInRows}
+                </Tag>
+              </div>
+            ) : (
+              <span style={{ color: "#999" }}>Не выбран</span>
+            )
+          }
+        />
+        <Table.Column
+          dataIndex="DateFrom"
+          title={"Дата начала"}
+          render={(_, record: BaseRecord) =>
+            dayjs(record.DateFrom).format("DD.MM.YYYY")
+          }
+          width={120}
+        />
+        <Table.Column
+          dataIndex="DateTo"
+          title={"Дата окончания"}
+          render={(_, record: BaseRecord) =>
+            dayjs(record.DateTo).format("DD.MM.YYYY")
+          }
+          width={120}
+        />
+        <Table.Column
+          title={"Действия"}
           dataIndex="actions"
+          width={120}
           render={(_, record: BaseRecord) => (
             <Space>
               <EditButton hideText size="small" recordItemId={record.id} />
