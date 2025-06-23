@@ -205,7 +205,7 @@ export const Grid: FC<GridProps> = ({
     textContent: "",
     widgetId: "",
   });
-  const [splitCount, setSplitCount] = useState(2);
+  const [splitIndices, setSplitIndices] = useState<number[]>([]);
 
   // Define rowHeight early so it can be used in useEffect
   const rowHeight = 40;
@@ -233,7 +233,6 @@ export const Grid: FC<GridProps> = ({
       textContent,
       widgetId,
     });
-    setSplitCount(2);
   };
 
   // Функция для закрытия модального окна
@@ -245,80 +244,48 @@ export const Grid: FC<GridProps> = ({
     });
   };
 
-  // Функция для разбиения текста на части
-  const splitTextIntoParts = (text: string, parts: number): string[] => {
-    if (parts <= 1) return [text];
-
-    const words = text.split(/\s+/);
-    const totalWords = words.length;
-
-    if (totalWords < parts) {
-      // Если слов меньше чем частей, каждое слово - отдельная часть
-      return words.map((word) => word.trim()).filter((word) => word.length > 0);
-    }
-
-    const wordsPerPart = Math.floor(totalWords / parts);
-    const remainder = totalWords % parts;
-
-    const result: string[] = [];
-    let currentIndex = 0;
-
-    for (let i = 0; i < parts; i++) {
-      const currentPartSize = wordsPerPart + (i < remainder ? 1 : 0);
-      const partWords = words.slice(
-        currentIndex,
-        currentIndex + currentPartSize
-      );
-      result.push(partWords.join(" ").trim());
-      currentIndex += currentPartSize;
-    }
-
-    return result.filter((part) => part.length > 0);
-  };
-
   // Функция для обработки разбиения текста
   const handleSplitText = () => {
     const { textContent, widgetId } = splitTextModal;
-
     if (!textContent.trim()) {
       message.error("Текст пуст");
       return;
     }
-
-    if (splitCount < 2 || splitCount > 5) {
-      message.error("Количество частей должно быть от 2 до 5");
+    if (splitIndices.length === 0) {
+      message.error("Выберите хотя бы одну точку разбиения");
       return;
     }
-
-    const textParts = splitTextIntoParts(textContent, splitCount);
-
-    if (textParts.length === 0) {
-      message.error("Не удалось разбить текст");
-      return;
+    // Split by splitIndices
+    const words = textContent.split(/(\s+)/);
+    let parts: string[] = [];
+    let current = "";
+    let wordIdx = 0;
+    for (let i = 0; i < words.length; i++) {
+      current += words[i];
+      if (i % 2 === 0 && splitIndices.includes(wordIdx)) {
+        parts.push(current.trim());
+        current = "";
+      }
+      if (i % 2 === 0) wordIdx++;
     }
-
-    // Удаляем оригинальный виджет
+    if (current.trim()) parts.push(current.trim());
+    if (parts.length === 0 && textContent) parts = [textContent];
+    // Remove the original widget
     const updatedLayout = layout.filter((item) => item.id !== widgetId);
     onChangeLayout(updatedLayout);
-
-    // Добавляем части текста в Temporary content
-    const newItems = textParts.map((part, index) => ({
-      id: Date.now() + index + Math.random(), // Уникальный ID
-      title: `Часть ${index + 1} из ${textParts.length}`,
+    // Add new parts as temporary content
+    const newItems = parts.map((part, index) => ({
+      id: Date.now() + index + Math.random(),
+      title: `Часть ${index + 1} из ${parts.length}`,
       content: part,
     }));
-
-    console.log("Adding new text parts:", newItems); // Отладка
-
-    // Обновляем состояние items, гарантируя что оно не undefined
     setItems((prevItems) => {
       const currentItems = prevItems || [];
       const updatedItems = [...currentItems, ...newItems];
-      console.log("Updated items state:", updatedItems); // Отладка
       return updatedItems;
     });
-
-    message.success(`Текст разбит на ${textParts.length} частей`);
+    message.success(`Текст разбит на ${parts.length} частей`);
+    setSplitIndices([]); // reset for next time
     closeSplitTextModal();
   };
 
@@ -1805,9 +1772,7 @@ export const Grid: FC<GridProps> = ({
         zIndex={1100}
       >
         <div style={{ marginBottom: 16 }}>
-          <p>
-            <strong>Текст для разбиения:</strong>
-          </p>
+          <p><strong>Кликните между словами, чтобы выбрать места разбиения:</strong></p>
           <div
             style={{
               maxHeight: 200,
@@ -1818,53 +1783,94 @@ export const Grid: FC<GridProps> = ({
               backgroundColor: "#fafafa",
               fontSize: "14px",
               lineHeight: "1.5",
+              wordBreak: "break-word",
+              userSelect: "text",
             }}
           >
-            {splitTextModal.textContent}
+            {(() => {
+              const words = splitTextModal.textContent ? splitTextModal.textContent.split(/(\s+)/) : [];
+              const wordIndices = words.filter((_, i) => i % 2 === 0).length;
+              let wordCount = 0;
+              return words.map((part, i) => {
+                if (i % 2 === 0) {
+                  // word
+                  const el = <span key={`w${i}`}>{part}</span>;
+                  if (i < words.length - 1) {
+                    const splitIdx = wordCount;
+                    const isActive = splitIndices.includes(splitIdx);
+                    wordCount++;
+                    return [
+                      el,
+                      <span
+                        key={`split${i}`}
+                        onClick={() => {
+                          setSplitIndices((prev) =>
+                            prev.includes(splitIdx)
+                              ? prev.filter((idx) => idx !== splitIdx)
+                              : [...prev, splitIdx].sort((a, b) => a - b)
+                          );
+                        }}
+                        style={{
+                          cursor: "pointer",
+                          margin: "0 2px",
+                          color: isActive ? "#fff" : "#1890ff",
+                          background: isActive ? "#1890ff" : "#e6f7ff",
+                          borderRadius: 6,
+                          padding: "0 6px",
+                          fontWeight: isActive ? "bold" : "normal",
+                          userSelect: "none",
+                          transition: "all 0.2s",
+                        }}
+                        title={isActive ? "Убрать разбиение" : "Разбить здесь"}
+                      >
+                        |<span style={{ fontSize: 10 }}>{isActive ? "✔" : ""}</span>
+                      </span>,
+                    ];
+                  } else {
+                    return el;
+                  }
+                } else {
+                  // space
+                  return <span key={`s${i}`}>{part}</span>;
+                }
+              });
+            })()}
           </div>
         </div>
-
         <div style={{ marginBottom: 16 }}>
-          <p>
-            <strong>Количество частей:</strong>
-          </p>
-          <InputNumber
-            min={2}
-            max={5}
-            value={splitCount}
-            onChange={(value) => setSplitCount(value || 2)}
-            style={{ width: "100%" }}
-          />
-          <p style={{ fontSize: "12px", color: "#666", marginTop: 8 }}>
-            Текст будет разделен по пробелам, чтобы слова не обрывались
-          </p>
+          <p><strong>Предварительный просмотр частей:</strong></p>
+          {(() => {
+            const words = splitTextModal.textContent ? splitTextModal.textContent.split(/(\s+)/) : [];
+            let parts: string[] = [];
+            let current = "";
+            let wordIdx = 0;
+            for (let i = 0; i < words.length; i++) {
+              current += words[i];
+              if (i % 2 === 0 && splitIndices.includes(wordIdx)) {
+                parts.push(current.trim());
+                current = "";
+              }
+              if (i % 2 === 0) wordIdx++;
+            }
+            if (current.trim()) parts.push(current.trim());
+            if (parts.length === 0 && splitTextModal.textContent) parts = [splitTextModal.textContent];
+            return parts.map((part, idx) => (
+              <div
+                key={idx}
+                style={{
+                  marginBottom: 8,
+                  padding: 8,
+                  border: "1px solid #e8e8e8",
+                  borderRadius: 4,
+                  backgroundColor: "#f9f9f9",
+                  fontSize: "12px",
+                }}
+              >
+                <strong>Часть {idx + 1}:</strong> {part.substring(0, 100)}{part.length > 100 ? "..." : ""}
+              </div>
+            ));
+          })()}
         </div>
-
-        {splitCount >= 2 && splitCount <= 5 && splitTextModal.textContent && (
-          <div>
-            <p>
-              <strong>Предварительный просмотр частей:</strong>
-            </p>
-            {splitTextIntoParts(splitTextModal.textContent, splitCount).map(
-              (part, index) => (
-                <div
-                  key={index}
-                  style={{
-                    marginBottom: 8,
-                    padding: 8,
-                    border: "1px solid #e8e8e8",
-                    borderRadius: 4,
-                    backgroundColor: "#f9f9f9",
-                    fontSize: "12px",
-                  }}
-                >
-                  <strong>Часть {index + 1}:</strong> {part.substring(0, 100)}
-                  {part.length > 100 ? "..." : ""}
-                </div>
-              )
-            )}
-          </div>
-        )}
       </Modal>
     </Container>
   );
