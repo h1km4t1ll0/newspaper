@@ -1,0 +1,25 @@
+{
+  "name": "Layout",
+  "description": "role for layout designer",
+  "type": "layout",
+  "permissions": [
+    {
+      "action": "api::issue.issue.find"
+    },
+    {
+      "action": "api::issue.issue.findOne"
+    },
+    {
+      "action": "api::layout.layout.find"
+    },
+    {
+      "action": "api::layout.layout.findOne"
+    },
+    {
+      "action": "api::task.task.find"
+    },
+    {
+      "action": "api::task.task.findOne"
+    }
+  ]
+}
