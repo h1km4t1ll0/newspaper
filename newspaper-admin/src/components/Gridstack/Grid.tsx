@@ -19,6 +19,7 @@ import {
   Skeleton,
   Tooltip,
   Typography,
+  Space,
 } from "antd";
 import { GridStack } from "gridstack";
 import "gridstack/dist/gridstack.min.css";
@@ -1230,6 +1231,52 @@ export const Grid: FC<GridProps> = ({
     message.success("Some text has been removed");
   };
 
+  const handleGeneratePDF = async () => {
+    const { generatePDF } = await import("../../utils/pdfGenerator");
+    if (issueId) {
+      const key = "pdf-progress";
+      message.open({
+        key,
+        type: "loading",
+        content: "Preparing to generate PDF...",
+      });
+
+      try {
+        await generatePDF(
+          allLayouts,
+          layoutSettings,
+          issueDate,
+          newspaperName,
+          currentFont,
+          issueCover,
+          (progress) => {
+            if (typeof progress === "number") {
+              message.open({
+                key,
+                type: "loading",
+                content: `Generating page ${progress} of ${totalPages}...`,
+              });
+            } else if (typeof progress === "string") {
+              message.open({
+                key,
+                type: "success",
+                content: `PDF has been successfully generated and saved as ${progress}`,
+                duration: 5,
+              });
+            }
+          }
+        );
+      } catch (e) {
+        message.open({
+          key,
+          type: "error",
+          content: "An error occurred while generating the PDF.",
+          duration: 5,
+        });
+      }
+    }
+  };
+
   return (
     <Container>
       <Sidebar>
@@ -1273,34 +1320,7 @@ export const Grid: FC<GridProps> = ({
           </Button>
           <Button
             type="default"
-            onClick={async () => {
-              const { generatePDF } = await import("../../utils/pdfGenerator");
-              let hideLoading = message.loading("Generating PDF...", 0);
-              try {
-                await generatePDF(
-                  allLayouts,
-                  layoutSettings,
-                  issueDate,
-                  newspaperName,
-                  currentFont,
-                  issueCover,
-                  (progress) => {
-                    if (typeof progress === "string") {
-                      message.open({ type: "loading", content: progress, duration: 0, key: "pdf-progress" });
-                    } else if (typeof progress === "number") {
-                      message.open({ type: "loading", content: `Generating page ${progress}...`, duration: 0, key: "pdf-progress" });
-                    }
-                  }
-                );
-                hideLoading();
-                message.success("PDF has been successfully generated and downloaded", 5);
-              } catch (e) {
-                hideLoading();
-                message.error("Error while generating PDF", 5);
-              } finally {
-                message.destroy("pdf-progress");
-              }
-            }}
+            onClick={handleGeneratePDF}
           >
             📄 Download PDF
           </Button>
@@ -1619,9 +1639,13 @@ export const Grid: FC<GridProps> = ({
               <div key={pageId} style={{ marginBottom: 16 }}>
                 <div style={{ fontWeight: 600, marginBottom: 4 }}>Page {pageNumber}</div>
                 <ul style={{ margin: 0, paddingLeft: 16 }}>
-                  {[...articleMap.entries()].map(([name, { isPart }]) => (
-                    <li key={name}>{name}{isPart ? ' (part)' : ''}</li>
-                  ))}
+                  {(() => {
+                    const items: React.ReactNode[] = [];
+                    articleMap.forEach(({ isPart }, name) => {
+                      items.push(<li key={name}>{name}{isPart ? ' (part)' : ''}</li>);
+                    });
+                    return items;
+                  })()}
                 </ul>
               </div>
             );
