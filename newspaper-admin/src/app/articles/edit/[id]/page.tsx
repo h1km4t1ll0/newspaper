@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 export default function BlogPostEdit() {
   const { formProps, saveButtonProps, form, queryResult } = useForm({
     meta: {
-      populate: ["photos"],
+      populate: ["photos", "issue"],
     },
   });
   const [text, setText] = useState("");
@@ -82,6 +82,33 @@ export default function BlogPostEdit() {
             placeholder="Select photos"
           />
         </Form.Item>
+        <Form.Item
+          label={"Issue"}
+          name={["issue"]}
+          rules={[
+              {
+                  required: true,
+                  message: "Please select an issue",
+              },
+          ]}
+          getValueProps={(value) => {
+            // Преобразуем данные из Strapi в формат для селекта
+            if (value && typeof value === 'object' && value.id) {
+              return { value: value.id };
+            }
+            if (Array.isArray(value)) {
+              return { value: value.map((issue) => issue.id || issue) };
+            }
+            return { value: value };
+          }}
+          >
+              <CustomSelect
+                resource="issues"
+                optionLabel="name"
+                optionValue="id"
+                placeholder="Select issue"
+              />
+          </Form.Item>
         <Form.Item
           label={"Text"}
           name={["text"]}

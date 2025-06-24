@@ -25,6 +25,23 @@ export default function BlogPostCreate() {
               <Input />
           </Form.Item>
           <Form.Item
+              label={"Issue"}
+              name={["issue"]}
+              rules={[
+                  {
+                      required: true,
+                      message: "Please select an issue",
+                  },
+              ]}
+          >
+              <CustomSelect
+                resource="issues"
+                optionLabel="name"
+                optionValue="id"
+                placeholder="Select issue"
+              />
+          </Form.Item>
+          <Form.Item
               label={"Photos"}
               name={["photos"]}
               rules={[
