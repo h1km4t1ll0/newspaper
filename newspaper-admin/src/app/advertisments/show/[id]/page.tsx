@@ -25,12 +25,12 @@ export default function BlogPostShow() {
         </div>
 
         <div>
-          <Title level={5}>{"Название рекламы"}</Title>
+          <Title level={5}>{"Name of AD"}</Title>
           <TextField value={record?.Header} />
         </div>
 
         <div>
-          <Title level={5}>{"Фотография"}</Title>
+          <Title level={5}>{"Photo"}</Title>
           {record?.photo && (
             <ImageField
               value={`${MEDIA_URL}${record.photo.url}`}
@@ -41,7 +41,7 @@ export default function BlogPostShow() {
         </div>
 
         <div>
-          <Title level={5}>{"Шаблон рекламы"}</Title>
+          <Title level={5}>{"AD Template"}</Title>
           {record?.ad_template ? (
             <div>
               <TextField value={record.ad_template.name} />
@@ -52,14 +52,14 @@ export default function BlogPostShow() {
               </small>
             </div>
           ) : (
-            <TextField value="Не выбран" />
+            <TextField value="Not specified" />
           )}
         </div>
 
         <Divider />
 
         <div>
-          <Title level={5}>{"Период показа"}</Title>
+          <Title level={5}>{"Duration"}</Title>
           <div>
             <strong>С:</strong> <DateField value={record?.DateFrom} />
           </div>

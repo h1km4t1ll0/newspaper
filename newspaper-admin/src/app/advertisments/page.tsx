@@ -66,9 +66,9 @@ export default function BlogPostList() {
     <List>
       <Table {...tableProps} rowKey="id">
         <Table.Column dataIndex="id" title={"ID"} width={60} />
-        <Table.Column dataIndex="Header" title={"Название"} />
+        <Table.Column dataIndex="Header" title={"Name"} />
         <Table.Column
-          title={"Фото"}
+          title={"Photo"}
           dataIndex="photo"
           width={100}
           render={(_, record: BaseRecord) =>
@@ -86,7 +86,7 @@ export default function BlogPostList() {
           }
         />
         <Table.Column
-          title={"Шаблон"}
+          title={"Template"}
           dataIndex="ad_template"
           render={(_, record: BaseRecord) =>
             record.ad_template ? (
@@ -104,7 +104,7 @@ export default function BlogPostList() {
         />
         <Table.Column
           dataIndex="DateFrom"
-          title={"Дата начала"}
+          title={"Start Date"}
           render={(_, record: BaseRecord) =>
             dayjs(record.DateFrom).format("DD.MM.YYYY")
           }
@@ -112,14 +112,14 @@ export default function BlogPostList() {
         />
         <Table.Column
           dataIndex="DateTo"
-          title={"Дата окончания"}
+          title={"End Date"}
           render={(_, record: BaseRecord) =>
             dayjs(record.DateTo).format("DD.MM.YYYY")
           }
           width={120}
         />
         <Table.Column
-          title={"Действия"}
+          title={"Actions"}
           dataIndex="actions"
           width={120}
           render={(_, record: BaseRecord) => (

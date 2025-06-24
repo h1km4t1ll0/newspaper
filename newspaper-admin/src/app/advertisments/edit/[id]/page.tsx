@@ -119,22 +119,22 @@ export default function BlogPostEdit() {
     <Edit saveButtonProps={saveButtonProps}>
       <Form {...formProps} layout="vertical" initialValues={initialValues}>
         <Form.Item
-          label={"Название рекламы"}
+          label={"Name of AD"}
           name={["Header"]}
           rules={[
             {
               required: true,
-              message: "Введите название рекламы",
+              message: "Enter the AD name",
             },
           ]}
         >
-          <Input placeholder="Название рекламного блока" />
+          <Input placeholder="Name of AD block" />
         </Form.Item>
 
         <Space direction="vertical">
           <Form.Item
             label={<Typography.Text strong>Фотография рекламы</Typography.Text>}
-            rules={[{ required: true, message: "Загрузите фотографию" }]}
+            rules={[{ required: true, message: "Upload a photo" }]}
             style={{ margin: 0 }}
             name="photo"
           >
@@ -151,8 +151,8 @@ export default function BlogPostEdit() {
 
           {photo && (
             <Popconfirm
-              title="Удалить фотографию"
-              description="Вы уверены, что хотите удалить эту фотографию?"
+              title="Delete a photo"
+              description="Are you sure you want to delete the photo?"
               onConfirm={() => {
                 // Сначала очищаем состояние
                 setPhoto(null);
@@ -161,10 +161,10 @@ export default function BlogPostEdit() {
                 // Принудительно обновляем форму
                 form?.validateFields(["photo"]);
               }}
-              okText="Да"
-              cancelText="Нет"
+              okText="Yes"
+              cancelText="No"
             >
-              <Tooltip placement="top" title={"Удалить"}>
+              <Tooltip placement="top" title={"Delete"}>
                 <Button
                   style={{ width: 120 }}
                   size="small"
@@ -180,7 +180,7 @@ export default function BlogPostEdit() {
         </Space>
 
         <Form.Item
-          label={"Шаблон рекламы"}
+          label={"AD Template"}
           name={["ad_template"]}
           rules={[
             {
@@ -189,40 +189,40 @@ export default function BlogPostEdit() {
           ]}
         >
           <Select
-            placeholder="Выберите шаблон размера"
+            placeholder="Choose the AD Template of size"
             allowClear
             {...templateSelectProps}
           />
         </Form.Item>
 
         <Form.Item
-          label={"Дата начала показа"}
+          label={"Start Date"}
           name={["DateFrom"]}
           rules={[
             {
               required: true,
-              message: "Выберите дату начала",
+              message: "Choose start date",
             },
           ]}
         >
           <DatePicker
             style={{ width: "100%" }}
-            placeholder="Дата начала показа"
+            placeholder="Start date"
           />
         </Form.Item>
         <Form.Item
-          label={"Дата окончания показа"}
+          label={"End Date"}
           name={["DateTo"]}
           rules={[
             {
               required: true,
-              message: "Выберите дату окончания",
+              message: "Choose end date",
             },
           ]}
         >
           <DatePicker
             style={{ width: "100%" }}
-            placeholder="Дата окончания показа"
+            placeholder="End date"
           />
         </Form.Item>
       </Form>
