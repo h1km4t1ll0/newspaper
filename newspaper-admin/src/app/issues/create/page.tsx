@@ -3,7 +3,7 @@
 
 import UploadImage from "@components/Upload";
 import { Create, useForm, useSelect } from "@refinedev/antd";
-import { Form, Input, Select } from "antd";
+import { Form, Input, Select, DatePicker } from "antd";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
@@ -61,7 +61,7 @@ export default function BlogPostCreate() {
             name: values.name,
             status: values.status,
             PublishDate: values.PublishDate
-              ? new Date(values.PublishDate).toISOString()
+              ? values.PublishDate.toISOString()
               : null,
             newspaper: values.newspaper?.id || values.newspaper,
             cover: values.cover?.id || null,
@@ -132,7 +132,10 @@ export default function BlogPostCreate() {
             },
           ]}
         >
-          <Input type="datetime-local" />
+          <DatePicker
+            placeholder="Select date"
+            style={{ width: '100%' }}
+          />
         </Form.Item>
         <Form.Item
           label={"Newspaper"}

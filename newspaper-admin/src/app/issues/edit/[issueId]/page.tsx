@@ -13,9 +13,17 @@ import {
   Space,
   Tooltip,
   Typography,
+  DatePicker,
 } from "antd";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import dayjs from "dayjs";
+import advancedFormat from "dayjs/plugin/advancedFormat";
+import localeData from "dayjs/plugin/localeData";
+import weekday from "dayjs/plugin/weekday";
+dayjs.extend(weekday);
+dayjs.extend(localeData);
+dayjs.extend(advancedFormat);
 
 export default function BlogPostEdit() {
   console.log("BlogPostEdit component loaded");
@@ -63,10 +71,6 @@ export default function BlogPostEdit() {
     },
   });
 
-  console.log("Issue data loaded:", issueData);
-  console.log("Loading:", isLoading);
-  console.log("Error:", error);
-
   const { selectProps: newspaperSelectProps } = useSelect({
     resource: "newspapers",
     optionLabel: "name",
@@ -75,30 +79,58 @@ export default function BlogPostEdit() {
 
   const [photo, setPhoto] = useState<null | any>(null);
 
-  // Устанавливаем значения формы после загрузки данных
+  const initialValues = useMemo(() => {
+    if (!issueData?.data) {
+      return formProps.initialValues;
+    }
+
+    const issue = issueData.data;
+    const photoData = issue.cover;
+    const publishDate = issue.PublishDate;
+    const newspaper = issue.newspaper;
+
+    console.log("Issue record:", issue);
+
+    const publishDateValue = publishDate ? dayjs(publishDate) : undefined;
+
+    // Подготавливаем данные для фото
+    const photoValue = photoData
+      ? {
+          url: photoData.url,
+          id: photoData.id,
+          fileName: `${photoData.hash}${photoData.ext}`,
+          type: photoData.mime?.split("/")[0],
+          ext: photoData.ext?.replace(".", ""),
+        }
+      : null;
+
+    console.log("Photo data:", photoValue);
+
+    // Подготавливаем данные для газеты
+    const newspaperId = newspaper?.id || null;
+    console.log("Newspaper ID:", newspaperId);
+
+    const values = {
+      ...formProps.initialValues,
+      name: issue.name,
+      status: issue.status,
+      PublishDate: publishDateValue,
+      newspaper: {
+        id: newspaperId,
+      },
+      cover: photoValue,
+    };
+
+    console.log("Initial values:", values);
+
+    return values;
+  }, [issueData, formProps.initialValues]);
+
+  // Инициализация данных после загрузки
   useEffect(() => {
-    if (issueData?.data) {
+    if (issueData?.data && form) {
       const issue = issueData.data;
       const photoData = issue.cover;
-      const publishDate = issue.PublishDate;
-      const newspaper = issue.newspaper;
-
-      console.log("Setting form data:", issue);
-
-      // Преобразуем дату в формат datetime-local (YYYY-MM-DDTHH:mm)
-      const formattedDate = publishDate
-        ? new Date(publishDate).toISOString().slice(0, 16)
-        : "";
-
-      // Устанавливаем значения формы
-      form?.setFieldsValue({
-        name: issue.name,
-        status: issue.status,
-        PublishDate: formattedDate,
-        newspaper: {
-          id: newspaper?.id,
-        },
-      });
 
       // Устанавливаем фото
       if (photoData) {
@@ -111,7 +143,6 @@ export default function BlogPostEdit() {
         };
         console.log("Setting photo:", photoValue);
         setPhoto(photoValue);
-        form?.setFieldValue("cover", photoValue);
       }
     }
   }, [issueData, form]);
@@ -135,6 +166,7 @@ export default function BlogPostEdit() {
         {...formProps}
         form={form}
         layout="vertical"
+        initialValues={initialValues}
         onFinish={(values: any) => {
           console.log("Form values before submit:", values);
 
@@ -143,7 +175,7 @@ export default function BlogPostEdit() {
             ...values,
             newspaper: values.newspaper?.id || values.newspaper,
             PublishDate: values.PublishDate
-              ? new Date(values.PublishDate).toISOString()
+              ? values.PublishDate.toISOString()
               : null,
             cover: values.cover?.id || values.cover,
           };
@@ -189,7 +221,10 @@ export default function BlogPostEdit() {
             },
           ]}
         >
-          <Input type="datetime-local" />
+          <DatePicker
+            placeholder="Select date"
+            style={{ width: '100%' }}
+          />
         </Form.Item>
         <Form.Item
           label={"Newspaper"}

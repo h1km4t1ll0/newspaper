@@ -219,15 +219,15 @@ export default function BlogPostList() {
                   style={{ marginLeft: "8px" }}
                 >
                   {record.status === "draft"
-                    ? "Черновик"
+                    ? "Draft"
                     : record.status === "in_progress"
-                    ? "В работе"
+                    ? "In progress"
                     : record.status === "review"
-                    ? "На проверке"
+                    ? "Review"
                     : record.status === "ready"
-                    ? "Готов"
+                    ? "Done"
                     : record.status === "published"
-                    ? "Опубликован"
+                    ? "Published"
                     : record.status}
                 </Tag>
               </p>
