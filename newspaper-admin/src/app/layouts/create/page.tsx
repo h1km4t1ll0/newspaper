@@ -130,7 +130,7 @@ export default function BlogPostCreate() {
           <Select
             options={FONT_OPTIONS}
             showSearch
-            placeholder="Choose a font"
+            placeholder="Select a font"
           />
         </Form.Item>
 

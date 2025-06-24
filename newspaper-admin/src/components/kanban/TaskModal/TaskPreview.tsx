@@ -17,48 +17,48 @@ export const TaskPreview: React.FC<TaskPreviewProps> = ({
   console.log("TaskPreview - task data:", task);
 
   const taskTypeLabels = {
-    WRITING: "Написание",
-    PHOTOGRAPHY: "Фотография",
-    LAYOUT: "Верстка",
-    EDITING: "Редактирование",
-    REVIEW: "Проверка",
+    WRITING: "Writing",
+    PHOTOGRAPHY: "Photography",
+    LAYOUT: "Layout",
+    EDITING: "Editing",
+    REVIEW: "Review",
   };
 
   const statusLabels = {
-    TO_DO: "К выполнению",
-    IN_PROGRESS: "В процессе",
-    DONE: "Готово",
+    TO_DO: "To do",
+    IN_PROGRESS: "In progress",
+    DONE: "Done",
   };
 
   const items = useMemo(
     () => [
       {
         key: "1",
-        label: "Основная информация",
+        label: "Main information",
         children: (
           <div>
             <h3>{task.title}</h3>
             <p>{task.description}</p>
             <p>
-              <strong>Исполнитель:</strong> {task.assignee}
+              <strong>Assignee:</strong> {task.assignee}
             </p>
             <p>
-              <strong>Статус:</strong> {statusLabels[task.status] || task.status}
+              <strong>Status:</strong> {statusLabels[task.status] || task.status}
             </p>
             {task.taskType && (
               <p>
-                <strong>Тип задачи:</strong>{" "}
+                <strong>Task type:</strong>{" "}
                 {taskTypeLabels[task.taskType] || task.taskType}
               </p>
             )}
             {task.issueName && (
               <p>
-                <strong>Выпуск:</strong> {task.issueName}
+                <strong>Issue:</strong> {task.issueName}
               </p>
             )}
             {task.issueDate && (
               <p>
-                <strong>Дата выпуска:</strong>{" "}
+                <strong>Issue date:</strong>{" "}
                 {new Date(task.issueDate).toLocaleDateString()}
               </p>
             )}
@@ -67,7 +67,7 @@ export const TaskPreview: React.FC<TaskPreviewProps> = ({
       },
       {
         key: "2",
-        label: "Статьи",
+        label: "Articles",
         children: (
           <div>
             {task.articles?.map((article) => (
@@ -81,7 +81,7 @@ export const TaskPreview: React.FC<TaskPreviewProps> = ({
       },
       {
         key: "3",
-        label: "Фотографии",
+        label: "Photos",
         children: (
           <div
             style={{

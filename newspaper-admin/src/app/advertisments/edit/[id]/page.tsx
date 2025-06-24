@@ -172,7 +172,7 @@ export default function BlogPostEdit() {
                   danger
                   icon={<DeleteOutlined />}
                 >
-                  Удалить
+                  Delete
                 </Button>
               </Tooltip>
             </Popconfirm>
@@ -189,7 +189,7 @@ export default function BlogPostEdit() {
           ]}
         >
           <Select
-            placeholder="Choose the AD Template of size"
+            placeholder="Select the AD Template of size"
             allowClear
             {...templateSelectProps}
           />
@@ -201,7 +201,7 @@ export default function BlogPostEdit() {
           rules={[
             {
               required: true,
-              message: "Choose start date",
+              message: "Select start date",
             },
           ]}
         >
@@ -216,7 +216,7 @@ export default function BlogPostEdit() {
           rules={[
             {
               required: true,
-              message: "Choose end date",
+              message: "Select end date",
             },
           ]}
         >

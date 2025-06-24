@@ -52,18 +52,18 @@ const SplitTextModal: React.FC<SplitTextModalProps> = ({
 
   return (
     <Modal
-      title="Разбить текст на части"
+      title="Split text into parts"
       open={visible}
       onOk={handleOk}
       onCancel={handleCancel}
-      okText="Разбить"
-      cancelText="Отмена"
+      okText="Split"
+      cancelText="Cancel"
       zIndex={1100}
       width={800}
     >
       <div style={{ marginBottom: 16 }}>
         <p>
-          <strong>Кликните между словами, чтобы выбрать места разбиения:</strong>
+          <strong>Click between words to select where to split:</strong>
         </p>
         <div
           style={{
@@ -100,7 +100,7 @@ const SplitTextModal: React.FC<SplitTextModalProps> = ({
         </div>
         <div>
           <p>
-            <strong>Предпросмотр:</strong>
+            <strong>Preview:</strong>
           </p>
           <div
             style={{

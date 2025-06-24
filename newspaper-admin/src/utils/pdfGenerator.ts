@@ -323,7 +323,7 @@ export const generatePDF = async (
         footer.style.alignItems = "center";
 
         const pageInfo = document.createElement("span");
-        pageInfo.textContent = `Страница ${pageNumber} из ${pageIds.length}`;
+        pageInfo.textContent = `Page ${pageNumber} of ${pageIds.length}`;
         footer.appendChild(pageInfo);
         pageContainer.appendChild(footer);
       }

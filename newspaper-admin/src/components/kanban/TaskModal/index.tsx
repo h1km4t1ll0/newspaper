@@ -34,13 +34,13 @@ export const TaskModal: React.FC<TaskModalProps> = ({
       populate: ["assignee", "issue", "articles", "photos"],
     },
     onMutationSuccess: async (data) => {
-      console.log("TaskModal - успешно сохранено:", data);
+      console.log("TaskModal - saved successfully:", data);
       await onUpdate();
       setIsEditing(false);
       onClose();
     },
     onMutationError: (error) => {
-      console.error("TaskModal - ошибка сохранения:", error);
+      console.error("TaskModal - saving error:", error);
     },
   });
 
@@ -57,7 +57,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
       if (formProps.form && isCreating) {
         setTimeout(() => {
           if (formProps.form) {
-            console.log("TaskModal - очистка формы для создания новой задачи");
+            console.log("TaskModal - clearing the form to create a new task");
             formProps.form.resetFields();
           }
         }, 10);
@@ -73,7 +73,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
     try {
       await formProps.form?.validateFields();
       const values = formProps.form?.getFieldsValue() || {};
-      console.log("TaskModal - исходные данные формы:", values);
+      console.log("TaskModal - source form data:", values);
 
       // Преобразуем данные для отправки в Strapi
       const processedValues = {
@@ -98,11 +98,11 @@ export const TaskModal: React.FC<TaskModalProps> = ({
   const handleModalClose = useCallback(() => {
     if (isEditing && hasChanges) {
       Modal.confirm({
-        title: "Есть несохраненные изменения",
+        title: "There are unsaved changes",
         content:
-          "Вы уверены, что хотите закрыть окно? Все несохраненные изменения будут потеряны.",
-        okText: "Да, закрыть",
-        cancelText: "Нет, остаться",
+          "Are you sure you want to close this window? All unsaved changes will be lost.",
+        okText: "Yes, close",
+        cancelText: "No, cancel",
         onOk: () => {
           setIsEditing(false);
           setHasChanges(false);
@@ -144,40 +144,40 @@ export const TaskModal: React.FC<TaskModalProps> = ({
   const modalTitle = useMemo(
     () =>
       isCreating
-        ? "Создание задачи"
+        ? "Create a task"
         : isEditing
-        ? "Редактирование задачи"
-        : "Просмотр задачи",
+        ? "Editing a task"
+        : "View a task",
     [isCreating, isEditing]
   );
 
   const modalFooter = useMemo(
     () => [
       <Button key="back" onClick={handleModalClose}>
-        {isCreating ? "Отмена" : isEditing ? "Отмена" : "Закрыть"}
+        {isCreating ? "Cancel" : isEditing ? "Cancel" : "Close"}
       </Button>,
       !isCreating && !isEditing && (
         <Button key="edit" type="primary" onClick={handleEdit}>
-          Редактировать
+           Edit
         </Button>
       ),
       !isCreating && task?.id && (
         <Popconfirm
           key="delete"
-          title="Удаление задачи"
-          description="Вы уверены, что хотите удалить эту задачу?"
+          title="Deleting a task"
+          description="Are you sure you want to delete this task?"
           onConfirm={handleDelete}
-          okText="Да"
-          cancelText="Нет"
+          okText="Yes"
+          cancelText="No"
         >
           <Button danger icon={<DeleteOutlined />}>
-            Удалить
+            Delete
           </Button>
         </Popconfirm>
       ),
       (isEditing || isCreating) && (
         <Button key="submit" type="primary" onClick={handleSave}>
-          Сохранить
+          Save
         </Button>
       ),
     ],

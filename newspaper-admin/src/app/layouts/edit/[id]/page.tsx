@@ -116,7 +116,7 @@ export default function BlogPostEdit() {
           <Select
             options={FONT_OPTIONS}
             showSearch
-            placeholder="Choose a font"
+            placeholder="Select a font"
           />
         </Form.Item>
 

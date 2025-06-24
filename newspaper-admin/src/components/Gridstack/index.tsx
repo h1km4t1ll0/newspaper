@@ -118,7 +118,7 @@ const GridStack: FC<GridStackProps> = ({
             }
           : {
               type: "text",
-              text: "**Обложка выпуска**\n\n*Здесь будет отображаться обложка выпуска*",
+              text: "**ОIssue Cover**\n\n*The issue cover will be displayed here*",
               fontFamily: layoutSettings?.fontFamily || "Arial",
             },
         lock: true,
@@ -131,11 +131,11 @@ const GridStack: FC<GridStackProps> = ({
         h: 2,
         content: {
           type: "text",
-          text: `*Выпуск от ${new Intl.DateTimeFormat("ru-RU", {
+          text: `*${new Intl.DateTimeFormat("en-EN", {
             year: "numeric",
             month: "long",
             day: "numeric",
-          }).format(new Date(issueDate))} г.*`,
+          }).format(new Date(issueDate))} edition*`,
           fontFamily: layoutSettings?.fontFamily || "Arial",
         },
         lock: true,
@@ -226,22 +226,22 @@ const GridStack: FC<GridStackProps> = ({
       return;
     }
 
-    if (content.type === "text" && content.title && content.title.startsWith("Часть")) {
-      const partBase = content.title.replace(/\(возвращена\)/, '').trim();
+    if (content.type === "text" && content.title && content.title.startsWith("Part")) {
+      const partBase = content.title.replace(/\(returned\)/, '').trim();
       let foundOnPages: string[] = [];
       Object.entries(pages).forEach(([pageId, layout]) => {
         if (layout.some(
           (w) =>
             w.content?.type === "text" &&
             w.content?.title &&
-            w.content.title.replace(/\(возвращена\)/, '').trim() === partBase
+            w.content.title.replace(/\(returned\)/, '').trim() === partBase
         )) {
           foundOnPages.push(pageId);
         }
       });
       if (foundOnPages.length > 0 && !foundOnPages.includes(currentPage)) {
         message.warning(
-          `Внимание: части одной статьи размещены на разных страницах! (${partBase})`,
+          `Warning: parts of one article are placed on different pages! (${partBase})`,
           5
         );
       }
@@ -764,7 +764,7 @@ const GridStack: FC<GridStackProps> = ({
                     }}
                   >
                     <span>
-                      Страница {pageNumber} из {totalPagesCount}
+                      Page {pageNumber} of {totalPagesCount}
                     </span>
                   </footer>
                 )}

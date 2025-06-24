@@ -101,7 +101,7 @@ export default function BlogPostList() {
               router.push(`/issues/create?newspaperId=${newspaperId}`)
             }
           >
-            Создать выпуск
+            Create an issue
           </Button>
         </Space>
       )}
@@ -198,10 +198,10 @@ export default function BlogPostList() {
               ].filter(Boolean)}
             >
               <p>
-                <strong>Газета:</strong> {record.newspaper?.name}
+                <strong>Newspaper:</strong> {record.newspaper?.name}
               </p>
               <p>
-                <strong>Статус:</strong>
+                <strong>Status:</strong>
                 <Tag
                   color={
                     record.status === "draft"

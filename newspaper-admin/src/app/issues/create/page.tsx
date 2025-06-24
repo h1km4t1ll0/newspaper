@@ -94,7 +94,7 @@ export default function BlogPostCreate() {
           ]}
           initialValue="draft"
         >
-          <Select placeholder="Choose status" defaultValue="draft">
+          <Select placeholder="Select status" defaultValue="draft">
             <Select.Option value="draft">Draft</Select.Option>
             <Select.Option value="in_progress">In Progress</Select.Option>
             <Select.Option value="review">Review</Select.Option>
@@ -144,7 +144,7 @@ export default function BlogPostCreate() {
           ]}
           initialValue={newspaperId ? parseInt(newspaperId) : undefined}
         >
-          <Select {...newspaperSelectProps} placeholder="Choose a newspaper" />
+          <Select {...newspaperSelectProps} placeholder="Select a newspaper" />
         </Form.Item>
       </Form>
     </Create>

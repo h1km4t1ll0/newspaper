@@ -24,17 +24,17 @@ const { Sider, Content } = Layout;
 const COLUMNS: KanbanColumn[] = [
   {
     id: "TO_DO",
-    title: "К выполнению",
+    title: "To do",
     tasks: [],
   },
   {
     id: "IN_PROGRESS",
-    title: "В процессе",
+    title: "In progress",
     tasks: [],
   },
   {
     id: "DONE",
-    title: "Готово",
+    title: "Done",
     tasks: [],
   },
 ];
@@ -126,7 +126,7 @@ export const Kanban: React.FC<KanbanProps> = ({ createButtonProps }) => {
         description: task.description,
         status: task.status,
         taskType: task.taskType,
-        assignee: assigneeUsername || "Не назначен",
+        assignee: assigneeUsername || "Not specified",
         assigneeId: assigneeId || undefined,
         issueName: issueName || undefined,
         issueId: issueId || undefined,
@@ -199,10 +199,10 @@ export const Kanban: React.FC<KanbanProps> = ({ createButtonProps }) => {
             populate: ["assignee", "issue", "articles", "photos"],
           },
         });
-        message.success("Статус задачи обновлен");
+        message.success("Task status updated");
         await refetch();
       } catch (error) {
-        message.error("Ошибка при обновлении статуса задачи");
+        message.error("Error updating task status");
       }
     },
     [updateTask, refetch]
@@ -310,9 +310,9 @@ export const Kanban: React.FC<KanbanProps> = ({ createButtonProps }) => {
 
   const statusOptions = useMemo(
     () => [
-      { label: "К выполнению", value: "TO_DO" },
-      { label: "В процессе", value: "IN_PROGRESS" },
-      { label: "Готово", value: "DONE" },
+      { label: "To do", value: "TO_DO" },
+      { label: "In progress", value: "IN_PROGRESS" },
+      { label: "Done", value: "DONE" },
     ],
     []
   );
@@ -364,35 +364,35 @@ export const Kanban: React.FC<KanbanProps> = ({ createButtonProps }) => {
         extra={
           !createButtonProps?.hidden && (
             <Button type="primary" onClick={handleCreateTask}>
-              Создать задачу
+              Create a task
             </Button>
           )
         }
       >
         <Space direction="vertical" style={{ width: "100%", marginBottom: 16 }}>
           <Search
-            placeholder="Поиск по названию или описанию"
+            placeholder="Search by title or description"
             allowClear
             onSearch={handleSearch}
             style={{ width: 300 }}
           />
           <Space>
             <Select
-              placeholder="Фильтр по исполнителю"
+              placeholder="Filter by assignee"
               allowClear
               style={{ width: 200 }}
               onChange={handleAssigneeFilter}
               options={assigneeOptions}
             />
             <Select
-              placeholder="Фильтр по статусу"
+              placeholder="Filter by status"
               allowClear
               style={{ width: 200 }}
               onChange={handleStatusFilter}
               options={statusOptions}
             />
             <Select
-              placeholder="Фильтр по газете"
+              placeholder="Filter by newspaper"
               allowClear
               style={{ width: 200 }}
               onChange={handleNewspaperFilter}
@@ -400,7 +400,7 @@ export const Kanban: React.FC<KanbanProps> = ({ createButtonProps }) => {
             />
             {selectedNewspaper && (
               <Select
-                placeholder="Фильтр по выпуску"
+                placeholder="Filter by issue"
                 allowClear
                 style={{ width: 200 }}
                 onChange={handleIssueFilter}

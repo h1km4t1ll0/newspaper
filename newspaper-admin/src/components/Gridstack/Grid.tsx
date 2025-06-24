@@ -248,14 +248,14 @@ export const Grid: FC<GridProps> = ({
     sortedIndices.forEach((index, i) => {
       const partContent = words.slice(lastIndex, index + 1).join(" ");
       parts.push({
-        title: `Часть ${i + 1} из ${sortedIndices.length + 1} - ${title}`,
+        title: `Part ${i + 1} of ${sortedIndices.length + 1} - ${title}`,
         content: partContent,
       });
       lastIndex = index + 1;
     });
 
     parts.push({
-      title: `Часть ${sortedIndices.length + 1} из ${
+      title: `Part ${sortedIndices.length + 1} из ${
         sortedIndices.length + 1
       } - ${title}`,
       content: words.slice(lastIndex).join(" "),
@@ -578,7 +578,7 @@ export const Grid: FC<GridProps> = ({
         const currentItems = prevItems || [];
         // Находим части текста, добавленные через разбиение (у них title начинается с "Часть")
         const splitTextParts = currentItems.filter(
-          (item) => item.title && item.title.startsWith("Часть")
+          (item) => item.title && item.title.startsWith("Part")
         );
 
         // Объединяем новые статьи с сохраненными частями текста
@@ -594,7 +594,7 @@ export const Grid: FC<GridProps> = ({
       setItems((prevItems) => {
         const currentItems = prevItems || [];
         const splitTextParts = currentItems.filter(
-          (item) => item.title && item.title.startsWith("Часть")
+          (item) => item.title && item.title.startsWith("Part")
         );
         return splitTextParts;
       });
@@ -653,19 +653,19 @@ export const Grid: FC<GridProps> = ({
 
       if (success) {
         message.success({
-          content: "Макет сохранен",
+          content: "Layout saved",
           duration: 2,
         });
       } else {
         message.error({
-          content: "Ошибка сохранения макета",
+          content: "Error saving layout",
           duration: 3,
         });
       }
     } catch (error) {
       console.error("Save error:", error);
       message.error({
-        content: "Ошибка сохранения макета",
+        content: "Error saving layout",
         duration: 3,
       });
     }
@@ -785,7 +785,6 @@ export const Grid: FC<GridProps> = ({
     grid.on("added", (event, items) => {
       const itemId: string | undefined = items[items.length - 1]?.id;
       if (!itemId) {
-        console.error("Ошибка при изменении лейаута! Нет ид элемента!");
         return;
       }
 
@@ -919,7 +918,7 @@ export const Grid: FC<GridProps> = ({
           // Определяем, является ли это временной частью текста
           const isTemporaryPart =
             item.title &&
-            (item.title.startsWith("Часть") || item.title === "Removed Text");
+            (item.title.startsWith("Part") || item.title === "Removed Text");
 
           const actions = [
             <Tooltip key="add-text" title="Add to layout">
@@ -1159,10 +1158,10 @@ export const Grid: FC<GridProps> = ({
           if (isTextPart) {
             // Ищем существующие части в items, чтобы определить номер новой части
             const existingParts = items.filter(
-              (item) => item.title && item.title.startsWith("Часть")
+              (item) => item.title && item.title.startsWith("Part")
             );
             const nextPartNumber = existingParts.length + 1;
-            title = `Часть ${nextPartNumber} (возвращена)`;
+            title = `Part ${nextPartNumber} (returned)`;
           }
 
           console.log("Adding item back to temporary content:", {
@@ -1207,7 +1206,7 @@ export const Grid: FC<GridProps> = ({
   // Функция для удаления временной части текста из меню
   const handleDeleteTemporaryItem = (itemId: number) => {
     setItems((prev) => prev.filter((item) => item.id !== itemId));
-    message.success("Часть текста удалена");
+    message.success("Some text has been removed");
   };
 
   return (
@@ -1225,9 +1224,9 @@ export const Grid: FC<GridProps> = ({
               fontSize: "14px",
             }}
           >
-            <strong>📝 Первая страница</strong>
+            <strong>📝 First page</strong>
             <br />
-            Эта страница не редактируется. Она содержит обложку выпуска.
+            This page is not editable. It contains the cover of the issue.
           </div>
         )}
         {currentPageNumber !== 1 && (
@@ -1282,7 +1281,7 @@ export const Grid: FC<GridProps> = ({
               }
             }}
           >
-            📄 Скачать PDF
+            📄 Download PDF
           </Button>
           <div style={{ flex: 1 }} />
           <span>
@@ -1475,7 +1474,7 @@ export const Grid: FC<GridProps> = ({
                                 onClick={() => {
                                   showSplitTextModal(child.content?.text || "", child.title || "", child.id || "");
                                 }}
-                                title="Разбить текст на части"
+                                title="Split text into parts"
                               >
                                 ✂
                               </button>
@@ -1565,7 +1564,7 @@ export const Grid: FC<GridProps> = ({
               }}
             >
               <span>
-                Страница {currentPageNumber} из {totalPages}
+                Page {currentPageNumber} of {totalPages}
               </span>
             </footer>
           )}
@@ -1763,7 +1762,7 @@ export const Grid: FC<GridProps> = ({
               }}
             >
               <span>
-                Страница {currentPageNumber} из {totalPages}
+                Page {currentPageNumber} of {totalPages}
               </span>
             </footer>
           )}

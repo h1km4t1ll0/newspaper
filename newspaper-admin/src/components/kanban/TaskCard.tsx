@@ -7,11 +7,11 @@ const { Text, Title } = Typography;
 
 const getTaskTypeLabel = (taskType: string) => {
   const taskTypeLabels = {
-    WRITING: "Написание",
-    PHOTOGRAPHY: "Фотография",
-    LAYOUT: "Верстка",
-    EDITING: "Редактирование",
-    REVIEW: "Проверка",
+    WRITING: "Writing",
+    PHOTOGRAPHY: "Photography",
+    LAYOUT: "Layout",
+    EDITING: "Editing",
+    REVIEW: "Review",
   };
   return taskTypeLabels[taskType as keyof typeof taskTypeLabels] || taskType;
 };

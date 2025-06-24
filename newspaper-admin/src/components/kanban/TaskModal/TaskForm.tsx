@@ -95,61 +95,61 @@ export const TaskForm: React.FC<TaskFormProps> = ({
     <Form {...formProps} layout="vertical" onValuesChange={onValuesChange}>
       <Form.Item
         name="name"
-        label="Название"
+        label="Name"
         rules={[
-          { required: true, message: "Пожалуйста, введите название задачи" },
+          { required: true, message: "Please enter the task name" },
         ]}
       >
         <Input />
       </Form.Item>
-      <Form.Item name="description" label="Описание">
+      <Form.Item name="description" label="Description">
         <Input.TextArea rows={4} />
       </Form.Item>
-      <Form.Item name={["assignee", "id"]} label="Исполнитель">
+      <Form.Item name={["assignee", "id"]} label="Assignee">
         <Select
           {...userSelectProps}
           allowClear
-          placeholder="Выберите исполнителя"
+          placeholder="Select an assignee"
           // Принудительно очищаем значение при смене задачи
           key={`assignee-${task?.id || "new"}`}
         />
       </Form.Item>
-      <Form.Item name="status" label="Статус">
+      <Form.Item name="status" label="Status">
         <Select>
-          <Select.Option value="TO_DO">К выполнению</Select.Option>
-          <Select.Option value="IN_PROGRESS">В процессе</Select.Option>
-          <Select.Option value="DONE">Готово</Select.Option>
+          <Select.Option value="TO_DO">To do</Select.Option>
+          <Select.Option value="IN_PROGRESS">In progress</Select.Option>
+          <Select.Option value="DONE">Done</Select.Option>
         </Select>
       </Form.Item>
       {task ? (
         // При редактировании показываем readonly поле
-        <Form.Item name={["issue", "name"]} label="Выпуск">
+        <Form.Item name={["issue", "name"]} label="Issue">
           <Input disabled />
         </Form.Item>
       ) : (
         // При создании показываем селект
         <Form.Item
           name={["issue", "id"]}
-          label="Выпуск"
+          label="Issue"
           rules={[{ required: true }]}
         >
           <Select
             {...issueSelectProps}
-            placeholder="Выберите выпуск"
+            placeholder="Select an issue"
             key={`issue-new`}
           />
         </Form.Item>
       )}
-      <Form.Item name="taskType" label="Тип задачи">
+      <Form.Item name="taskType" label="Task type">
         <Select
-          placeholder="Выберите тип задачи"
+          placeholder="Select task type"
           onChange={handleTaskTypeChange}
         >
-          <Select.Option value="WRITING">Написание</Select.Option>
-          <Select.Option value="PHOTOGRAPHY">Фотография</Select.Option>
-          <Select.Option value="LAYOUT">Верстка</Select.Option>
-          <Select.Option value="EDITING">Редактирование</Select.Option>
-          <Select.Option value="REVIEW">Проверка</Select.Option>
+          <Select.Option value="WRITING">Writing</Select.Option>
+          <Select.Option value="PHOTOGRAPHY">Photography</Select.Option>
+          <Select.Option value="LAYOUT">Layout</Select.Option>
+          <Select.Option value="EDITING">Editing</Select.Option>
+          <Select.Option value="REVIEW">Review</Select.Option>
         </Select>
       </Form.Item>
 
@@ -157,7 +157,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({
       {(selectedTaskType === "WRITING" || selectedTaskType === "EDITING") && (
         <Form.Item
           name={["articles"]}
-          label="Выберите существующую статью (необязательно, если уже существует)"
+          label="Select an existing article (optional if already exists)"
           getValueProps={(value) => {
             if (value && typeof value === "object" && value.id) {
               return { value: value.id };
@@ -168,7 +168,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({
           <Select
             {...articleSelectProps}
             allowClear
-            placeholder="Выберите статью или оставьте пустым для создания новой"
+            placeholder="Select an article or leave blank to create a new one"
             key={`articles-${task?.id || "new"}`}
           />
         </Form.Item>
@@ -177,7 +177,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({
       {selectedTaskType === "PHOTOGRAPHY" && (
         <Form.Item
           name={["photos"]}
-          label="Выберите существующее фото (необязательно, если уже существует)"
+          label="Select an existing photo (optional if already exists)"
           getValueProps={(value) => {
             if (value && typeof value === "object" && value.id) {
               return { value: value.id };
@@ -188,7 +188,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({
           <Select
             {...photoSelectProps}
             allowClear
-            placeholder="Выберите фото или оставьте пустым для создания нового"
+            placeholder="Select a photo or leave blank to create a new one"
             key={`photos-${task?.id || "new"}`}
           />
         </Form.Item>
