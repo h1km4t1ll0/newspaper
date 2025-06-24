@@ -16,9 +16,9 @@ const FONT_OPTIONS = [
 ];
 
 const COLUMN_COUNT_OPTIONS = [
-  { value: 4, label: "4 колонки" },
-  { value: 8, label: "8 колонок" },
-  { value: 12, label: "12 колонок" },
+  { value: 4, label: "4 columns" },
+  { value: 8, label: "8 columns" },
+  { value: 12, label: "12 columns" },
 ];
 
 const PAGE_SIZE_PRESETS = [
@@ -27,7 +27,7 @@ const PAGE_SIZE_PRESETS = [
   { value: "letter", label: "Letter (612×792)", width: 612, height: 792 },
   {
     value: "newspaper",
-    label: "Газетный формат (800×1200)",
+    label: "Newspaper format (800×1200)",
     width: 800,
     height: 1200,
   },
@@ -68,19 +68,19 @@ export default function BlogPostCreate() {
     <Create saveButtonProps={saveButtonProps}>
       <Form {...formProps} layout="vertical">
         <Form.Item
-          label="Название макета"
+          label="Name of layout"
           name="name"
-          rules={[{ required: true, message: "Введите название макета" }]}
+          rules={[{ required: true, message: "Enter the name of layout" }]}
         >
-          <Input placeholder="Например: Стандартный макет газеты" />
+          <Input placeholder="Example: Standart newspaper layout" />
         </Form.Item>
 
         <Form.Item
-          label="Предустановленный размер страницы"
-          help="Выберите стандартный размер или настройте вручную ниже"
+          label="Preset page size"
+          help="Select a standard size or customize below"
         >
           <Select
-            placeholder="Выберите размер страницы"
+            placeholder="Select page size"
             onChange={handlePageSizeChange}
             options={PAGE_SIZE_PRESETS.map((p) => ({
               value: p.value,
@@ -90,7 +90,7 @@ export default function BlogPostCreate() {
         </Form.Item>
 
         <Form.Item
-          label="Ширина страницы (px)"
+          label="Page width (px)"
           name="pageWidth"
           rules={[{ required: true }]}
         >
@@ -98,7 +98,7 @@ export default function BlogPostCreate() {
         </Form.Item>
 
         <Form.Item
-          label="Высота страницы (px)"
+          label="Page height (px)"
           name="pageHeight"
           rules={[{ required: true }]}
         >
@@ -106,7 +106,7 @@ export default function BlogPostCreate() {
         </Form.Item>
 
         <Form.Item
-          label="Количество колонок"
+          label="Number of columns"
           name="columnCount"
           rules={[{ required: true }]}
         >
@@ -114,46 +114,46 @@ export default function BlogPostCreate() {
         </Form.Item>
 
         <Form.Item
-          label="Количество страниц"
+          label="Number of pages"
           name="pagesCount"
           rules={[{ required: true }]}
-          help="Минимум 2 страницы (первая страница не редактируется)"
+          help="Minimum 2 pages (first page is not editable)"
         >
           <InputNumber min={2} max={50} style={{ width: "100%" }} />
         </Form.Item>
 
         <Form.Item
-          label="Основной шрифт"
+          label="Main font"
           name="fontFamily"
           rules={[{ required: true }]}
         >
           <Select
             options={FONT_OPTIONS}
             showSearch
-            placeholder="Выберите шрифт"
+            placeholder="Choose a font"
           />
         </Form.Item>
 
         <Form.Item
-          label="Горизонтальные поля (px)"
+          label="Horizontal fields (px)"
           name="horizontalFieldsWidth"
-          help="Отступы слева и справа"
+          help="Left and right margins"
         >
           <InputNumber min={0} max={200} style={{ width: "100%" }} />
         </Form.Item>
 
         <Form.Item
-          label="Вертикальные поля (px)"
+          label="Vertical fields (px)"
           name="verticalFieldsHeight"
-          help="Отступы сверху и снизу"
+          help="Top and bottom margins"
         >
           <InputNumber min={0} max={200} style={{ width: "100%" }} />
         </Form.Item>
 
         <Form.Item
-          label="Доступные стили текста (JSON)"
+          label="Available text styles (JSON)"
           name="availableTextStyles"
-          help="Конфигурация доступных шрифтов в формате JSON"
+          help="Configuration of available fonts in JSON format"
         >
           <TextArea
             rows={4}
@@ -162,9 +162,9 @@ export default function BlogPostCreate() {
         </Form.Item>
 
         <Form.Item
-          label="Данные редактора (JSON)"
+          label="Editor Data (JSON)"
           name="editorJSData"
-          help="Структурированные данные EditorJS (обычно пустые при создании)"
+          help="Editor structured data (usually empty when created)"
         >
           <TextArea rows={3} placeholder='{"blocks": []}' />
         </Form.Item>
