@@ -4,6 +4,18 @@
   "type": "layout",
   "permissions": [
     {
+      "action": "api::advertisment.advertisment.find"
+    },
+    {
+      "action": "api::advertisment.advertisment.findOne"
+    },
+    {
+      "action": "api::article.article.find"
+    },
+    {
+      "action": "api::article.article.findOne"
+    },
+    {
       "action": "api::issue.issue.find"
     },
     {
@@ -16,10 +28,34 @@
       "action": "api::layout.layout.findOne"
     },
     {
+      "action": "api::newspaper.newspaper.find"
+    },
+    {
+      "action": "api::newspaper.newspaper.findOne"
+    },
+    {
+      "action": "api::photo.photo.find"
+    },
+    {
+      "action": "api::photo.photo.findOne"
+    },
+    {
       "action": "api::task.task.find"
     },
     {
       "action": "api::task.task.findOne"
+    },
+    {
+      "action": "plugin::users-permissions.role.find"
+    },
+    {
+      "action": "plugin::users-permissions.role.findOne"
+    },
+    {
+      "action": "plugin::users-permissions.user.find"
+    },
+    {
+      "action": "plugin::users-permissions.user.findOne"
     }
   ]
 }

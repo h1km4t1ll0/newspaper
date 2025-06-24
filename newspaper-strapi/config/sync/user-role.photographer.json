@@ -91,6 +91,12 @@
       "action": "api::layout.layout.update"
     },
     {
+      "action": "api::newspaper.newspaper.find"
+    },
+    {
+      "action": "api::newspaper.newspaper.findOne"
+    },
+    {
       "action": "api::photo.photo.create"
     },
     {
@@ -113,6 +119,18 @@
     },
     {
       "action": "api::task.task.update"
+    },
+    {
+      "action": "plugin::users-permissions.role.find"
+    },
+    {
+      "action": "plugin::users-permissions.role.findOne"
+    },
+    {
+      "action": "plugin::users-permissions.user.find"
+    },
+    {
+      "action": "plugin::users-permissions.user.findOne"
     }
   ]
 }
