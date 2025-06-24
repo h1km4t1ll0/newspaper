@@ -1,0 +1,13 @@
+.comma {
+  position: relative;
+
+  &::after {
+    content: ', ';
+  }
+
+  &:last-of-type {
+    &::after {
+      content: '';
+    }
+  }
+}
