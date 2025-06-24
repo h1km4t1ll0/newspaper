@@ -202,10 +202,12 @@ export const Grid: FC<GridProps> = ({
     visible: boolean;
     textContent: string;
     widgetId: string;
+    originalTitle?: string;
   }>({
     visible: false,
     textContent: "",
     widgetId: "",
+    originalTitle: "",
   });
   const [splitIndices, setSplitIndices] = useState<number[]>([]);
 
@@ -229,11 +231,13 @@ export const Grid: FC<GridProps> = ({
       typeof widget.content === "string"
         ? widget.content
         : widget.content?.text || widget.content?.blocks?.[0]?.data?.text || "";
+    const originalTitle = widget.content?.title || widget.content?.name || "Untitled Article";
 
     setSplitTextModal({
       visible: true,
       textContent,
       widgetId,
+      originalTitle,
     });
   };
 
@@ -243,12 +247,13 @@ export const Grid: FC<GridProps> = ({
       visible: false,
       textContent: "",
       widgetId: "",
+      originalTitle: "",
     });
   };
 
   // Функция для обработки разбиения текста
   const handleSplitText = () => {
-    const { textContent, widgetId } = splitTextModal;
+    const { textContent, widgetId, originalTitle } = splitTextModal;
     if (!textContent.trim()) {
       message.error("The text is emptyт");
       return;
@@ -275,11 +280,12 @@ export const Grid: FC<GridProps> = ({
     // Remove the original widget
     const updatedLayout = layout.filter((item) => item.id !== widgetId);
     onChangeLayout(updatedLayout);
-    // Add new parts as temporary content
+    // Add new parts as temporary content, with originalArticleName
     const newItems = parts.map((part, index) => ({
       id: Date.now() + index + Math.random(),
-      title: `Part ${index + 1} of ${parts.length}`,
+      title: `Part ${index + 1} of ${parts.length} — ${originalTitle || "Untitled Article"}`,
       content: part,
+      originalArticleName: originalTitle || "Untitled Article",
     }));
     setItems((prevItems) => {
       const currentItems = prevItems || [];
@@ -1003,7 +1009,7 @@ export const Grid: FC<GridProps> = ({
                             fontWeight: "normal",
                           }}
                         >
-                          временный
+                          temporary
                         </span>
                       )}
                     </div>
@@ -1169,39 +1175,31 @@ export const Grid: FC<GridProps> = ({
             : widget.content?.text ||
               widget.content?.blocks?.[0]?.data?.text ||
               "";
-
-        console.log("Text content to return:", textContent); // Отладка
-
+        let originalArticleName = widget.content?.originalArticleName;
+        if (!originalArticleName && widget.content?.title && widget.content.title.startsWith('Part')) {
+          const match = widget.content.title.match(/— (.+)$/);
+          if (match) originalArticleName = match[1].trim();
+        }
         if (textContent && textContent.trim()) {
-          // Определяем заголовок для возвращаемого элемента
           let title = "Removed Text";
-
-          // Если это часть разбитого текста, сохраняем информацию о части
-          const isTextPart = textContent.length < 200; // Предполагаем что части короче оригинальных статей
+          const isTextPart = textContent.length < 200;
           if (isTextPart) {
-            // Ищем существующие части в items, чтобы определить номер новой части
             const existingParts = items.filter(
               (item) => item.title && item.title.startsWith("Part")
             );
             const nextPartNumber = existingParts.length + 1;
             title = `Part ${nextPartNumber} (returned)`;
           }
-
-          console.log("Adding item back to temporary content:", {
-            title,
-            content: textContent,
-          }); // Отладка
-
           setItems((prev) => {
             const newItems = [
               ...prev,
               {
-                id: Date.now() + Math.random(), // Уникальный ID
+                id: Date.now() + Math.random(),
                 title: title,
                 content: textContent,
+                originalArticleName,
               },
             ];
-            console.log("Updated items after adding back:", newItems); // Отладка
             return newItems;
           });
         }
@@ -1593,7 +1591,43 @@ export const Grid: FC<GridProps> = ({
           )}
         </div>
       </MainContent>
-
+      <Sidebar>
+        <h3 style={{ marginBottom: 16 }}>Table of Content</h3>
+        {/* Table of Content: List all placed articles per page, no parts, show original article name for parts */}
+        <div style={{ maxHeight: '80vh', overflowY: 'auto' }}>
+          {Object.entries(allLayouts).map(([pageId, layout]) => {
+            const pageNumber = isNaN(Number(pageId)) ? pageId : Number(pageId);
+            const articleMap = new Map<string, { isPart: boolean }>();
+            layout.forEach(item => {
+              // Prefer originalArticleName if present
+              if (item.content?.originalArticleName) {
+                articleMap.set(item.content.originalArticleName, { isPart: true });
+              } else if (item.content?.title && item.content.title.startsWith('Part')) {
+                const match = item.content.title.match(/— (.+)$/);
+                if (match) {
+                  const name = match[1].trim();
+                  articleMap.set(name, { isPart: true });
+                }
+              } else if (item.content?.title) {
+                articleMap.set(item.content.title, { isPart: false });
+              } else if (item.content?.name) {
+                articleMap.set(item.content.name, { isPart: false });
+              }
+            });
+            if (articleMap.size === 0) return null;
+            return (
+              <div key={pageId} style={{ marginBottom: 16 }}>
+                <div style={{ fontWeight: 600, marginBottom: 4 }}>Page {pageNumber}</div>
+                <ul style={{ margin: 0, paddingLeft: 16 }}>
+                  {[...articleMap.entries()].map(([name, { isPart }]) => (
+                    <li key={name}>{name}{isPart ? ' (part)' : ''}</li>
+                  ))}
+                </ul>
+              </div>
+            );
+          })}
+        </div>
+      </Sidebar>
       <Modal
         visible={previewVisible}
         onCancel={hidePreview}

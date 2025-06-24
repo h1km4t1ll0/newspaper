@@ -239,29 +239,6 @@ const GridStack: FC<GridStackProps> = ({
           foundOnPages.push(pageId);
         }
       });
-      if (foundOnPages.length > 0 && !foundOnPages.includes(currentPage)) {
-        message.warning(
-          `Warning: parts of one article are placed on different pages! (${partBase})`,
-          5
-        );
-      }
-      const allOtherParts = Object.entries(pages).flatMap(([pageId, layout]) =>
-        layout
-          .filter(
-            (w) =>
-              w.content?.type === "text" &&
-              w.content?.title &&
-              w.content.title.startsWith("Часть") &&
-              pageId !== currentPage
-          )
-          .map((w) => ({ title: w.content.title, pageId }))
-      );
-      if (allOtherParts.length > 0) {
-        message.warning(
-          `Warning: parts of one article are placed on different pages!`,
-          5
-        );
-      }
     }
 
     const pageLayout = pages[currentPage];

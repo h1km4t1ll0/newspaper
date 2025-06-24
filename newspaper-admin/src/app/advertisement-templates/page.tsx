@@ -41,13 +41,13 @@ export default function BlogPostList() {
           dataIndex="widthInColumns"
           title={"Width (in columns)"}
           width={130}
-          render={(value) => <Tag color="cyan">{value} кол.</Tag>}
+          render={(value) => <Tag color="cyan">{value} col.</Tag>}
         />
         <Table.Column
           dataIndex="heightInRows"
           title={"Height (in rows)"}
           width={130}
-          render={(value) => <Tag color="orange">{value} стр.</Tag>}
+          render={(value) => <Tag color="orange">{value} rows</Tag>}
         />
         <Table.Column
           title={"Size"}

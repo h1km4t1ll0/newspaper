@@ -47,7 +47,7 @@ export default {
               "api::article.article",
               {
                 data: {
-                  name: `Статья: ${result.name}`,
+                  name: `Article: ${result.name}`,
                   text: "",
                   issue: issueId,
                   tasks: [result.id],
@@ -62,7 +62,7 @@ export default {
               "api::photo.photo",
               {
                 data: {
-                  name: `Фото для: ${result.name}`,
+                  name: `Photo for: ${result.name}`,
                   width: 0,
                   height: 0,
                   article: article.id,
@@ -122,7 +122,7 @@ export default {
               "api::article.article",
               {
                 data: {
-                  name: `Статья для фото: ${result.name}`,
+                  name: `Article for photo: ${result.name}`,
                   text: "",
                   issue: issueId,
                   tasks: [result.id],
