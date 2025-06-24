@@ -1,14 +1,17 @@
-"use client";
+'use client';
 
-import { RefineThemes } from "@refinedev/antd";
-import { App as AntdApp, ConfigProvider, theme } from "antd";
-import Cookies from "js-cookie";
+// import { RefineThemes } from '@refinedev/antd';
+import CustomLightTheme from '@styles/theme/CustomLightTheme';
+import CustomDarkTheme from '@styles/theme/CustomDarkTheme';
+import { App as AntdApp, ConfigProvider, theme } from 'antd';
+import Cookies from 'js-cookie';
 import React, {
-  type PropsWithChildren,
+  PropsWithChildren,
   createContext,
   useEffect,
+  useMemo,
   useState,
-} from "react";
+} from 'react';
 
 type ColorModeContextType = {
   mode: string;
@@ -27,7 +30,7 @@ export const ColorModeContextProvider: React.FC<
   PropsWithChildren<ColorModeContextProviderProps>
 > = ({ children, defaultMode }) => {
   const [isMounted, setIsMounted] = useState(false);
-  const [mode, setMode] = useState(defaultMode || "light");
+  const [mode, setMode] = useState(defaultMode || 'light');
 
   useEffect(() => {
     setIsMounted(true);
@@ -35,22 +38,30 @@ export const ColorModeContextProvider: React.FC<
 
   useEffect(() => {
     if (isMounted) {
-      const theme = Cookies.get("theme") || "light";
+      const theme = Cookies.get('theme') || 'light';
       setMode(theme);
     }
   }, [isMounted]);
 
   const setColorMode = () => {
-    if (mode === "light") {
-      setMode("dark");
-      Cookies.set("theme", "dark");
+    if (mode === 'light') {
+      setMode('dark');
+      Cookies.set('theme', 'dark');
     } else {
-      setMode("light");
-      Cookies.set("theme", "light");
+      setMode('light');
+      Cookies.set('theme', 'light');
     }
   };
 
   const { darkAlgorithm, defaultAlgorithm } = theme;
+
+  const customTheme = useMemo(() => {
+    if (mode === 'dark') {
+      return CustomDarkTheme;
+    }
+
+    return CustomLightTheme;
+  }, [mode]);
 
   return (
     <ColorModeContext.Provider
@@ -62,8 +73,8 @@ export const ColorModeContextProvider: React.FC<
       <ConfigProvider
         // you can change the theme colors here. example: ...RefineThemes.Magenta,
         theme={{
-          ...RefineThemes.Blue,
-          algorithm: mode === "light" ? defaultAlgorithm : darkAlgorithm,
+          ...customTheme,
+          algorithm: mode === 'light' ? defaultAlgorithm : darkAlgorithm,
         }}
       >
         <AntdApp>{children}</AntdApp>

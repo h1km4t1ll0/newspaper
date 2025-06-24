@@ -20,6 +20,7 @@ import {
   Tooltip,
   Typography,
   Space,
+  Empty,
 } from "antd";
 import { GridStack } from "gridstack";
 import "gridstack/dist/gridstack.min.css";
@@ -37,6 +38,7 @@ import React, {
 import styled from "styled-components";
 import "./grid-stack.css";
 import { GridItem } from "./GridItem";
+import { axiosInstance } from "@utility/axios-instance";
 
 const Container = styled.div`
   display: grid;
@@ -256,7 +258,7 @@ export const Grid: FC<GridProps> = ({
   const handleSplitText = () => {
     const { textContent, widgetId, originalTitle } = splitTextModal;
     if (!textContent.trim()) {
-      message.error("The text is emptyт");
+      message.error("The text is empty");
       return;
     }
     if (splitIndices.length === 0) {
@@ -281,6 +283,21 @@ export const Grid: FC<GridProps> = ({
     // Remove the original widget
     const updatedLayout = layout.filter((item) => item.id !== widgetId);
     onChangeLayout(updatedLayout);
+    
+    // Remove the original article from items
+    setItems((prevItems) => {
+      const currentItems = prevItems || [];
+      const itemContent = typeof textContent === "string" ? textContent : (textContent as any)?.text || (textContent as any)?.blocks?.[0]?.data?.text || "";
+      return currentItems.filter((item) => {
+        const itemText = typeof item.content === "string" ? item.content : item.content.text || item.content.blocks?.[0]?.data?.text || "";
+        return itemText !== itemContent;
+      });
+    });
+    
+    // Add the split article to splitArticles to prevent it from returning to available content
+    const itemContent = typeof textContent === "string" ? textContent : (textContent as any)?.text || (textContent as any)?.blocks?.[0]?.data?.text || "";
+    setSplitArticles((prev) => [...prev, itemContent]);
+    
     // Add new parts as temporary content, with originalArticleName
     const newItems = parts.map((part, index) => ({
       id: Date.now() + index + Math.random(),
@@ -288,10 +305,10 @@ export const Grid: FC<GridProps> = ({
       content: part,
       originalArticleName: originalTitle || "Untitled Article",
     }));
-    setItems((prevItems) => {
-      const currentItems = prevItems || [];
-      const updatedItems = [...currentItems, ...newItems];
-      return updatedItems;
+    setTemporaryParts((prev) => {
+      const currentParts = prev || [];
+      const updatedParts = [...currentParts, ...newItems];
+      return updatedParts;
     });
     message.success(`The text is divided into ${parts.length} parts`);
     setSplitIndices([]); // reset for next time
@@ -480,6 +497,10 @@ export const Grid: FC<GridProps> = ({
   const [items, setItems] = useState<
     { title: string; content: any; id: number }[]
   >([]);
+  const [temporaryParts, setTemporaryParts] = useState<
+    { title: string; content: any; id: number; originalArticleName?: string }[]
+  >([]);
+  const [splitArticles, setSplitArticles] = useState<string[]>([]);
   const [images, setImages] =
     useState<{ name: string; url: string; id: number }[]>();
   const [advertisement, setAdvertisement] = useState<
@@ -549,6 +570,7 @@ export const Grid: FC<GridProps> = ({
           id: rawData.id,
         }));
 
+        console.log("photosData.data?.data.data", photosData.data?.data.data);
       // Get photos from the API и фильтруем по issue
       const imagesArray: { name: string; url: string; id: number }[] =
         photosData.data?.data.data
@@ -556,6 +578,7 @@ export const Grid: FC<GridProps> = ({
             // Проверяем что у фото есть файл и оно принадлежит текущему issue
             const hasPhoto = photo?.attributes?.photo?.data?.attributes?.url;
             const photoIssueId = photo.attributes?.issue?.data?.id;
+            console.log("photoIssueId", photoIssueId, issueId);
             return (
               hasPhoto &&
               photoIssueId &&
@@ -595,41 +618,27 @@ export const Grid: FC<GridProps> = ({
           typeof item.content === "string"
             ? item.content
             : item.content.text || item.content.blocks?.[0]?.data?.text || "";
-        return !usedContent.includes(itemContent);
+        // Исключаем статьи, которые уже используются в layout или были разбиты
+        return !usedContent.includes(itemContent) && !splitArticles.includes(itemContent);
       });
 
       const filteredImages = imagesArray.filter(
         (image) => !usedContent.includes(image.url)
       );
 
-      // Сохраняем существующие части текста (добавленные через разбиение)
-      setItems((prevItems) => {
-        const currentItems = prevItems || [];
-        // Находим части текста, добавленные через разбиение (у них title начинается с "Часть")
-        const splitTextParts = currentItems.filter(
-          (item) => item.title && item.title.startsWith("Part")
-        );
-
-        // Объединяем новые статьи с сохраненными частями текста
-        const combinedItems = [...(filteredItems || []), ...splitTextParts];
-        console.log("Combined items with split parts:", combinedItems);
-        return combinedItems;
-      });
+      // Сохраняем только оригинальные статьи, не смешиваем с временными частями
+      setItems(filteredItems || []);
+      // НЕ перезаписываем temporaryParts при перезагрузке данных
 
       setImages(filteredImages);
     } catch (error) {
       console.error("Error loading articles and photos:", error);
       // При ошибке сохраняем существующие части текста
-      setItems((prevItems) => {
-        const currentItems = prevItems || [];
-        const splitTextParts = currentItems.filter(
-          (item) => item.title && item.title.startsWith("Part")
-        );
-        return splitTextParts;
-      });
+      setItems([]);
+      // НЕ перезаписываем temporaryParts при ошибке
       setImages([]);
     }
-  }, [allLayouts, refetch, refetchPhotos, issueId]);
+  }, [allLayouts, refetch, refetchPhotos, issueId, splitArticles]);
 
   const getAdvertisement = useCallback(async () => {
     const data = await refetchAdvertisement();
@@ -757,6 +766,13 @@ export const Grid: FC<GridProps> = ({
 
     const nextId = (layout.length + 1).toString();
     const initialWidthWidth = safeLayoutSettings.columnCount;
+
+    if (currentPageNumber === 2 && layout.length === 0) {
+      const newTableOfContents = generateTableOfContents();
+      if (newTableOfContents && newTableOfContents.length > 0) {
+        onChangeLayout(newTableOfContents);
+      }
+    }
 
     if (currentPageNumber === 1 && layout.length === 0) {
       const initialWidgets = [
@@ -945,11 +961,6 @@ export const Grid: FC<GridProps> = ({
         loading={loading}
         style={{ width: "100%" }}
         renderItem={(item) => {
-          // Определяем, является ли это временной частью текста
-          const isTemporaryPart =
-            item.title &&
-            (item.title.startsWith("Part") || item.title === "Removed Text");
-
           const actions = [
             <Tooltip key="add-text" title="Add to layout">
               <Button
@@ -972,20 +983,6 @@ export const Grid: FC<GridProps> = ({
             </Tooltip>,
           ];
 
-          // Добавляем кнопку удаления для временных частей
-          if (isTemporaryPart) {
-            actions.push(
-              <Tooltip key="delete-text" title="Delete permanently">
-                <Button
-                  danger
-                  shape="circle"
-                  icon={<DeleteOutlined />}
-                  onClick={() => handleDeleteTemporaryItem(item.id)}
-                />
-              </Tooltip>
-            );
-          }
-
           return (
             <List.Item style={{ padding: "8px 0" }} actions={actions}>
               <Skeleton avatar title={false} loading={loading} active>
@@ -999,20 +996,6 @@ export const Grid: FC<GridProps> = ({
                       }}
                     >
                       <span>{item.title}</span>
-                      {isTemporaryPart && (
-                        <span
-                          style={{
-                            fontSize: "10px",
-                            backgroundColor: "#f0f0f0",
-                            color: "#666",
-                            padding: "2px 6px",
-                            borderRadius: "10px",
-                            fontWeight: "normal",
-                          }}
-                        >
-                          temporary
-                        </span>
-                      )}
                     </div>
                   }
                   description={
@@ -1185,13 +1168,13 @@ export const Grid: FC<GridProps> = ({
           let title = "Removed Text";
           const isTextPart = textContent.length < 200;
           if (isTextPart) {
-            const existingParts = items.filter(
+            const existingParts = temporaryParts.filter(
               (item) => item.title && item.title.startsWith("Part")
             );
             const nextPartNumber = existingParts.length + 1;
             title = `Part ${nextPartNumber} (returned)`;
           }
-          setItems((prev) => {
+          setTemporaryParts((prev) => {
             const newItems = [
               ...prev,
               {
@@ -1227,8 +1210,82 @@ export const Grid: FC<GridProps> = ({
 
   // Функция для удаления временной части текста из меню
   const handleDeleteTemporaryItem = (itemId: number) => {
-    setItems((prev) => prev.filter((item) => item.id !== itemId));
+    setTemporaryParts((prev) => prev.filter((item) => item.id !== itemId));
     message.success("Some text has been removed");
+  };
+
+  // Функция для восстановления оригинальной статьи из частей
+  const handleRestoreArticle = async (originalArticleName: string) => {
+    // Находим все части этой статьи
+    const articleParts = temporaryParts.filter(
+      (item) => item.originalArticleName === originalArticleName
+    );
+    
+    if (articleParts.length === 0) {
+      message.error("No parts found for this article");
+      return;
+    }
+
+    try {
+      // Получаем оригинальную статью с бэкенда по названию
+      const query = qs.stringify(
+        {
+          fields: "*",
+          filters: {
+            name: {
+              $eq: originalArticleName
+            },
+            issue: {
+              id: {
+                $eq: issueId
+              }
+            }
+          }
+        },
+        {
+          encodeValuesOnly: true,
+        }
+      );
+
+      const response = await axiosInstance.get(`${API_URL}/api/articles?${query}`);
+      const data = response.data;
+
+      if (!data.data || data.data.length === 0) {
+        message.error(`Article "${originalArticleName}" not found on backend`);
+        return;
+      }
+
+      const originalArticle = data.data[0];
+      const originalText = originalArticle.attributes.text;
+
+      // Удаляем все части из temporaryParts
+      setTemporaryParts((prev) => 
+        prev.filter((item) => item.originalArticleName !== originalArticleName)
+      );
+
+      // Удаляем статью из splitArticles
+      setSplitArticles((prev) => 
+        prev.filter((content) => {
+          const itemContent = typeof content === "string" ? content : (content as any)?.text || (content as any)?.blocks?.[0]?.data?.text || "";
+          return itemContent !== originalText;
+        })
+      );
+
+      // Добавляем оригинальную статью обратно в items
+      setItems((prev) => [
+        ...prev,
+        {
+          id: originalArticle.id,
+          title: originalArticle.attributes.name,
+          content: originalText,
+        },
+      ]);
+
+      message.success(`Article "${originalArticleName}" has been restored`);
+    } catch (error) {
+      console.error("Error restoring article:", error);
+      message.error("Error restoring article from backend");
+    }
   };
 
   const handleGeneratePDF = async () => {
@@ -1277,10 +1334,316 @@ export const Grid: FC<GridProps> = ({
     }
   };
 
+  const renderTemporaryContentList = () => {
+    console.log("Rendering temporary content list, temporaryParts:", temporaryParts); // Отладка
+    console.log("Temporary parts length:", temporaryParts?.length || 0); // Отладка
+
+    // Проверяем, есть ли временные части
+    if (!temporaryParts || temporaryParts.length === 0) {
+      return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />;
+    }
+
+    // Группируем части по оригинальной статье
+    const groupedParts = temporaryParts.reduce((groups, item) => {
+      const articleName = item.originalArticleName || "Unknown Article";
+      if (!groups[articleName]) {
+        groups[articleName] = [];
+      }
+      groups[articleName].push(item);
+      return groups;
+    }, {} as Record<string, typeof temporaryParts>);
+
+    return (
+      <div>
+        {Object.entries(groupedParts).map(([articleName, parts]) => (
+          <div key={articleName} style={{ marginBottom: 16 }}>
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center',
+              marginBottom: 8,
+              padding: '8px 12px',
+              backgroundColor: '#f8f9fa',
+              borderRadius: '4px',
+              border: '1px solid #e9ecef'
+            }}>
+              <span style={{ fontWeight: 600, fontSize: '14px' }}>
+                {articleName} ({parts.length} parts)
+              </span>
+              <Button
+                type="primary"
+                size="small"
+                onClick={() => handleRestoreArticle(articleName)}
+                style={{ fontSize: '12px' }}
+              >
+                Restore Article
+              </Button>
+            </div>
+            <List
+              itemLayout="vertical"
+              dataSource={parts}
+              loading={loading}
+              style={{ width: "100%" }}
+              renderItem={(item) => {
+                const actions = [
+                  <Tooltip key="add-text" title="Add to layout">
+                    <Button
+                      type="primary"
+                      shape="circle"
+                      icon={<PlusOutlined />}
+                      disabled={currentPageNumber === 1}
+                      onClick={() => {
+                        addWidgetWithContent({
+                          type: "text",
+                          text: item.content,
+                          fontFamily: currentFont,
+                          title: item.title,
+                        });
+                        setTemporaryParts((prev) =>
+                          prev.filter((each) => each.id !== item.id)
+                        );
+                      }}
+                    />
+                  </Tooltip>,
+                  <Tooltip key="delete-text" title="Delete permanently">
+                    <Button
+                      danger
+                      shape="circle"
+                      icon={<DeleteOutlined />}
+                      onClick={() => handleDeleteTemporaryItem(item.id)}
+                    />
+                  </Tooltip>,
+                ];
+
+                return (
+                  <List.Item style={{ padding: "8px 0" }} actions={actions}>
+                    <Skeleton avatar title={false} loading={loading} active>
+                      <List.Item.Meta
+                        title={
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "8px",
+                            }}
+                          >
+                            <span>{item.title}</span>
+                            <span
+                              style={{
+                                fontSize: "10px",
+                                backgroundColor: "#f0f0f0",
+                                color: "#666",
+                                padding: "2px 6px",
+                                borderRadius: "10px",
+                                fontWeight: "normal",
+                              }}
+                            >
+                              temporary
+                            </span>
+                          </div>
+                        }
+                        description={
+                          <div
+                            style={{
+                              maxHeight: "5%",
+                              overflow: "hidden",
+                              wordBreak: "break-word",
+                              whiteSpace: "normal",
+                              paddingRight: 8,
+                              width: "100%",
+                            }}
+                          >
+                            <MarkdownContainer fontFamily={currentFont}>
+                              <MDEditor.Markdown
+                                source={
+                                  typeof item.content === "string"
+                                    ? item.content
+                                    : item.content.text ||
+                                      item.content.blocks?.[0]?.data?.text ||
+                                      ""
+                                }
+                                style={{
+                                  backgroundColor: "transparent",
+                                  padding: "6px",
+                                  whiteSpace: "pre-wrap",
+                                  wordBreak: "break-word",
+                                  lineHeight: "1.4", // Добавляем фиксированную высоту строки
+                                }}
+                              />
+                            </MarkdownContainer>
+                          </div>
+                        }
+                      />
+                    </Skeleton>
+                  </List.Item>
+                );
+              }}
+            />
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  // Функция для генерации оглавления
+  const generateTableOfContents = useCallback(() => {
+    if (currentPageNumber !== 2) return;
+    
+    const tableOfContents: any[] = [];
+    let currentY = 0;
+    
+    // Добавляем заголовок оглавления
+    tableOfContents.push({
+      id: "toc-header",
+      x: 0,
+      y: currentY,
+      w: safeLayoutSettings.columnCount,
+      h: 3,
+      lock: true,
+      content: {
+        blocks: [
+          {
+            id: "toc-header",
+            data: {
+              text: "# Table of Contents",
+            },
+            type: "paragraph",
+          },
+        ],
+      },
+    });
+    currentY += 3;
+
+    // Анализируем все страницы для создания оглавления
+    Object.entries(allLayouts).forEach(([pageKey, pageLayout]) => {
+      const pageNumber = parseInt(pageKey.replace('page', ''));
+      
+      // Пропускаем первую и вторую страницы (обложка и само оглавление)
+      if (pageNumber <= 2) return;
+      
+      // Ищем текстовые виджеты на странице
+      const textWidgets = pageLayout.filter(widget => 
+        widget.content?.type === "text" && 
+        widget.content?.title && 
+        !widget.lock // Исключаем заблокированные виджеты (заголовки страниц)
+      );
+      
+      if (textWidgets.length > 0) {
+        // Добавляем разделитель страницы с красивым форматированием
+        tableOfContents.push({
+          id: `toc-page-${pageNumber}-header`,
+          x: 0,
+          y: currentY,
+          w: safeLayoutSettings.columnCount,
+          h: 2,
+          lock: true,
+          content: {
+            blocks: [
+              {
+                id: `toc-page-${pageNumber}-header`,
+                data: {
+                  text: `## Page ${pageNumber}\n---`,
+                },
+                type: "paragraph",
+              },
+            ],
+          },
+        });
+        currentY += 2;
+        
+        // Добавляем заголовки статей с красивым форматированием
+        textWidgets.forEach((widget, index) => {
+          const title = widget.content.title;
+          if (title && title !== "Removed Text") {
+            // Определяем тип статьи по заголовку
+            
+            tableOfContents.push({
+              id: `toc-${pageNumber}-${index}`,
+              x: 0,
+              y: currentY,
+              w: safeLayoutSettings.columnCount,
+              h: 1,
+              lock: true,
+              content: {
+                blocks: [
+                  {
+                    id: `toc-${pageNumber}-${index}`,
+                    data: {
+                      text: `• **${title}**`,
+                    },
+                    type: "paragraph",
+                  },
+                ],
+              },
+            });
+            currentY += 1;
+          }
+        });
+        
+        // Добавляем пустую строку между страницами
+        currentY += 1;
+      }
+    });
+
+    // Если оглавление пустое, добавляем красивое сообщение
+    if (tableOfContents.length === 1) {
+      tableOfContents.push({
+        id: "toc-empty",
+        x: 0,
+        y: currentY,
+        w: safeLayoutSettings.columnCount,
+        h: 3,
+        lock: true,
+        content: {
+          blocks: [
+            {
+              id: "toc-empty",
+              data: {
+                text: "### 📭 No Articles Found\n\n*Add some articles to other pages to see them listed here.*",
+              },
+              type: "paragraph",
+            },
+          ],
+        },
+      });
+    } else {
+      // Добавляем финальную информацию
+      const totalArticles = Object.entries(allLayouts).reduce((total, [pageKey, pageLayout]) => {
+        const pageNumber = parseInt(pageKey.replace('page', ''));
+        if (pageNumber <= 2) return total;
+        
+        const textWidgets = pageLayout.filter(widget => 
+          widget.content?.type === "text" && 
+          widget.content?.title && 
+          !widget.lock &&
+          widget.content.title !== "Removed Text"
+        );
+        return total + textWidgets.length;
+      }, 0);
+    }
+
+    return tableOfContents;
+  }, [allLayouts, currentPageNumber, safeLayoutSettings.columnCount]);
+
+  // Функция для ручной генерации оглавления
+  const handleGenerateTOC = () => {
+    if (currentPageNumber === 2) {
+      const newTableOfContents = generateTableOfContents();
+      if (newTableOfContents && newTableOfContents.length > 0) {
+        onChangeLayout(newTableOfContents);
+        message.success("Table of Contents has been generated successfully!");
+      } else {
+        message.warning("No articles found to generate table of contents.");
+      }
+    } else {
+      message.warning("Table of Contents can only be generated on page 2.");
+    }
+  };
+
   return (
     <Container>
       <Sidebar>
-        <h3 style={{ marginBottom: 16 }}>Available Content</h3>
+        <h3 style={{ marginBottom: 16 }}>Content List</h3>
         {currentPageNumber === 1 && (
           <div
             style={{
@@ -1297,10 +1660,28 @@ export const Grid: FC<GridProps> = ({
             This page is not editable. It contains the cover of the issue.
           </div>
         )}
-        {currentPageNumber !== 1 && (
+        {currentPageNumber === 2 && (
+          <div
+            style={{
+              backgroundColor: "#fff3cd",
+              border: "1px solid #ffeaa7",
+              borderRadius: "4px",
+              padding: "12px",
+              marginBottom: "16px",
+              fontSize: "14px",
+            }}
+          >
+            <strong>📝 Second page</strong>
+            <br />
+            This page is not editable. It contains the table of contents of the issue.
+          </div>
+        )}
+        {(currentPageNumber !== 1 && currentPageNumber !== 2) && (
           <>
-            <Divider orientation="left">Temporary Content</Divider>
+            <Divider orientation="left">Available Content</Divider>
             {renderContentList()}
+            <Divider orientation="left">Temporary Content</Divider>
+            {renderTemporaryContentList()}
             <Divider orientation="left">Images</Divider>
             {renderImageList()}
             <Divider orientation="left">Advertisements</Divider>
@@ -1324,6 +1705,19 @@ export const Grid: FC<GridProps> = ({
           >
             📄 Download PDF
           </Button>
+          {currentPageNumber === 2 && (
+            <Button
+              type="default"
+              onClick={handleGenerateTOC}
+              style={{ 
+                backgroundColor: '#f0f8ff', 
+                borderColor: '#1890ff',
+                color: '#1890ff'
+              }}
+            >
+              📋 Generate TOC
+            </Button>
+          )}
           <div style={{ flex: 1 }} />
           <span>
             Page {currentPageNumber} of {totalPages}
@@ -1611,47 +2005,6 @@ export const Grid: FC<GridProps> = ({
           )}
         </div>
       </MainContent>
-      <Sidebar>
-        <h3 style={{ marginBottom: 16 }}>Table of Content</h3>
-        {/* Table of Content: List all placed articles per page, no parts, show original article name for parts */}
-        <div style={{ maxHeight: '80vh', overflowY: 'auto' }}>
-          {Object.entries(allLayouts).map(([pageId, layout]) => {
-            const pageNumber = isNaN(Number(pageId)) ? pageId : Number(pageId);
-            const articleMap = new Map<string, { isPart: boolean }>();
-            layout.forEach(item => {
-              // Prefer originalArticleName if present
-              if (item.content?.originalArticleName) {
-                articleMap.set(item.content.originalArticleName, { isPart: true });
-              } else if (item.content?.title && item.content.title.startsWith('Part')) {
-                const match = item.content.title.match(/— (.+)$/);
-                if (match) {
-                  const name = match[1].trim();
-                  articleMap.set(name, { isPart: true });
-                }
-              } else if (item.content?.title) {
-                articleMap.set(item.content.title, { isPart: false });
-              } else if (item.content?.name) {
-                articleMap.set(item.content.name, { isPart: false });
-              }
-            });
-            if (articleMap.size === 0) return null;
-            return (
-              <div key={pageId} style={{ marginBottom: 16 }}>
-                <div style={{ fontWeight: 600, marginBottom: 4 }}>Page {pageNumber}</div>
-                <ul style={{ margin: 0, paddingLeft: 16 }}>
-                  {(() => {
-                    const items: React.ReactNode[] = [];
-                    articleMap.forEach(({ isPart }, name) => {
-                      items.push(<li key={name}>{name}{isPart ? ' (part)' : ''}</li>);
-                    });
-                    return items;
-                  })()}
-                </ul>
-              </div>
-            );
-          })}
-        </div>
-      </Sidebar>
       <Modal
         visible={previewVisible}
         onCancel={hidePreview}

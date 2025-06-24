@@ -138,7 +138,7 @@ export default function BlogPostList() {
                 (value) => String(value.id) === String(record.id)
               )?.attributes;
 
-              if (!val?.photos?.data || val.photos.data.length === 0) {
+              if (!val?.photos?.data || val.photos.data.length === 0 || val.photos.data[0].attributes.photo.data === null) {
                 return "-";
               }
 
@@ -176,7 +176,16 @@ export default function BlogPostList() {
                 ? JSON.stringify(text)
                 : "";
             return (
-              <div data-color-mode="light">
+              <div 
+              data-color-mode="light" 
+              style={{ 
+                maxWidth: "300px",
+                maxHeight: "200px",
+                overflow: "auto",
+                border: "1px solid #f0f0f0",
+                borderRadius: "4px"
+              }}
+            >
                 <MDEditor.Markdown
                   source={textContent}
                   style={{
@@ -195,10 +204,10 @@ export default function BlogPostList() {
           dataIndex="actions"
           render={(_, record: BaseRecord) => (
             <Space>
+              <ShowButton hideText size="small" recordItemId={record.id} />
               {(role === "Authenticated" || role === "Writer") && (
                 <EditButton hideText size="small" recordItemId={record.id} />
               )}
-              <ShowButton hideText size="small" recordItemId={record.id} />
               {(role === "Authenticated" || role === "Writer") && (
                 <DeleteButton hideText size="small" recordItemId={record.id} />
               )}

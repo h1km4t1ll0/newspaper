@@ -20,6 +20,33 @@ import { ColorModeContextProvider } from "@contexts/color-mode";
 import { authProvider } from "@providers/auth-provider/auth-provider";
 import { dataProvider } from "@providers/data-provider";
 import "@refinedev/antd/dist/reset.css";
+import {
+  AppstoreOutlined,
+  FileTextOutlined,
+  PictureOutlined,
+  FileUnknownOutlined,
+  FileDoneOutlined,
+  FileImageOutlined,
+  FileSearchOutlined,
+  FileAddOutlined,
+  FileOutlined,
+  UnorderedListOutlined,
+  ProfileOutlined,
+  SolutionOutlined,
+  ContainerOutlined,
+  FileProtectOutlined,
+  FileSyncOutlined,
+  FileWordOutlined,
+  FilePdfOutlined,
+  FileMarkdownOutlined,
+  FileExcelOutlined,
+  FilePptOutlined,
+  FileZipOutlined,
+  FileExclamationOutlined,
+  FileGifOutlined,
+  FileJpgOutlined,
+  FileUnknownOutlined as DefaultIcon,
+} from "@ant-design/icons";
 
 const allResources = [
   {
@@ -30,6 +57,7 @@ const allResources = [
     show: "/layouts/show/:id",
     meta: {
       label: "Layouts",
+      icon: <AppstoreOutlined />,
     },
   },
   {
@@ -40,6 +68,7 @@ const allResources = [
     show: "/advertisement-templates/show/:id",
     meta: {
       label: "Advertisement template",
+      icon: <FileTextOutlined />,
     },
   },
   {
@@ -50,6 +79,7 @@ const allResources = [
     show: "/advertisments/show/:id",
     meta: {
       label: "Advertisements",
+      icon: <FileDoneOutlined />,
     },
   },
   {
@@ -60,6 +90,7 @@ const allResources = [
     show: "/articles/show/:id",
     meta: {
       label: "Articles",
+      icon: <ProfileOutlined />,
     },
   },
   {
@@ -70,6 +101,7 @@ const allResources = [
     show: "/photos/show/:id",
     meta: {
       label: "Photos",
+      icon: <PictureOutlined />,
     },
   },
   {
@@ -80,6 +112,7 @@ const allResources = [
     show: "/issues",
     meta: {
       label: "Newspapers",
+      icon: <ContainerOutlined />,
     },
   },
   {
@@ -90,6 +123,7 @@ const allResources = [
     show: "/issues/show/:id",
     meta: {
       label: "Issues",
+      icon: <FileSearchOutlined />,
     },
   },
   {
@@ -101,6 +135,7 @@ const allResources = [
     meta: {
       label: "Tasks",
       canDelete: true,
+      icon: <SolutionOutlined />,
     },
   },
 ];
@@ -124,18 +159,18 @@ export default function RefineApp({
   const resources = useMemo(() => {
     if (role === "Writer") {
       return allResources.filter((r) =>
-        ["articles", "photos", "tasks"].includes(r.name)
+        ["articles", "photos", "tasks", "newspapers"].includes(r.name)
       );
     }
 
     if (role === "Photographer") {
       return allResources.filter((r) =>
-        ["articles", "photos", "tasks"].includes(r.name)
+        ["articles", "photos", "tasks", "newspapers"].includes(r.name)
       );
     }
 
     if (role === "Layout") {
-      return allResources.filter((r) => ["layouts", "tasks"].includes(r.name));
+      return allResources.filter((r) => ["layouts", "tasks", "newspapers"].includes(r.name));
     }
 
     if (role === "Authenticated") {
