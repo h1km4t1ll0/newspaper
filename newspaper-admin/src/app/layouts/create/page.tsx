@@ -5,8 +5,13 @@ import { Form, Input, InputNumber, Select } from "antd";
 
 const { TextArea } = Input;
 
+// Типы для опций
+type FontOption = { value: string; label: string };
+type ColumnOption = { value: number; label: string };
+type PageSizePreset = { value: string; label: string; width: number; height: number };
+
 // Предустановленные значения
-const FONT_OPTIONS = [
+const FONT_OPTIONS: FontOption[] = [
   { value: "Arial", label: "Arial" },
   { value: "Times New Roman", label: "Times New Roman" },
   { value: "Helvetica", label: "Helvetica" },
@@ -15,13 +20,13 @@ const FONT_OPTIONS = [
   { value: "Courier New", label: "Courier New" },
 ];
 
-const COLUMN_COUNT_OPTIONS = [
+const COLUMN_COUNT_OPTIONS: ColumnOption[] = [
   { value: 4, label: "4 columns" },
   { value: 8, label: "8 columns" },
   { value: 12, label: "12 columns" },
 ];
 
-const PAGE_SIZE_PRESETS = [
+const PAGE_SIZE_PRESETS: PageSizePreset[] = [
   { value: "a4", label: "A4 (595×842)", width: 595, height: 842 },
   { value: "a5", label: "A5 (420×595)", width: 420, height: 595 },
   { value: "letter", label: "Letter (612×792)", width: 612, height: 792 },

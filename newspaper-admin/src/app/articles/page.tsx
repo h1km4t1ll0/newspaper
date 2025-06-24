@@ -138,7 +138,8 @@ export default function BlogPostList() {
                 (value) => String(value.id) === String(record.id)
               )?.attributes;
 
-              if (!val?.photos?.data || val.photos.data.length === 0 || val.photos.data[0].attributes.photo.data === null) {
+              // @ts-ignore
+              if (!val?.photos?.data || val?.photos?.data?.length === 0 || val?.photos?.data[0]?.attributes?.photo?.data === null) {
                 return "-";
               }
 

@@ -432,6 +432,7 @@ export const Kanban: React.FC<KanbanProps> = ({ createButtonProps }) => {
             ))}
           </AnimatePresence>
         </Row>
+        {/* @ts-ignore */}
         <TaskModal {...modalProps} />
       </Card>
     </DndProvider>
