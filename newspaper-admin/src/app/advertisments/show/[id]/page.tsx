@@ -2,10 +2,18 @@
 
 import { DateField, ImageField, Show, TextField } from "@refinedev/antd";
 import { useShow } from "@refinedev/core";
-import { Divider, Space, Typography } from "antd";
+import { Divider, Space, Typography, Card, Descriptions, Tag, Row, Col } from "antd";
 import { MEDIA_URL } from "../../../../utility/constants";
+import styled from "styled-components";
 
 const { Title } = Typography;
+
+const StyledDescriptions = styled(Descriptions)`
+  .ant-descriptions-item-label {
+    font-weight: bold !important;
+    color: #292D30E0 !important;
+  }
+`;
 
 export default function BlogPostShow() {
   const { queryResult } = useShow({
@@ -18,56 +26,52 @@ export default function BlogPostShow() {
 
   return (
     <Show isLoading={isLoading}>
-      <Space direction="vertical" size="large" style={{ width: "100%" }}>
-        <div>
-          <Title level={5}>{"ID"}</Title>
-          <TextField value={record?.id} />
-        </div>
+      <Row gutter={24}>
+        <Col span={12}>
+          <Card title="Advertisement Information" style={{ marginBottom: 16 }}>
+            <StyledDescriptions column={1} size="small">
+              <Descriptions.Item label="ID">
+                <Tag color="blue">{record?.id}</Tag>
+              </Descriptions.Item>
+              <Descriptions.Item label="Name of AD">
+                <TextField value={record?.Header} />
+              </Descriptions.Item>
+              <Descriptions.Item label="AD Template">
+                {record?.ad_template ? (
+                  <div>
+                    <Tag color="green">{record.ad_template.name}</Tag>
 
-        <div>
-          <Title level={5}>{"Name of AD"}</Title>
-          <TextField value={record?.Header} />
-        </div>
-
-        <div>
-          <Title level={5}>{"Photo"}</Title>
-          {record?.photo && (
-            <ImageField
-              value={`${MEDIA_URL}${record.photo.url}`}
-              title={record.photo.name}
-              width={200}
-            />
-          )}
-        </div>
-
-        <div>
-          <Title level={5}>{"AD Template"}</Title>
-          {record?.ad_template ? (
-            <div>
-              <TextField value={record.ad_template.name} />
-              <br />
-              <small>
-                Размер: {record.ad_template.widthInColumns} ×{" "}
-                {record.ad_template.heightInRows}
-              </small>
-            </div>
-          ) : (
-            <TextField value="Not specified" />
-          )}
-        </div>
-
-        <Divider />
-
-        <div>
-          <Title level={5}>{"Duration"}</Title>
-          <div>
-            <strong>С:</strong> <DateField value={record?.DateFrom} />
-          </div>
-          <div>
-            <strong>По:</strong> <DateField value={record?.DateTo} />
-          </div>
-        </div>
-      </Space>
+                    <Tag color="purple" style={{ marginTop: '4px' }}>
+                      {record.ad_template.widthInColumns} × {record.ad_template.heightInRows}
+                    </Tag>
+                  </div>
+                ) : (
+                  <Tag color="red">Not specified</Tag>
+                )}
+              </Descriptions.Item>
+              <Descriptions.Item label="Date From">
+                <DateField value={record?.DateFrom} />
+              </Descriptions.Item>
+              <Descriptions.Item label="Date To">
+                <DateField value={record?.DateTo} />
+              </Descriptions.Item>
+            </StyledDescriptions>
+          </Card>
+        </Col>
+        <Col span={12}>
+          <Card title="Photo" style={{ marginBottom: 16 }}>
+            {record?.photo ? (
+              <ImageField
+                value={`${MEDIA_URL}${record.photo.url}`}
+                title={record.photo.name}
+                width={300}
+              />
+            ) : (
+              <Tag color="orange">No photo uploaded</Tag>
+            )}
+          </Card>
+        </Col>
+      </Row>
     </Show>
   );
 }

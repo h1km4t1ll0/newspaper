@@ -38,7 +38,7 @@ export default function BlogPostCreate() {
           rules={[
             {
               required: true,
-              message: "EEnter the name of AD",
+              message: "Enter the name of AD",
             },
           ]}
         >
