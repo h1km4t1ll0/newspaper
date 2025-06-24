@@ -172,7 +172,7 @@ export default function BlogPostEdit() {
             },
           ]}
         >
-          <Select placeholder="Выберите статус">
+          <Select placeholder="Choose status">
             <Select.Option value="draft">Draft</Select.Option>
             <Select.Option value="in_progress">In Progress</Select.Option>
             <Select.Option value="review">Review</Select.Option>
@@ -200,7 +200,7 @@ export default function BlogPostEdit() {
             },
           ]}
         >
-          <Select {...newspaperSelectProps} placeholder="Выберите газету" />
+          <Select {...newspaperSelectProps} placeholder="Choose a newspaper" />
         </Form.Item>
         <Space direction="vertical">
           <Form.Item

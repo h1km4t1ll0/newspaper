@@ -113,7 +113,7 @@ export default function BlogPostList() {
               title={
                 <div>
                   <div style={{ fontWeight: "bold", fontSize: "16px" }}>
-                    {record.name || "Без названия"}
+                    {record.name || "No name"}
                   </div>
                   <div
                     style={{
