@@ -49,31 +49,31 @@ const TaskCreate = () => {
   return (
     <Create saveButtonProps={saveButtonProps}>
       <Form {...formProps} layout="vertical">
-        <Form.Item label="Название" name="name" rules={[{ required: true }]}>
+        <Form.Item label="Name" name="name" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
         <Form.Item
-          label="Описание"
+          label="Description"
           name="description"
           rules={[{ required: true }]}
         >
           <Input.TextArea />
         </Form.Item>
-        <Form.Item label="Исполнитель" name="assignee">
+        <Form.Item label="Assignee" name="assignee">
           <Select {...userSelectProps} />
         </Form.Item>
-        <Form.Item label="Статус" name="status" initialValue="TO_DO">
+        <Form.Item label="Status" name="status" initialValue="TO_DO">
           <Select>
-            <Select.Option value="TO_DO">К выполнению</Select.Option>
-            <Select.Option value="IN_PROGRESS">В процессе</Select.Option>
-            <Select.Option value="DONE">Готово</Select.Option>
+            <Select.Option value="TO_DO">To do</Select.Option>
+            <Select.Option value="IN_PROGRESS">In progress</Select.Option>
+            <Select.Option value="DONE">Done</Select.Option>
           </Select>
         </Form.Item>
-        <Form.Item label="Выпуск" name="issue" rules={[{ required: true }]}>
+        <Form.Item label="Issue" name="issue" rules={[{ required: true }]}>
           <Select {...issueSelectProps} />
         </Form.Item>
         <Form.Item
-          label="Тип задачи"
+          label="Task type"
           name="taskType"
           rules={[{ required: true }]}
         >
@@ -87,23 +87,23 @@ const TaskCreate = () => {
               });
             }}
           >
-            <Select.Option value="WRITING">Написание</Select.Option>
-            <Select.Option value="PHOTOGRAPHY">Фотография</Select.Option>
-            <Select.Option value="LAYOUT">Верстка</Select.Option>
-            <Select.Option value="EDITING">Редактирование</Select.Option>
-            <Select.Option value="REVIEW">Проверка</Select.Option>
+            <Select.Option value="WRITING">Writing</Select.Option>
+            <Select.Option value="PHOTOGRAPHY">Photography</Select.Option>
+            <Select.Option value="LAYOUT">Layout</Select.Option>
+            <Select.Option value="EDITING">Editing</Select.Option>
+            <Select.Option value="REVIEW">Review</Select.Option>
           </Select>
         </Form.Item>
 
         {selectedTaskType === "WRITING" && (
           <Form.Item
-            label="Статья (необязательно)"
+            label="Issue (optional)"
             name="articles"
-            extra="Если не выбрана, будет создана новая статья и фото автоматически"
+            extra="If not selected, a new article and photo will be created automatically."
           >
             <Select
               allowClear
-              placeholder="Выберите статью или оставьте пустым для создания новой"
+              placeholder="Select an article or leave blank to create a new one"
             >
               {articlesData?.data.map((article: any) => (
                 <Select.Option key={article.id} value={article.id}>
@@ -116,13 +116,13 @@ const TaskCreate = () => {
 
         {selectedTaskType === "PHOTOGRAPHY" && (
           <Form.Item
-            label="Фотография (необязательно)"
+            label="Photo (optional)"
             name="photos"
-            extra="Если не выбрана, будет создана новая статья и фото автоматически"
+            extra="If not selected, a new article and photo will be created automatically."
           >
             <Select
               allowClear
-              placeholder="Выберите фото или оставьте пустым для создания нового"
+              placeholder="Select a photo or leave blank to create a new one"
             >
               {photosData?.data.map((photo: any) => (
                 <Select.Option key={photo.id} value={photo.id}>
@@ -136,7 +136,7 @@ const TaskCreate = () => {
         {selectedTaskType &&
           !["WRITING", "PHOTOGRAPHY"].includes(selectedTaskType) && (
             <>
-              <Form.Item label="Статьи" name="articles">
+              <Form.Item label="Articles" name="articles">
                 <Select mode="multiple" allowClear>
                   {articlesData?.data.map((article: any) => (
                     <Select.Option key={article.id} value={article.id}>
@@ -145,7 +145,7 @@ const TaskCreate = () => {
                   ))}
                 </Select>
               </Form.Item>
-              <Form.Item label="Фотографии" name="photos">
+              <Form.Item label="Photos" name="photos">
                 <Select mode="multiple" allowClear>
                   {photosData?.data.map((photo: any) => (
                     <Select.Option key={photo.id} value={photo.id}>

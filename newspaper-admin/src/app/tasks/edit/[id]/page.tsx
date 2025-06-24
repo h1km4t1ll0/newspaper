@@ -27,43 +27,43 @@ const TaskEdit = () => {
     <Edit saveButtonProps={saveButtonProps}>
       <Form {...formProps} layout="vertical">
         <Form.Item
-          label="Название"
+          label="Name"
           name={["name"]}
           rules={[{ required: true }]}
         >
           <Input />
         </Form.Item>
         <Form.Item
-          label="Описание"
+          label="Description"
           name={["description"]}
           rules={[{ required: true }]}
         >
           <Input.TextArea />
         </Form.Item>
-        <Form.Item label="Исполнитель" name={["assignee", "id"]}>
+        <Form.Item label="Assignee" name={["assignee", "id"]}>
           <Select {...userSelectProps} />
         </Form.Item>
-        <Form.Item label="Статус" name={["status"]}>
+        <Form.Item label="Status" name={["status"]}>
           <Select>
-            <Select.Option value="TO_DO">К выполнению</Select.Option>
-            <Select.Option value="IN_PROGRESS">В процессе</Select.Option>
-            <Select.Option value="DONE">Готово</Select.Option>
+            <Select.Option value="TO_DO">To do</Select.Option>
+            <Select.Option value="IN_PROGRESS">In progress</Select.Option>
+            <Select.Option value="DONE">Done</Select.Option>
           </Select>
         </Form.Item>
-        <Form.Item label="Выпуск" name={["issue", "name"]}>
+        <Form.Item label="Issue" name={["issue", "name"]}>
           <Input disabled />
         </Form.Item>
-        <Form.Item label="Тип задачи" name={["taskType"]}>
+        <Form.Item label="Task type" name={["taskType"]}>
           <Select>
-            <Select.Option value="WRITING">Написание</Select.Option>
-            <Select.Option value="PHOTOGRAPHY">Фотография</Select.Option>
-            <Select.Option value="LAYOUT">Верстка</Select.Option>
-            <Select.Option value="EDITING">Редактирование</Select.Option>
-            <Select.Option value="REVIEW">Проверка</Select.Option>
+            <Select.Option value="WRITING">Writing</Select.Option>
+            <Select.Option value="PHOTOGRAPHY">Photography</Select.Option>
+            <Select.Option value="LAYOUT">Layout</Select.Option>
+            <Select.Option value="EDITING">Editing</Select.Option>
+            <Select.Option value="REVIEW">Review</Select.Option>
           </Select>
         </Form.Item>
         <Form.Item
-          label="Статьи"
+          label="Articles"
           name={["articles"]}
           getValueProps={(value) => {
             if (Array.isArray(value)) {
@@ -81,7 +81,7 @@ const TaskEdit = () => {
           </Select>
         </Form.Item>
         <Form.Item
-          label="Фотографии"
+          label="Photos"
           name={["photos"]}
           getValueProps={(value) => {
             if (Array.isArray(value)) {
