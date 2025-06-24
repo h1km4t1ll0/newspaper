@@ -22,7 +22,6 @@ import {
 } from "antd";
 import { GridStack } from "gridstack";
 import "gridstack/dist/gridstack.min.css";
-import "gridstack/dist/gridstack-extra.css";
 import qs from "qs";
 import React, {
   Children,
@@ -37,8 +36,6 @@ import React, {
 import styled from "styled-components";
 import "./grid-stack.css";
 import { GridItem } from "./GridItem";
-import { v4 as uuidv4 } from "uuid";
-import SplitTextModal from "./modals/SplitTextModal";
 
 const Container = styled.div`
   display: grid;
@@ -203,15 +200,14 @@ export const Grid: FC<GridProps> = ({
   const [previewVisible, setPreviewVisible] = useState(false);
   const [splitTextModal, setSplitTextModal] = useState<{
     visible: boolean;
-    text: string;
-    title: string;
-    id: string;
+    textContent: string;
+    widgetId: string;
   }>({
     visible: false,
-    text: "",
-    title: "",
-    id: "",
+    textContent: "",
+    widgetId: "",
   });
+  const [splitIndices, setSplitIndices] = useState<number[]>([]);
 
   // Define rowHeight early so it can be used in useEffect
   const rowHeight = 40;
@@ -224,48 +220,74 @@ export const Grid: FC<GridProps> = ({
   // Handler for closing preview
   const hidePreview = () => setPreviewVisible(false);
 
-  const showSplitTextModal = (text: string, title: string, id: string) => {
-    setSplitTextModal({ visible: true, text, title, id });
+  // Функция для открытия модального окна разбиения текста
+  const openSplitTextModal = (widgetId: string) => {
+    const widget = layout.find((item) => item.id === widgetId);
+    if (!widget || widget.content?.type === "image") return;
+
+    const textContent =
+      typeof widget.content === "string"
+        ? widget.content
+        : widget.content?.text || widget.content?.blocks?.[0]?.data?.text || "";
+
+    setSplitTextModal({
+      visible: true,
+      textContent,
+      widgetId,
+    });
   };
 
+  // Функция для закрытия модального окна
   const closeSplitTextModal = () => {
-    setSplitTextModal({ visible: false, text: "", title: "", id: "" });
+    setSplitTextModal({
+      visible: false,
+      textContent: "",
+      widgetId: "",
+    });
   };
 
-  const handleSplitText = (splitIndices: number[]) => {
-    const { text, title, id } = splitTextModal;
-    const words = text.split(" ");
-    const sortedIndices = [...splitIndices].sort((a, b) => a - b);
-
-    if (sortedIndices.length === 0) {
-      closeSplitTextModal();
+  // Функция для обработки разбиения текста
+  const handleSplitText = () => {
+    const { textContent, widgetId } = splitTextModal;
+    if (!textContent.trim()) {
+      message.error("The text is emptyт");
       return;
     }
-
-    const parts: { title: string; content: string }[] = [];
-    let lastIndex = 0;
-
-    sortedIndices.forEach((index, i) => {
-      const partContent = words.slice(lastIndex, index + 1).join(" ");
-      parts.push({
-        title: `Part ${i + 1} of ${sortedIndices.length + 1} - ${title}`,
-        content: partContent,
-      });
-      lastIndex = index + 1;
+    if (splitIndices.length === 0) {
+      message.error("Select at least one split point");
+      return;
+    }
+    // Split by splitIndices
+    const words = textContent.split(/(\s+)/);
+    let parts: string[] = [];
+    let current = "";
+    let wordIdx = 0;
+    for (let i = 0; i < words.length; i++) {
+      current += words[i];
+      if (i % 2 === 0 && splitIndices.includes(wordIdx)) {
+        parts.push(current.trim());
+        current = "";
+      }
+      if (i % 2 === 0) wordIdx++;
+    }
+    if (current.trim()) parts.push(current.trim());
+    if (parts.length === 0 && textContent) parts = [textContent];
+    // Remove the original widget
+    const updatedLayout = layout.filter((item) => item.id !== widgetId);
+    onChangeLayout(updatedLayout);
+    // Add new parts as temporary content
+    const newItems = parts.map((part, index) => ({
+      id: Date.now() + index + Math.random(),
+      title: `Part ${index + 1} of ${parts.length}`,
+      content: part,
+    }));
+    setItems((prevItems) => {
+      const currentItems = prevItems || [];
+      const updatedItems = [...currentItems, ...newItems];
+      return updatedItems;
     });
-
-    parts.push({
-      title: `Part ${sortedIndices.length + 1} из ${
-        sortedIndices.length + 1
-      } - ${title}`,
-      content: words.slice(lastIndex).join(" "),
-    });
-
-    setItems((prev) => {
-      const newItems = prev?.filter((article) => article.id !== id);
-      return [...(newItems || []), ...parts.map(p => ({ ...p, id: uuidv4() }))];
-    });
-
+    message.success(`The text is divided into ${parts.length} parts`);
+    setSplitIndices([]); // reset for next time
     closeSplitTextModal();
   };
 
@@ -785,6 +807,7 @@ export const Grid: FC<GridProps> = ({
     grid.on("added", (event, items) => {
       const itemId: string | undefined = items[items.length - 1]?.id;
       if (!itemId) {
+        console.error("Ошибка при изменении лейаута! Нет ид элемента!");
         return;
       }
 
@@ -1472,9 +1495,9 @@ export const Grid: FC<GridProps> = ({
                                   target.style.transform = "scale(1)";
                                 }}
                                 onClick={() => {
-                                  showSplitTextModal(child.content?.text || "", child.title || "", child.id || "");
+                                  openSplitTextModal(child.id);
                                 }}
-                                title="Split text into parts"
+                                title="Split text on parts"
                               >
                                 ✂
                               </button>
@@ -1770,12 +1793,116 @@ export const Grid: FC<GridProps> = ({
       </Modal>
 
       {/* Модальное окно для разбиения текста */}
-      <SplitTextModal
-        visible={splitTextModal.visible}
-        text={splitTextModal.text}
-        onCancel={closeSplitTextModal}
+      <Modal
+        title="Split text into parts"
+        open={splitTextModal.visible}
         onOk={handleSplitText}
-      />
+        onCancel={closeSplitTextModal}
+        okText="Split"
+        cancelText="Cancel"
+        zIndex={1100}
+      >
+        <div style={{ marginBottom: 16 }}>
+          <p><strong>Click between words to select where to split:</strong></p>
+          <div
+            style={{
+              maxHeight: 200,
+              overflow: "auto",
+              padding: 12,
+              border: "1px solid #d9d9d9",
+              borderRadius: 6,
+              backgroundColor: "#fafafa",
+              fontSize: "14px",
+              lineHeight: "1.5",
+              wordBreak: "break-word",
+              userSelect: "text",
+            }}
+          >
+            {(() => {
+              const words = splitTextModal.textContent ? splitTextModal.textContent.split(/(\s+)/) : [];
+              const wordIndices = words.filter((_, i) => i % 2 === 0).length;
+              let wordCount = 0;
+              return words.map((part, i) => {
+                if (i % 2 === 0) {
+                  // word
+                  const el = <span key={`w${i}`}>{part}</span>;
+                  if (i < words.length - 1) {
+                    const splitIdx = wordCount;
+                    const isActive = splitIndices.includes(splitIdx);
+                    wordCount++;
+                    return [
+                      el,
+                      <span
+                        key={`split${i}`}
+                        onClick={() => {
+                          setSplitIndices((prev) =>
+                            prev.includes(splitIdx)
+                              ? prev.filter((idx) => idx !== splitIdx)
+                              : [...prev, splitIdx].sort((a, b) => a - b)
+                          );
+                        }}
+                        style={{
+                          cursor: "pointer",
+                          margin: "0 2px",
+                          color: isActive ? "#fff" : "#1890ff",
+                          background: isActive ? "#1890ff" : "#e6f7ff",
+                          borderRadius: 6,
+                          padding: "0 6px",
+                          fontWeight: isActive ? "bold" : "normal",
+                          userSelect: "none",
+                          transition: "all 0.2s",
+                        }}
+                        title={isActive ? "Remove partition" : "Break here"}
+                      >
+                        |<span style={{ fontSize: 10 }}>{isActive ? "✔" : ""}</span>
+                      </span>,
+                    ];
+                  } else {
+                    return el;
+                  }
+                } else {
+                  // space
+                  return <span key={`s${i}`}>{part}</span>;
+                }
+              });
+            })()}
+          </div>
+        </div>
+        <div style={{ marginBottom: 16 }}>
+          <p><strong>Preview parts:</strong></p>
+          {(() => {
+            const words = splitTextModal.textContent ? splitTextModal.textContent.split(/(\s+)/) : [];
+            let parts: string[] = [];
+            let current = "";
+            let wordIdx = 0;
+            for (let i = 0; i < words.length; i++) {
+              current += words[i];
+              if (i % 2 === 0 && splitIndices.includes(wordIdx)) {
+                parts.push(current.trim());
+                current = "";
+              }
+              if (i % 2 === 0) wordIdx++;
+            }
+            if (current.trim()) parts.push(current.trim());
+            if (parts.length === 0 && splitTextModal.textContent) parts = [splitTextModal.textContent];
+            return parts.map((part, idx) => (
+              <div
+                key={idx}
+                style={{
+                  marginBottom: 8,
+                  padding: 8,
+                  border: "1px solid #e8e8e8",
+                  borderRadius: 4,
+                  backgroundColor: "#f9f9f9",
+                  fontSize: "12px",
+                }}
+              >
+                <strong>Part {idx + 1}:</strong> {part.substring(0, 100)}{part.length > 100 ? "..." : ""}
+              </div>
+            ));
+          })()}
+        </div>
+      </Modal>
     </Container>
   );
 };
