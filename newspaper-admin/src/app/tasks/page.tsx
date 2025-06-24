@@ -10,6 +10,7 @@ const TasksPage: React.FC = () => {
   const canCreateTask =
     permissions === "Authenticated" ||
     permissions === "Photographer" ||
+    permissions === "Writer" ||
     permissions === "Layout";
 
   return (

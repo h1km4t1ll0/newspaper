@@ -11,12 +11,13 @@ import {
   Spin,
 } from "antd";
 import { AnimatePresence, motion } from "framer-motion";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { Column } from "./Column";
 import { TaskModal } from "./TaskModal/index";
 import { KanbanColumn, KanbanTask, Task } from "./types";
+import { RoleContext } from "@app/RefineApp";
 
 const { Search } = Input;
 const { Sider, Content } = Layout;
@@ -50,6 +51,8 @@ export const Kanban: React.FC<KanbanProps> = ({ createButtonProps }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [filters, setFilters] = useState<any[]>([]);
+  const role = useContext(RoleContext);
+
   const [selectedNewspaper, setSelectedNewspaper] = useState<string | null>(
     null
   );
@@ -342,6 +345,7 @@ export const Kanban: React.FC<KanbanProps> = ({ createButtonProps }) => {
       onClose: handleModalClose,
       onUpdate: handleTaskUpdate,
       isCreating,
+      role,
     }),
     [
       selectedTask,

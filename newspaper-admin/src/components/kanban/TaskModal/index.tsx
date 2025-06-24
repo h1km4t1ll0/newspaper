@@ -13,6 +13,7 @@ interface TaskModalProps {
   onClose: () => void;
   onUpdate: () => void;
   isCreating?: boolean;
+  role: string;
 }
 
 export const TaskModal: React.FC<TaskModalProps> = ({
@@ -21,6 +22,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
   onClose,
   onUpdate,
   isCreating = false,
+  role,
 }) => {
   const [isEditing, setIsEditing] = useState(isCreating);
   const [activeTab, setActiveTab] = useState("1");
@@ -161,7 +163,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
            Edit
         </Button>
       ),
-      !isCreating && task?.id && (
+      role === "Authenticated" && !isCreating && task?.id && (
         <Popconfirm
           key="delete"
           title="Deleting a task"
@@ -189,6 +191,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
       handleSave,
       handleDelete,
       task?.id,
+      role,
     ]
   );
 
