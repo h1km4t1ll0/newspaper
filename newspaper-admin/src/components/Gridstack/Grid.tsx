@@ -18,6 +18,7 @@ import {
   Modal,
   Skeleton,
   Tooltip,
+  Typography,
 } from "antd";
 import { GridStack } from "gridstack";
 import "gridstack/dist/gridstack.min.css";
@@ -1083,7 +1084,13 @@ export const Grid: FC<GridProps> = ({
               </Tooltip>,
             ]}
           >
-            <Card.Meta title={item.name} />
+            <Card.Meta
+              title={
+                <Typography.Text style={{ whiteSpace: "normal" }}>
+                  {item.name}
+                </Typography.Text>
+              }
+            />
           </Card>
         </List.Item>
       )}
