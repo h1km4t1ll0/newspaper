@@ -86,7 +86,7 @@ export default function CreateNewspaperPage() {
             },
           ]}
         >
-          <Select {...layoutSelectProps} placeholder="Выберите макет" />
+          <Select {...layoutSelectProps} placeholder="Choose a layout" />
         </Form.Item>
       </Form>
     </Create>

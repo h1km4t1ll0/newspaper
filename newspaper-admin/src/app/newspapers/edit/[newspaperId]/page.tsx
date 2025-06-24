@@ -84,7 +84,7 @@ export default function BlogPostEdit() {
             },
           ]}
         >
-          <Select {...layoutSelectProps} placeholder="Выберите макет" />
+          <Select {...layoutSelectProps} placeholder="Choose a layout" />
         </Form.Item>
         <Space direction="vertical">
           <Form.Item
