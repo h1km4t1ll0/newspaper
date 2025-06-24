@@ -10,40 +10,40 @@ export default function BlogPostCreate() {
     <Create saveButtonProps={saveButtonProps}>
       <Form {...formProps} layout="vertical">
         <Form.Item
-          label={"Название шаблона"}
+          label={"Name of template"}
           name={["name"]}
           rules={[
             {
               required: true,
-              message: "Введите название шаблона",
+              message: "Enter the name of template",
             },
           ]}
         >
-          <Input placeholder="Например: Баннер 2x3, Квадрат 1x1" />
+          <Input placeholder="Example: Banner 2x3, Square 1x1" />
         </Form.Item>
         <Form.Item
-          label={"Ширина (в колонках)"}
+          label={"Width (in columns)"}
           name={["widthInColumns"]}
           rules={[
             {
               required: true,
-              message: "Укажите ширину в колонках",
+              message: "Enter the width in columns",
             },
           ]}
         >
-          <InputNumber min={1} max={12} placeholder="Количество колонок" />
+          <InputNumber min={1} max={12} placeholder="Number of columns" />
         </Form.Item>
         <Form.Item
-          label={"Высота (в строках)"}
+          label={"Height (in rows)"}
           name={["heightInRows"]}
           rules={[
             {
               required: true,
-              message: "Укажите высоту в строках",
+              message: "Enter the height in rows",
             },
           ]}
         >
-          <InputNumber min={1} max={20} placeholder="Количество строк" />
+          <InputNumber min={1} max={20} placeholder="Number of rows" />
         </Form.Item>
       </Form>
     </Create>

@@ -36,21 +36,21 @@ export default function BlogPostList() {
     <List>
       <Table {...tableProps} rowKey="id">
         <Table.Column dataIndex="id" title={"ID"} width={60} />
-        <Table.Column dataIndex="name" title={"Название шаблона"} />
+        <Table.Column dataIndex="name" title={"Name of template"} />
         <Table.Column
           dataIndex="widthInColumns"
-          title={"Ширина (колонки)"}
+          title={"Width (in columns)"}
           width={130}
           render={(value) => <Tag color="cyan">{value} кол.</Tag>}
         />
         <Table.Column
           dataIndex="heightInRows"
-          title={"Высота (строки)"}
+          title={"Height (in rows)"}
           width={130}
           render={(value) => <Tag color="orange">{value} стр.</Tag>}
         />
         <Table.Column
-          title={"Размер"}
+          title={"Size"}
           width={100}
           render={(_, record: BaseRecord) => (
             <Tag color="blue">
@@ -59,7 +59,7 @@ export default function BlogPostList() {
           )}
         />
         <Table.Column
-          title={"Действия"}
+          title={"Actions"}
           dataIndex="actions"
           width={120}
           render={(_, record: BaseRecord) => (
