@@ -26,6 +26,39 @@ export default function BlogPostCreate() {
               <Input />
           </Form.Item>
           <Form.Item
+              label={"Issue"}
+              name={["issue"]}
+              rules={[
+                  {
+                      required: true,
+                      message: "Please select an issue",
+                  },
+              ]}
+          >
+              <CustomSelect
+                resource="issues"
+                optionLabel="name"
+                optionValue="id"
+                placeholder="Select issue"
+              />
+          </Form.Item>
+          <Form.Item
+              label={"Article"}
+              name={["article"]}
+              rules={[
+                  {
+                      required: false,
+                  },
+              ]}
+          >
+              <CustomSelect
+                resource="articles"
+                optionLabel="name"
+                optionValue="id"
+                placeholder="Select article"
+              />
+          </Form.Item>
+          <Form.Item
               label={"Width"}
               name={["width"]}
               rules={[
@@ -49,7 +82,7 @@ export default function BlogPostCreate() {
           </Form.Item>
         <Space direction="vertical">
           <Form.Item
-            label={<Typography.Text strong>Agent photo</Typography.Text>}
+            label={<Typography.Text strong>Photo</Typography.Text>}
             rules={[{ required: true, message: 'Upload a photo' }]}
             style={{ margin: 0 }}
             name='photo'
@@ -83,22 +116,6 @@ export default function BlogPostCreate() {
             </Tooltip>
           </Popconfirm>)}
         </Space>
-          <Form.Item
-              label={"Article"}
-              name={["article"]}
-              rules={[
-                  {
-                      required: false,
-                  },
-              ]}
-          >
-              <CustomSelect
-                resource="articles"
-                optionLabel="name"
-                optionValue="id"
-                placeholder="Select article"
-              />
-          </Form.Item>
       </Form>
     </Create>
   );

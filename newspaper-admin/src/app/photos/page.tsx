@@ -9,11 +9,9 @@ import {
   ShowButton,
   useTable,
 } from "@refinedev/antd";
-import { type BaseRecord, useCustom } from "@refinedev/core";
+import { type BaseRecord } from "@refinedev/core";
 import MDEditor from "@uiw/react-md-editor";
-import { API_URL } from "@utility/constants";
 import { Space, Table } from "antd";
-import qs from "qs";
 import { useContext } from "react";
 
 const relationsQuery = {
@@ -34,25 +32,6 @@ type ArticleType = {
   name: string;
   text: string;
 };
-
-const query = qs.stringify(
-  {
-    fields: "*",
-    populate: {
-      photos: {
-        fields: "*",
-        populate: {
-          photo: {
-            fields: "*",
-          },
-        },
-      },
-    },
-  },
-  {
-    encodeValuesOnly: true, // prettify URL
-  }
-);
 
 export default function BlogPostList() {
   const role = useContext(RoleContext);
@@ -80,41 +59,6 @@ export default function BlogPostList() {
     },
   });
 
-  const { refetch, data } = useCustom<{
-    data: {
-      id: number;
-      attributes: {
-        id: number;
-        text: any;
-        name: string;
-        photos: {
-          data: [
-            {
-              id: number;
-              attributes: {
-                name: string;
-                width: number;
-                height: number;
-                createdAt: string;
-                updatedAt: string;
-                photo: {
-                  data: {
-                    attributes: {
-                      url: string;
-                    };
-                  };
-                };
-              };
-            }
-          ];
-        };
-      };
-    }[];
-  }>({
-    url: `${API_URL}/api/articles?${query}`,
-    method: "get",
-  });
-
   return (
     <List
       createButtonProps={{
@@ -131,8 +75,22 @@ export default function BlogPostList() {
             return record.issue?.name || "-";
           }}
         />
-        <Table.Column dataIndex="width" title={"Width"} />
-        <Table.Column dataIndex="height" title={"Height"} />
+        <Table.Column 
+          dataIndex="width" 
+          title={"Width"} 
+          render={(value) => {
+            if (value === null || value === undefined || value === '') return '-';
+            return `${value}px`;
+          }}
+        />
+        <Table.Column 
+          dataIndex="height" 
+          title={"Height"} 
+          render={(value) => {
+            if (value === null || value === undefined || value === '') return '-';
+            return `${value}px`;
+          }}
+        />
         <Table.Column
           dataIndex="photo"
           title={"Photo"}
@@ -153,41 +111,48 @@ export default function BlogPostList() {
             )
           }
         />
-        {(role === "Authenticated" || role === "Writer") && (
-          <Table.Column
-            title={"Article"}
-            dataIndex="article"
-            render={(_, record: BaseRecord) => {
-              const val = data?.data.data.find(
-                (value) => value.id == record.id
-              )?.attributes;
-              return (
-                <div data-color-mode="light">
-                  <MDEditor.Markdown
-                    source={
-                      typeof val?.text === "string"
-                        ? val.text
-                        : JSON.stringify(val?.text)
-                    }
-                    style={{
-                      backgroundColor: "transparent",
-                      padding: "10px",
-                    }}
-                  />
-                </div>
-              );
-            }}
-          />
-        )}
+        <Table.Column
+          title={"Article"}
+          dataIndex="article"
+          render={(_, record: BaseRecord) => {
+            const article = record.article;
+            if (!article) return "-";
+            
+            return (
+              <div 
+                data-color-mode="light" 
+                style={{ 
+                  maxWidth: "300px",
+                  maxHeight: "200px",
+                  overflow: "auto",
+                  border: "1px solid #f0f0f0",
+                  borderRadius: "4px"
+                }}
+              >
+                <MDEditor.Markdown
+                  source={
+                    typeof article.text === "string"
+                      ? article.text
+                      : JSON.stringify(article.text)
+                  }
+                  style={{
+                    backgroundColor: "transparent",
+                    padding: "10px",
+                  }}
+                />
+              </div>
+            );
+          }}
+        />
         <Table.Column
           title={"Actions"}
           dataIndex="actions"
           render={(_, record: BaseRecord) => (
             <Space>
+              <ShowButton hideText size="small" recordItemId={record.id} />
               {(role === "Authenticated" || role === "Photographer") && (
                 <EditButton hideText size="small" recordItemId={record.id} />
               )}
-              <ShowButton hideText size="small" recordItemId={record.id} />
               {(role === "Authenticated" || role === "Photographer") && (
                 <DeleteButton hideText size="small" recordItemId={record.id} />
               )}

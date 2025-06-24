@@ -22,6 +22,7 @@ export default function BlogPostEdit() {
       populate: {
         photo: "*",
         article: "*",
+        issue: "*",
       },
       fields: ["*"],
     },
@@ -63,6 +64,60 @@ export default function BlogPostEdit() {
           <Input />
         </Form.Item>
         <Form.Item
+              label={"Issue"}
+              name={["issue"]}
+              rules={[
+                  {
+                      required: true,
+                      message: "Please select an issue",
+                  },
+              ]}
+              getValueProps={(value) => {
+                // Преобразуем данные из Strapi в формат для селекта
+                if (value && typeof value === 'object' && value.id) {
+                  return { value: value.id };
+                }
+                if (Array.isArray(value)) {
+                  return { value: value.map((issue) => issue.id || issue) };
+                }
+                return { value: value };
+              }}
+          >
+              <CustomSelect
+                resource="issues"
+                optionLabel="name"
+                optionValue="id"
+                placeholder="Select issue"
+              />
+          </Form.Item>
+          <Form.Item
+              label={"Article"}
+              name={["article"]}
+              rules={[
+                  {
+                      required: false,
+                      message: "Please select an article",
+                  },
+              ]}
+              getValueProps={(value) => {
+                // Преобразуем данные из Strapi в формат для селекта
+                if (value && typeof value === 'object' && value.id) {
+                  return { value: value.id };
+                }
+                if (Array.isArray(value)) {
+                  return { value: value.map((article) => article.id || article) };
+                }
+                return { value: value };
+              }}
+          >
+              <CustomSelect
+                resource="articles"
+                optionLabel="name"
+                optionValue="id"
+                placeholder="Select article"
+              />
+          </Form.Item>
+        <Form.Item
           label={"Width"}
           name={["width"]}
           rules={[
@@ -86,7 +141,7 @@ export default function BlogPostEdit() {
         </Form.Item>
         <Space direction="vertical">
           <Form.Item
-            label={<Typography.Text strong>Agent photo</Typography.Text>}
+            label={<Typography.Text strong>Photo</Typography.Text>}
             rules={[{ required: true, message: "Upload a photo" }]}
             style={{ margin: 0 }}
             name="photo"
@@ -126,29 +181,6 @@ export default function BlogPostEdit() {
             </Popconfirm>
           )}
         </Space>
-        <Form.Item
-          label={"Article"}
-          name={["article"]}
-          rules={[
-            {
-              required: false,
-            },
-          ]}
-          getValueProps={(value) => {
-            // Преобразуем данные из Strapi в формат для селекта
-            if (value && typeof value === "object" && value.id) {
-              return { value: value.id };
-            }
-            return { value: value };
-          }}
-        >
-          <CustomSelect
-            resource="articles"
-            optionLabel="name"
-            optionValue="id"
-            placeholder="Select article"
-          />
-        </Form.Item>
       </Form>
     </Edit>
   );
