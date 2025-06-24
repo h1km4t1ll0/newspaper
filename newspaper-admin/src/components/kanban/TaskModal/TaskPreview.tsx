@@ -24,6 +24,12 @@ export const TaskPreview: React.FC<TaskPreviewProps> = ({
     REVIEW: "Проверка",
   };
 
+  const statusLabels = {
+    TO_DO: "К выполнению",
+    IN_PROGRESS: "В процессе",
+    DONE: "Готово",
+  };
+
   const items = useMemo(
     () => [
       {
@@ -37,7 +43,7 @@ export const TaskPreview: React.FC<TaskPreviewProps> = ({
               <strong>Исполнитель:</strong> {task.assignee}
             </p>
             <p>
-              <strong>Статус:</strong> {task.status}
+              <strong>Статус:</strong> {statusLabels[task.status] || task.status}
             </p>
             {task.taskType && (
               <p>
@@ -96,7 +102,7 @@ export const TaskPreview: React.FC<TaskPreviewProps> = ({
         ),
       },
     ],
-    [task, taskTypeLabels]
+    [task, taskTypeLabels, statusLabels]
   );
 
   return <Tabs activeKey={activeTab} onChange={onTabChange} items={items} />;
