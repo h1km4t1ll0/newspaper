@@ -1,4 +1,4 @@
-import { useList, useUpdate } from "@refinedev/core";
+import { useList, useUpdate, useGetIdentity } from "@refinedev/core";
 import {
   Button,
   Card,
@@ -18,6 +18,7 @@ import { Column } from "./Column";
 import { TaskModal } from "./TaskModal/index";
 import { KanbanColumn, KanbanTask, Task } from "./types";
 import { RoleContext } from "@app/RefineApp";
+import { MEDIA_URL } from "@utility/constants";
 
 const { Search } = Input;
 const { Sider, Content } = Layout;
@@ -51,20 +52,49 @@ export const Kanban: React.FC<KanbanProps> = ({ createButtonProps }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [filters, setFilters] = useState<any[]>([]);
+  const [refreshKey, setRefreshKey] = useState(0);
   const role = useContext(RoleContext);
+
+  // Получаем информацию о текущем пользователе
+  const { data: userIdentity } = useGetIdentity<{
+    id: number;
+    username: string;
+    email: string;
+  }>();
 
   const [selectedNewspaper, setSelectedNewspaper] = useState<string | null>(
     null
   );
+
+  // Добавляем фильтр по исполнителю для не-администраторов
+  const userFilters = useMemo(() => {
+    const baseFilters = [...filters];
+    
+    console.log("Current user role:", role);
+    console.log("Current user identity:", userIdentity);
+    
+    // Если пользователь не администратор, показываем только его задачи
+    if (role !== "Authenticated" && userIdentity?.id) {
+      console.log("Adding user filter for user ID:", userIdentity.id);
+      baseFilters.push({
+        field: "assignee.id",
+        operator: "eq",
+        value: userIdentity.id,
+      });
+    }
+    
+    console.log("Final filters:", baseFilters);
+    return baseFilters;
+  }, [filters, role, userIdentity?.id]);
 
   const { data, isLoading, refetch } = useList<Task>({
     resource: "tasks",
     pagination: {
       pageSize: 100,
     },
-    filters,
+    filters: userFilters,
     meta: {
-      populate: ["assignee", "articles", "photos", "issue", "issue.newspaper"],
+      populate: ["assignee", "articles", "photos", "photos.photo", "issue", "issue.newspaper"],
     },
   });
 
@@ -144,7 +174,7 @@ export const Kanban: React.FC<KanbanProps> = ({ createButtonProps }) => {
           task.photos?.map((photo) => ({
             id: photo.id,
             name: photo.name || "",
-            url: photo.url || "",
+            url: photo.photo?.url ? `${MEDIA_URL}${photo?.photo?.url}` : "",
           })) || [],
       });
     });
@@ -192,6 +222,8 @@ export const Kanban: React.FC<KanbanProps> = ({ createButtonProps }) => {
   const handleDrop = useCallback(
     async (taskId: number, newStatus: string) => {
       try {
+        console.log(`Moving task ${taskId} to status: ${newStatus}`);
+        
         await updateTask({
           resource: "tasks",
           id: taskId,
@@ -199,12 +231,28 @@ export const Kanban: React.FC<KanbanProps> = ({ createButtonProps }) => {
             status: newStatus,
           },
           meta: {
-            populate: ["assignee", "issue", "articles", "photos"],
+            populate: ["assignee", "issue", "articles", "photos", "photos.photo"],
           },
         });
+        
         message.success("Task status updated");
+        
+        // Принудительно обновляем данные
+        console.log("Refreshing task data after status update");
         await refetch();
+        
+        // Принудительный ререндер компонентов
+        setRefreshKey(prev => prev + 1);
+        
+        // Дополнительная проверка обновления через небольшую задержку
+        setTimeout(async () => {
+          console.log("Additional refresh check");
+          await refetch();
+          setRefreshKey(prev => prev + 1);
+        }, 300);
+        
       } catch (error) {
+        console.error("Error updating task status:", error);
         message.error("Error updating task status");
       }
     },
@@ -366,7 +414,7 @@ export const Kanban: React.FC<KanbanProps> = ({ createButtonProps }) => {
         title="Tasks"
         style={{ margin: "20px" }}
         extra={
-          !createButtonProps?.hidden && (
+          !createButtonProps?.hidden && role === "Authenticated" && (
             <Button type="primary" onClick={handleCreateTask}>
               Create a task
             </Button>
@@ -417,13 +465,14 @@ export const Kanban: React.FC<KanbanProps> = ({ createButtonProps }) => {
           <AnimatePresence>
             {columns.map((column) => (
               <motion.div
-                key={column.id}
+                key={`${column.id}}`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.3 }}
               >
                 <Column
+                  key={`${column.id}-${refreshKey}`}
                   column={column}
                   onTaskClick={handleTaskClick}
                   onDrop={handleDrop}

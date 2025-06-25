@@ -1,7 +1,7 @@
 "use client";
 
 import { Kanban } from "@/components/kanban";
-import { ThemedLayoutV2 } from "@refinedev/antd";
+import { ThemedLayout } from "@components/themed-layout";
 import { usePermissions } from "@refinedev/core";
 import React from "react";
 
@@ -14,9 +14,9 @@ const TasksPage: React.FC = () => {
     permissions === "Layout";
 
   return (
-    <ThemedLayoutV2>
+    <ThemedLayout>
       <Kanban createButtonProps={{ hidden: false }} />
-    </ThemedLayoutV2>
+    </ThemedLayout>
   );
 };
 

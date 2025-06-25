@@ -34,8 +34,6 @@ const BannerPreviewBox = styled.div<{ width: number; height: number }>`
   height: ${props => props.height}px;
   min-width: 100px;
   min-height: 100px;
-  max-width: 400px;
-  max-height: 300px;
 `;
 
 type Layout = {
@@ -93,7 +91,7 @@ export const BannerPreview: React.FC<BannerPreviewProps> = ({
     if (!selectedLayout) return widthInColumns * 50;
     
     // Calculate width of one column
-    const columnWidth = (selectedLayout.pageWidth - selectedLayout.horizontalFieldsWidth * 2) / selectedLayout.columnCount;
+    const columnWidth = selectedLayout.pageWidth / selectedLayout.columnCount;
     return widthInColumns * columnWidth;
   };
 

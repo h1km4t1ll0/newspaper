@@ -116,7 +116,13 @@ export default function BlogPostList() {
   });
 
   return (
-    <List>
+    <List
+      createButtonProps={{
+        style: {
+          display: role === "Authenticated" || role === "Writer" ? "inline-flex" : "none",
+        },
+      }}
+    >
       <Table {...tableProps} rowKey="id">
         <Table.Column dataIndex="id" title={"ID"} />
         <Table.Column dataIndex="name" title={"Name"} />

@@ -174,7 +174,7 @@ export default function BlogPostList() {
                     onClick={() => router.push(`/issues/edit/${record.id}`)}
                   />
                 ) : undefined,
-                role === "Authenticated" ? (
+                (role === "Authenticated" || role === "Layout") ? (
                   <ShowButton
                     hideText
                     size="small"

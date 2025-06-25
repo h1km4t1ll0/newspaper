@@ -1,11 +1,13 @@
 "use client";
 
-import { Show, TextField, ImageField } from "@refinedev/antd";
+import { RoleContext } from "@app/RefineApp";
+import { Show, TextField, ImageField, EditButton, ListButton } from "@refinedev/antd";
 import { useShow } from "@refinedev/core";
-import { Typography, Card, Descriptions, Tag, Row, Col } from "antd";
+import { Typography, Card, Descriptions, Tag, Row, Col, Space } from "antd";
 import MDEditor from "@uiw/react-md-editor";
 import { MEDIA_URL } from "../../../../utility/constants";
 import styled from "styled-components";
+import { useContext } from "react";
 
 const { Title } = Typography;
 
@@ -28,6 +30,8 @@ const MarkdownContainer = styled.div`
 `;
 
 export default function BlogPostShow() {
+  const role = useContext(RoleContext);
+  
   const { queryResult } = useShow({
     meta: {
       populate: {
@@ -44,7 +48,16 @@ export default function BlogPostShow() {
   const record = data?.data;
 
   return (
-    <Show isLoading={isLoading}>
+    <Show 
+      isLoading={isLoading}
+      headerButtons={[
+        <ListButton key="list" />,
+        ...(role === "Authenticated" || role === "Writer" 
+          ? [<EditButton key="edit" type="primary" />] 
+          : []
+        ),
+      ]}
+    >
       <Row gutter={24}>
         <Col span={12}>
           <Card title="Article Information" style={{ marginBottom: 16 }}>
@@ -66,12 +79,12 @@ export default function BlogPostShow() {
           </Card>
           
           <Card title="Photos" style={{ marginBottom: 16 }}>
-            {record?.photos && record.photos.length > 0 ? (
+            {record?.photos && record.photos.filter((photo: any) => photo?.photo?.url).length > 0 ? (
               <div>
                 {record.photos.map((photo: any, index: number) => (
                   <div key={photo.id} style={{ marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     <ImageField
-                      value={`${MEDIA_URL}${photo.photo.url}`}
+                      value={`${MEDIA_URL}${photo?.photo?.url}`}
                       title={photo.name}
                       width={200}
                       height={200}

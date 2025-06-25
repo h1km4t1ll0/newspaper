@@ -121,6 +121,18 @@
       "action": "api::task.task.update"
     },
     {
+      "action": "plugin::upload.content-api.destroy"
+    },
+    {
+      "action": "plugin::upload.content-api.find"
+    },
+    {
+      "action": "plugin::upload.content-api.findOne"
+    },
+    {
+      "action": "plugin::upload.content-api.upload"
+    },
+    {
       "action": "plugin::users-permissions.role.find"
     },
     {
@@ -131,6 +143,9 @@
     },
     {
       "action": "plugin::users-permissions.user.findOne"
+    },
+    {
+      "action": "plugin::users-permissions.user.me"
     }
   ]
 }

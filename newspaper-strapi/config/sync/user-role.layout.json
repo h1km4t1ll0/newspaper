@@ -16,10 +16,22 @@
       "action": "api::article.article.findOne"
     },
     {
+      "action": "api::issue.issue.create"
+    },
+    {
+      "action": "api::issue.issue.delete"
+    },
+    {
       "action": "api::issue.issue.find"
     },
     {
       "action": "api::issue.issue.findOne"
+    },
+    {
+      "action": "api::issue.issue.update"
+    },
+    {
+      "action": "api::layout.layout.create"
     },
     {
       "action": "api::layout.layout.find"
@@ -28,10 +40,19 @@
       "action": "api::layout.layout.findOne"
     },
     {
+      "action": "api::layout.layout.update"
+    },
+    {
+      "action": "api::newspaper.newspaper.create"
+    },
+    {
       "action": "api::newspaper.newspaper.find"
     },
     {
       "action": "api::newspaper.newspaper.findOne"
+    },
+    {
+      "action": "api::newspaper.newspaper.update"
     },
     {
       "action": "api::photo.photo.find"
@@ -40,10 +61,28 @@
       "action": "api::photo.photo.findOne"
     },
     {
+      "action": "api::task.task.create"
+    },
+    {
       "action": "api::task.task.find"
     },
     {
       "action": "api::task.task.findOne"
+    },
+    {
+      "action": "api::task.task.update"
+    },
+    {
+      "action": "plugin::upload.content-api.destroy"
+    },
+    {
+      "action": "plugin::upload.content-api.find"
+    },
+    {
+      "action": "plugin::upload.content-api.findOne"
+    },
+    {
+      "action": "plugin::upload.content-api.upload"
     },
     {
       "action": "plugin::users-permissions.role.find"
@@ -56,6 +95,9 @@
     },
     {
       "action": "plugin::users-permissions.user.findOne"
+    },
+    {
+      "action": "plugin::users-permissions.user.me"
     }
   ]
 }

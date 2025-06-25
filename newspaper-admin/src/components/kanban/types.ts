@@ -24,7 +24,9 @@ export interface Task {
   photos?: Array<{
     id: number;
     name: string;
-    url: string;
+    photo?: {
+      url: string;
+    };
   }>;
 }
 

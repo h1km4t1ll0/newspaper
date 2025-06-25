@@ -1,11 +1,13 @@
 "use client";
 
-import { ImageField, Show, TextField } from "@refinedev/antd";
+import { EditButton, ImageField, ListButton, Show, TextField } from "@refinedev/antd";
 import { useShow } from "@refinedev/core";
 import { Typography, Card, Descriptions, Tag, Row, Col } from "antd";
 import MDEditor from "@uiw/react-md-editor";
 import { MEDIA_URL } from "@utility/constants";
 import styled from "styled-components";
+import { useContext } from "react";
+import { RoleContext } from "@app/RefineApp";
 
 const { Title } = Typography;
 
@@ -49,9 +51,19 @@ export default function BlogPostShow() {
   });
   const { data, isLoading } = queryResult;
   const record = data?.data;
+  const role = useContext(RoleContext);
 
   return (
-    <Show isLoading={isLoading}>
+    <Show 
+    isLoading={isLoading}
+    headerButtons={[
+      <ListButton key="list" />,
+      ...(role === "Authenticated" || role === "Photographer" 
+        ? [<EditButton key="edit" type="primary" />] 
+        : []
+      ),
+    ]}
+    >
       <Row gutter={24}>
         <Col span={12}>
           <Card title="Photo Information" style={{ marginBottom: 16 }}>

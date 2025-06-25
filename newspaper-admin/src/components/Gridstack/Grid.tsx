@@ -24,6 +24,7 @@ import {
 } from "antd";
 import { GridStack } from "gridstack";
 import "gridstack/dist/gridstack.min.css";
+import "gridstack/dist/gridstack.css";
 import qs from "qs";
 import React, {
   Children,
@@ -739,7 +740,7 @@ export const Grid: FC<GridProps> = ({
         column: safeLayoutSettings.columnCount,
         cellHeight: rowHeight,
         margin: 5,
-        float: false, // Отключаем автоматическое перемещение
+        float: true, // ОТКЛЮЧАЕМ АВТОМАТИЧЕСКОЕ ПЕРЕМЕЩЕНИЕ
         animate: false, // Отключаем анимации
         maxRow: rowCount,
         staticGrid: false, // Разрешаем перемещение, но контролируем его
@@ -757,11 +758,11 @@ export const Grid: FC<GridProps> = ({
     grid.off("added change");
 
     // Принудительно отключаем автоматическое перемещение
-    grid.float(false);
+    grid.float(true);
 
     // Отключаем компактирование сетки
     if (grid.opts) {
-      grid.opts.float = false;
+      grid.opts.float = true;
     }
 
     const nextId = (layout.length + 1).toString();
@@ -840,6 +841,9 @@ export const Grid: FC<GridProps> = ({
 
       const curItem = items[items.length - 1];
 
+      // Принудительно отключаем компактирование после добавления
+      grid.float(true);
+
       onChangeLayout([
         ...layout,
         {
@@ -859,7 +863,7 @@ export const Grid: FC<GridProps> = ({
 
     gridRef.current.on("resizestop", (event, el) => {
       const itemId = el.id;
-      if (!itemId) return;
+      if (!itemId || !gridRef.current) return;
 
       // Получаем данные элемента из GridStack
       const gridData = gridRef.current
@@ -869,6 +873,9 @@ export const Grid: FC<GridProps> = ({
 
       const curItem = layout.find((each) => each.id === itemId);
       if (!curItem) return;
+
+      // Принудительно отключаем компактирование
+      gridRef.current.float(true);
 
       // Обновляем только размеры измененного элемента
       const updatedLayout = layout.map((item) => {
@@ -890,10 +897,15 @@ export const Grid: FC<GridProps> = ({
 
     gridRef.current.on("dragstop", (event, el) => {
       const itemId = el.id;
-      if (!itemId) return;
+      if (!itemId || !gridRef.current) return;
 
       const curItem = layout.find((each) => each.id === itemId);
       if (!curItem) return;
+
+      // Принудительно отключаем компактирование
+      if (gridRef.current) {
+        gridRef.current.float(true);
+      }
 
       // Обновляем только позицию перемещенного элемента
       const updatedLayout = layout.map((item) => {
@@ -935,7 +947,7 @@ export const Grid: FC<GridProps> = ({
     grid.batchUpdate(false);
 
     // После обновления принудительно отключаем float снова
-    grid.float(false);
+    grid.float(true);
   }, [children, rowHeight, rowCount]);
 
   const remainingHeight =

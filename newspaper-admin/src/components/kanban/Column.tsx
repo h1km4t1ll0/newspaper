@@ -31,15 +31,20 @@ export const Column: React.FC<ColumnProps> = ({ column, onTaskClick, onDrop }) =
                     margin: '0 8px',
                     backgroundColor: '#f5f5f5',
                     height: '100%',
+                    minHeight: '300px',
                 }}
                 styles={{
-                    body: { padding: '12px', height: '100%' }
+                    body: { padding: '12px', height: '100%', minHeight: '300px' }
                 }}
             >
                 <Title level={4} style={{ marginBottom: 16 }}>
                     {column.title}
                 </Title>
-                <div style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 200px)' }}>
+                <div style={{ 
+                    overflowY: 'auto', 
+                    maxHeight: 'calc(100vh - 200px)',
+                    minHeight: '250px'
+                }}>
                     {column.tasks.map((task) => (
                         <TaskCard
                             key={task.id}

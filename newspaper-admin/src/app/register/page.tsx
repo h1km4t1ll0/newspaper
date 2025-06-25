@@ -6,7 +6,7 @@ export default async function Register() {
   const data = await getData();
 
   if (data.authenticated) {
-    redirect(data?.redirectTo || "/");
+    redirect(data?.redirectTo || "/tasks");
   }
 
   return <AuthPage type="register" />;

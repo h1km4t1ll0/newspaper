@@ -24,7 +24,7 @@ export const authProvider: AuthProvider = {
 
       return {
         success: true,
-        redirectTo: "/",
+        redirectTo: "/tasks",
       };
     }
     return {

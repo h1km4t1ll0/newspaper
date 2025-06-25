@@ -133,7 +133,7 @@ export default function BlogPostEdit() {
 
         <Space direction="vertical">
           <Form.Item
-            label={<Typography.Text strong>Фотография рекламы</Typography.Text>}
+            label={<Typography.Text strong>AD photo</Typography.Text>}
             rules={[{ required: true, message: "Upload a photo" }]}
             style={{ margin: 0 }}
             name="photo"

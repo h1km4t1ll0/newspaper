@@ -158,7 +158,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
       <Button key="back" onClick={handleModalClose}>
         {isCreating ? "Cancel" : isEditing ? "Cancel" : "Close"}
       </Button>,
-      !isCreating && !isEditing && (
+      !isCreating && !isEditing && role === "Authenticated" && (
         <Button key="edit" type="primary" onClick={handleEdit}>
            Edit
         </Button>

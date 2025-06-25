@@ -159,13 +159,13 @@ export default function RefineApp({
   const resources = useMemo(() => {
     if (role === "Writer") {
       return allResources.filter((r) =>
-        ["articles", "photos", "tasks", "newspapers"].includes(r.name)
+        ["articles", "photos", "tasks"].includes(r.name)
       );
     }
 
     if (role === "Photographer") {
       return allResources.filter((r) =>
-        ["articles", "photos", "tasks", "newspapers"].includes(r.name)
+        ["articles", "photos", "tasks"].includes(r.name)
       );
     }
 
@@ -200,6 +200,9 @@ export default function RefineApp({
                 warnWhenUnsavedChanges: true,
                 useNewQueryKeys: true,
                 projectId: "5dXQNc-LgkBeL-IkhHJz",
+                title: {
+                  text: "Newspaper"
+                },
               }}
             >
               <Suspense fallback={<div>Loading content…</div>}>

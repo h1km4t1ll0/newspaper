@@ -3,8 +3,6 @@ import React from 'react';
 import { useRouterContext, useRouterType, useLink } from '@refinedev/core';
 import {theme, Space, Typography} from 'antd';
 import type { RefineLayoutThemedTitleProps } from '@refinedev/antd';
-import Logo from './Logo';
-import SmallLogo from './SmallLogo';
 
 type Props = RefineLayoutThemedTitleProps & {
   width?: number;
@@ -44,26 +42,15 @@ export const ThemedTitleV2: React.FC<Props> = ({
         }}
       >
         {!collapsed && (
-          // <Typography.Title
-          //   style={{
-          //     fontSize: 'inherit',
-          //     marginBottom: 0,
-          //     fontWeight: 700,
-          //   }}
-          // >
-          // тут быд текст
-          // </Typography.Title>
           <div
             style={{
-              maxWidth: '160px',
               display: 'flex',
-              justifyContent: 'space-between',
+              justifyContent: 'center',
               alignItems: 'center',
               color: token.colorPrimary,
               width: '100%'
             }}
           >
-            <Logo width={50} height={50} />
             <Typography.Title level={4}>News<span style={{color: '#44a363'}}>paper</span></Typography.Title>
           </div>
         )}
@@ -72,13 +59,13 @@ export const ThemedTitleV2: React.FC<Props> = ({
           <div
             style={{
               display: 'flex',
-              justifyContent: 'space-around',
+              justifyContent: 'center',
               alignItems: 'center',
               width: '100%',
               color: token.colorPrimary,
             }}
           >
-            <SmallLogo />
+            <Typography.Title level={5}>N</Typography.Title>
           </div>
         )}
       </div>
